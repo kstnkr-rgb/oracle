@@ -13,6 +13,7 @@ const server = http.createServer((req, res) => {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') { res.writeHead(204); res.end(); return; }
 
+  // Serve index.html
   if (req.method === 'GET' && (req.url === '/' || req.url === '/index.html')) {
     const html = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
@@ -20,18 +21,22 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // Proxy API calls
   if (req.method === 'POST' && req.url === '/proxy') {
     let body = '';
     req.on('data', chunk => body += chunk);
     req.on('end', () => {
       let parsed;
-      try { parsed = JSON.parse(body); } catch(e) {
-        res.writeHead(400, {'Content-Type':'application/json'});
-        res.end(JSON.stringify({error:'Invalid JSON'}));
+      try { parsed = JSON.parse(body); }
+      catch(e) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Invalid JSON' }));
         return;
       }
+
       const { apiPath, payload } = parsed;
       const bodyStr = JSON.stringify(payload);
+
       const options = {
         hostname: API_HOST,
         path: apiPath,
@@ -43,27 +48,33 @@ const server = http.createServer((req, res) => {
           'Content-Length': Buffer.byteLength(bodyStr)
         }
       };
+
       console.log(`→ POST https://${API_HOST}${apiPath}`);
+
       const proxyReq = https.request(options, proxyRes => {
         let data = '';
         proxyRes.on('data', chunk => data += chunk);
         proxyRes.on('end', () => {
-          console.log(`← ${proxyRes.statusCode}`);
+          console.log(`← ${proxyRes.statusCode}: ${data.substring(0, 100)}`);
           res.writeHead(proxyRes.statusCode, { 'Content-Type': 'application/json' });
           res.end(data);
         });
       });
+
       proxyReq.on('error', e => {
-        res.writeHead(500, {'Content-Type':'application/json'});
-        res.end(JSON.stringify({error: e.message}));
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: e.message }));
       });
+
       proxyReq.write(bodyStr);
       proxyReq.end();
     });
     return;
   }
 
-  res.writeHead(404); res.end('Not found');
+  // All other routes → JSON 404 (not plain text!)
+  res.writeHead(404, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify({ error: 'Not found', path: req.url }));
 });
 
 server.listen(PORT, () => {
