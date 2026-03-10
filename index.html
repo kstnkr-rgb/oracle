@@ -1,519 +1,313 @@
+```html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AstroAPI — Небесный свод</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600&display=swap" rel="stylesheet"/>
-  <style>
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{--bg:#05050f;--gold:#c9a84c;--gold2:#e8c97a;--silver:#a8b5c8;--text:#dde4f0;--dim:#7a869a;--border:rgba(201,168,76,.18);--glow:rgba(201,168,76,.10);--card:rgba(255,255,255,.025)}
-    body{font-family:'Cormorant Garamond',serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
-    .stars{position:fixed;inset:0;pointer-events:none;z-index:0;background:
-      radial-gradient(1px 1px at 8% 12%,rgba(255,255,255,.8) 0%,transparent 100%),
-      radial-gradient(1.5px 1.5px at 38% 7%,rgba(255,255,255,.9) 0%,transparent 100%),
-      radial-gradient(1px 1px at 53% 20%,rgba(255,255,255,.6) 0%,transparent 100%),
-      radial-gradient(1px 1px at 68% 33%,rgba(255,255,255,.7) 0%,transparent 100%),
-      radial-gradient(1.5px 1.5px at 83% 4%,rgba(255,255,255,.8) 0%,transparent 100%),
-      radial-gradient(1px 1px at 14% 58%,rgba(255,255,255,.4) 0%,transparent 100%),
-      radial-gradient(1px 1px at 58% 73%,rgba(255,255,255,.6) 0%,transparent 100%),
-      radial-gradient(1px 1px at 89% 53%,rgba(255,255,255,.5) 0%,transparent 100%),
-      radial-gradient(1px 1px at 33% 83%,rgba(255,255,255,.7) 0%,transparent 100%),
-      radial-gradient(1.5px 1.5px at 76% 88%,rgba(255,255,255,.6) 0%,transparent 100%),
-      radial-gradient(1px 1px at 91% 16%,rgba(255,255,255,.7) 0%,transparent 100%)}
-    .nebula{position:fixed;inset:0;pointer-events:none;z-index:0;background:
-      radial-gradient(ellipse 60% 40% at 20% 30%,rgba(80,40,120,.15) 0%,transparent 70%),
-      radial-gradient(ellipse 40% 60% at 80% 70%,rgba(40,60,120,.12) 0%,transparent 70%)}
-    .wrap{position:relative;z-index:1;max-width:800px;margin:0 auto;padding:52px 22px 80px}
-    header{text-align:center;margin-bottom:42px}
-    .sigil{width:58px;height:58px;margin:0 auto 16px}
-    .sigil svg{width:100%;height:100%;animation:rot 40s linear infinite}
-    @keyframes rot{to{transform:rotate(360deg)}}
-    h1{font-family:'Cinzel',serif;font-size:clamp(1.6rem,5vw,2.4rem);font-weight:600;letter-spacing:.12em;
-      background:linear-gradient(135deg,var(--gold) 0%,var(--gold2) 50%,var(--gold) 100%);
-      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px}
-    header p{color:var(--silver);font-size:.98rem;font-style:italic;opacity:.8}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AstroAPI</title>
 
-    .mbar{display:flex;gap:2px;flex-wrap:wrap;margin-bottom:24px;border-bottom:1px solid var(--border)}
-    .mb{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;
-      padding:9px 13px;color:var(--dim);background:none;border:none;cursor:pointer;
-      border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .3s;white-space:nowrap}
-    .mb.on{color:var(--gold2);border-bottom-color:var(--gold)}
-    .mb:hover{color:var(--silver)}
-    .panel{display:none}.panel.on{display:block}
+<style>
+body{
+background:#06060f;
+color:#eee;
+font-family:serif;
+padding:40px;
+max-width:900px;
+margin:auto
+}
 
-    .card{background:var(--card);border:1px solid var(--border);border-radius:2px;padding:28px 32px 24px;box-shadow:0 0 48px var(--glow);position:relative}
-    .c{position:absolute;color:var(--gold);font-size:.6rem;opacity:.3}
-    .c.tl{top:8px;left:12px}.c.tr{top:8px;right:12px}.c.bl{bottom:8px;left:12px}.c.br{bottom:8px;right:12px}
+h1{
+color:#d7b45c;
+margin-bottom:30px
+}
 
-    .row{display:grid;gap:13px;margin-bottom:13px}
-    .r2{grid-template-columns:1fr 1fr}.r3{grid-template-columns:2fr 1fr 1fr}.r2e{grid-template-columns:1fr 1fr}
-    .f{display:flex;flex-direction:column;gap:5px}
-    label{font-family:'Cinzel',serif;font-size:.57rem;letter-spacing:.19em;text-transform:uppercase;color:var(--gold);opacity:.76}
-    input,select{background:rgba(255,255,255,.03);border:1px solid rgba(201,168,76,.2);border-radius:1px;
-      padding:9px 11px;color:var(--text);font-family:'Cormorant Garamond',serif;font-size:.93rem;
-      outline:none;transition:border-color .3s,box-shadow .3s;width:100%}
-    input:focus,select:focus{border-color:var(--gold);background:rgba(201,168,76,.04);box-shadow:0 0 14px rgba(201,168,76,.1)}
-    input::placeholder{color:var(--dim);font-style:italic}
-    select option{background:#0d0d20;color:var(--text)}
-    .note{font-size:.76rem;color:var(--dim);font-style:italic;line-height:1.5;margin-top:2px}
-    .sl{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.17em;text-transform:uppercase;color:var(--gold);opacity:.6;margin:14px 0 8px}
-    .div{display:flex;align-items:center;gap:11px;margin:16px 0}
-    .div::before,.div::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.28}
-    .div span{color:var(--gold);font-size:.85rem;opacity:.5}
-    .btn{width:100%;padding:12px 16px;margin-top:5px;
-      background:linear-gradient(135deg,rgba(201,168,76,.11) 0%,rgba(201,168,76,.05) 100%);
-      border:1px solid var(--gold);border-radius:1px;color:var(--gold2);
-      font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;
-      cursor:pointer;transition:all .3s}
-    .btn:hover{background:linear-gradient(135deg,rgba(201,168,76,.21) 0%,rgba(201,168,76,.11) 100%);box-shadow:0 0 24px rgba(201,168,76,.16)}
-    .btn:disabled{opacity:.38;cursor:not-allowed}
-    .spin{display:none;text-align:center;padding:28px 0}.spin.on{display:block}
-    .orbit{width:42px;height:42px;border:1px solid rgba(201,168,76,.3);border-top-color:var(--gold);border-radius:50%;animation:sp 1.2s linear infinite;margin:0 auto 12px}
-    @keyframes sp{to{transform:rotate(360deg)}}
-    .spin p{color:var(--silver);font-style:italic;font-size:.92rem}
-    .eb{display:none;padding:11px 15px;border:1px solid rgba(200,60,60,.3);background:rgba(200,60,60,.05);border-radius:1px;color:#e88;font-size:.84rem;margin-top:12px;line-height:1.5;white-space:pre-wrap}
-    .eb.on{display:block}
-    .res{display:none;margin-top:30px;animation:fu .5s ease}.res.on{display:block}
-    @keyframes fu{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-    .rl{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.19em;text-transform:uppercase;color:var(--gold);opacity:.6;margin-bottom:11px}
-    .tabs{display:flex;gap:2px;flex-wrap:wrap;border-bottom:1px solid var(--border);margin-bottom:14px}
-    .tb{font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.13em;text-transform:uppercase;
-      padding:7px 13px;color:var(--dim);background:none;border:none;cursor:pointer;
-      border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .3s}
-    .tb.on{color:var(--gold2);border-bottom-color:var(--gold)}
-    .tc{display:none}.tc.on{display:block}
+.card{
+border:1px solid #333;
+padding:20px;
+margin-bottom:30px
+}
 
-    .pg{display:grid;gap:6px}
-    .pr{display:grid;grid-template-columns:30px 140px 1fr auto;gap:8px;align-items:center;
-      padding:8px 12px;background:rgba(255,255,255,.02);border:1px solid rgba(201,168,76,.08);border-radius:1px;transition:border-color .2s}
-    .pr:hover{border-color:rgba(201,168,76,.2)}
-    .ps{font-size:1.2rem;text-align:center}
-    .pn{font-family:'Cinzel',serif;font-size:.61rem;letter-spacing:.09em;text-transform:uppercase;color:var(--silver)}
-    .psg{color:var(--gold2);font-size:.88rem}
-    .pd{color:var(--dim);font-size:.76rem;font-style:italic;white-space:nowrap}
-    .rt{color:#e08080;font-size:.6rem;font-family:'Cinzel',serif;margin-left:3px}
-    .hg{display:grid;grid-template-columns:repeat(auto-fill,minmax(124px,1fr));gap:7px}
-    .hc{padding:10px 12px;background:rgba(255,255,255,.02);border:1px solid rgba(201,168,76,.1);border-radius:1px;text-align:center}
-    .hn{font-family:'Cinzel',serif;font-size:.54rem;letter-spacing:.16em;color:var(--dim);text-transform:uppercase;margin-bottom:4px}
-    .hsg{font-size:.94rem;color:var(--gold2)}
-    .hd{font-size:.72rem;color:var(--dim);font-style:italic}
-    .al{display:grid;gap:6px}
-    .ai{display:flex;align-items:center;gap:8px;padding:7px 12px;background:rgba(255,255,255,.02);border:1px solid rgba(201,168,76,.08);border-radius:1px}
-    .at{font-family:'Cinzel',serif;font-size:.53rem;letter-spacing:.07em;padding:2px 6px;border-radius:20px;text-transform:uppercase;min-width:64px;text-align:center}
-    .at.trine{background:rgba(80,200,120,.12);color:#6dbb8a;border:1px solid rgba(80,200,120,.2)}
-    .at.sextile{background:rgba(80,160,220,.12);color:#6aaee0;border:1px solid rgba(80,160,220,.2)}
-    .at.conjunction{background:rgba(201,168,76,.1);color:var(--gold2);border:1px solid var(--border)}
-    .at.opposition{background:rgba(220,80,80,.1);color:#e08080;border:1px solid rgba(220,80,80,.2)}
-    .at.square{background:rgba(200,120,40,.1);color:#e0a060;border:1px solid rgba(200,120,40,.2)}
-    .at.other{background:rgba(150,100,200,.1);color:#c0a0e0;border:1px solid rgba(150,100,200,.2)}
-    .ap{color:var(--silver);flex:1;font-size:.84rem}
-    .ao{color:var(--dim);font-size:.72rem;font-style:italic}
-    .tb2{background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:1px;padding:20px 24px;line-height:1.9;font-size:.96rem;color:var(--text)}
-    .tb2 h3{font-family:'Cinzel',serif;font-size:.63rem;letter-spacing:.16em;color:var(--gold);text-transform:uppercase;margin:16px 0 6px;padding-bottom:4px;border-bottom:1px solid rgba(201,168,76,.1)}
-    .tb2 h3:first-child{margin-top:0}
-    .tb2 p{opacity:.9;margin-bottom:9px}.tb2 p:last-child{margin-bottom:0}
-    .hcard{background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:1px;padding:20px 24px}
-    .htitle{font-family:'Cinzel',serif;font-size:1rem;color:var(--gold2);margin-bottom:12px;letter-spacing:.1em}
-    .hcats{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-bottom:12px}
-    .hcat{padding:10px 12px;background:rgba(255,255,255,.02);border:1px solid rgba(201,168,76,.1);border-radius:1px}
-    .hcatn{font-family:'Cinzel',serif;font-size:.54rem;letter-spacing:.13em;text-transform:uppercase;color:var(--gold);margin-bottom:4px}
-    .hcatt{font-size:.86rem;line-height:1.6;color:var(--text);opacity:.88}
-    .hlk{display:flex;gap:16px;flex-wrap:wrap;margin-top:9px}
-    .hlki{font-size:.82rem;color:var(--dim)}.hlki span{color:var(--gold2)}
-    .mwrap{display:flex;align-items:center;gap:24px;padding:14px 0;flex-wrap:wrap}
-    .msym{font-size:4rem;line-height:1}
-    .minf{flex:1;min-width:170px}
-    .mph{font-family:'Cinzel',serif;font-size:1rem;color:var(--gold2);margin-bottom:6px}
-    .mdt{font-size:.86rem;color:var(--silver);line-height:1.8}
-    .ng{display:grid;grid-template-columns:repeat(auto-fill,minmax(142px,1fr));gap:8px}
-    .nc{padding:13px;background:rgba(255,255,255,.02);border:1px solid rgba(201,168,76,.12);border-radius:1px;text-align:center}
-    .nv{font-family:'Cinzel',serif;font-size:1.8rem;color:var(--gold2);margin-bottom:4px}
-    .nl{font-family:'Cinzel',serif;font-size:.53rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
-    .kvg{display:grid;gap:6px}
-    .kvi{display:flex;justify-content:space-between;align-items:baseline;padding:7px 12px;background:rgba(255,255,255,.02);border:1px solid rgba(201,168,76,.08);border-radius:1px;gap:11px}
-    .kvk{color:var(--dim);font-size:.79rem;font-style:italic;flex-shrink:0}
-    .kvv{color:var(--text);font-size:.89rem;text-align:right;word-break:break-word}
-    .rj{background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.06);border-radius:2px;padding:15px;font-family:'Courier New',monospace;font-size:.73rem;color:#8bc4a8;white-space:pre-wrap;word-break:break-all;max-height:440px;overflow-y:auto;line-height:1.6}
-    .rj::-webkit-scrollbar{width:5px}.rj::-webkit-scrollbar-thumb{background:rgba(201,168,76,.2);border-radius:3px}
-    @media(max-width:580px){
-      .wrap{padding:28px 11px 60px}.card{padding:20px 13px 16px}
-      .r2,.r3,.r2e{grid-template-columns:1fr}
-      .pr{grid-template-columns:26px 1fr auto}.psg{display:none}
-      .mb{padding:7px 8px;font-size:.52rem}
-    }
-  </style>
+label{
+display:block;
+margin-top:10px;
+font-size:14px
+}
+
+input,select{
+width:100%;
+padding:6px;
+margin-top:4px;
+background:#111;
+color:#eee;
+border:1px solid #333
+}
+
+button{
+margin-top:15px;
+padding:10px 20px;
+background:#d7b45c;
+border:none;
+cursor:pointer
+}
+
+pre{
+background:#000;
+padding:20px;
+overflow:auto;
+max-height:400px
+}
+
+.error{
+color:#ff6b6b;
+margin-top:10px
+}
+</style>
 </head>
+
 <body>
-<div class="stars"></div><div class="nebula"></div>
-<div class="wrap">
 
-<header>
-  <div class="sigil">
-    <svg viewBox="0 0 64 64" fill="none">
-      <circle cx="32" cy="32" r="30" stroke="#c9a84c" stroke-width=".5" stroke-dasharray="4 3" opacity=".5"/>
-      <circle cx="32" cy="32" r="22" stroke="#c9a84c" stroke-width=".4" opacity=".3"/>
-      <line x1="2" y1="32" x2="62" y2="32" stroke="#c9a84c" stroke-width=".4" opacity=".2"/>
-      <line x1="32" y1="2" x2="32" y2="62" stroke="#c9a84c" stroke-width=".4" opacity=".2"/>
-      <circle cx="32" cy="32" r="2.5" fill="#c9a84c" opacity=".7"/>
-      <circle cx="32" cy="9" r="1.5" fill="#c9a84c" opacity=".5"/>
-      <circle cx="32" cy="55" r="1.5" fill="#c9a84c" opacity=".5"/>
-      <circle cx="9" cy="32" r="1.5" fill="#c9a84c" opacity=".5"/>
-      <circle cx="55" cy="32" r="1.5" fill="#c9a84c" opacity=".5"/>
-    </svg>
-  </div>
-  <h1>AstroAPI</h1>
-  <p>Астрология · Нумерология · Лунный календарь</p>
-</header>
+<h1>AstroAPI</h1>
 
-<div class="mbar">
-  <button class="mb on" onclick="sw('natal')">☉ Карта рождения</button>
-  <button class="mb" onclick="sw('horoscope')">☽ Гороскоп</button>
-  <button class="mb" onclick="sw('synastry')">♡ Синастрия</button>
-  <button class="mb" onclick="sw('moon')">🌕 Луна</button>
-  <button class="mb" onclick="sw('numerology')">✦ Нумерология</button>
+<div class="card">
+
+<h3>Натальная карта</h3>
+
+<label>Дата рождения</label>
+<input type="date" id="n-date">
+
+<label>Время рождения</label>
+<input type="time" id="n-time" value="12:00">
+
+<label>Город</label>
+<input type="text" id="n-city" placeholder="Moscow">
+
+<label>Страна</label>
+<input type="text" id="n-country" placeholder="RU">
+
+<button onclick="doNatal()">Рассчитать</button>
+
+<div id="err-natal" class="error"></div>
+
 </div>
 
-<!-- ── NATAL ─────────────────────────────────────────────────── -->
-<div id="p-natal" class="panel on"><div class="card">
-  <span class="c tl">✦</span><span class="c tr">✦</span><span class="c bl">✦</span><span class="c br">✦</span>
-  <div class="f" style="margin-bottom:13px">
-    <label>Тип расчёта</label>
-    <select id="n-type">
-      <option value="positions">Позиции планет</option>
-      <option value="house-cusps">Дома (куспиды)</option>
-      <option value="aspects">Аспекты</option>
-      <option value="all">Полная карта (планеты + дома + аспекты)</option>
-    </select>
-  </div>
-  <div class="div"><span>✦</span></div>
-  <div class="row r2">
-    <div class="f"><label>Дата рождения</label><input type="date" id="n-date"/></div>
-    <div class="f"><label>Время рождения</label><input type="time" id="n-time" value="12:00"/></div>
-  </div>
-  <div class="row r3">
-    <div class="f"><label>Город</label><input type="text" id="n-city" placeholder="Moscow"/></div>
-    <div class="f"><label>Страна</label><input type="text" id="n-country" placeholder="RU" maxlength="2"/></div>
-    <div class="f"><label>Имя</label><input type="text" id="n-name" placeholder="Имя"/></div>
-  </div>
-  <p class="note">Город на латинице: Moscow, Berlin, New York, Paris</p>
-  <button class="btn" onclick="doNatal()">✦ &nbsp; Рассчитать &nbsp; ✦</button>
-  <div class="spin" id="sp-natal"><div class="orbit"></div><p>Считываю звёздные координаты…</p></div>
-  <div class="eb" id="er-natal"></div>
-</div></div>
 
-<!-- ── HOROSCOPE ──────────────────────────────────────────────── -->
-<div id="p-horoscope" class="panel"><div class="card">
-  <span class="c tl">✦</span><span class="c tr">✦</span><span class="c bl">✦</span><span class="c br">✦</span>
-  <div class="row r2e">
-    <div class="f">
-      <label>Знак зодиака</label>
-      <select id="h-sign">
-        <option value="aries">Овен</option><option value="taurus">Телец</option>
-        <option value="gemini">Близнецы</option><option value="cancer">Рак</option>
-        <option value="leo">Лев</option><option value="virgo">Дева</option>
-        <option value="libra">Весы</option><option value="scorpio">Скорпион</option>
-        <option value="sagittarius">Стрелец</option><option value="capricorn">Козерог</option>
-        <option value="aquarius">Водолей</option><option value="pisces">Рыбы</option>
-      </select>
-    </div>
-    <div class="f">
-      <label>Период</label>
-      <select id="h-period">
-        <option value="daily">Ежедневный</option>
-        <option value="weekly">Еженедельный</option>
-        <option value="monthly">Ежемесячный</option>
-        <option value="yearly">Ежегодный</option>
-      </select>
-    </div>
-  </div>
-  <button class="btn" onclick="doHoroscope()">✦ &nbsp; Получить гороскоп &nbsp; ✦</button>
-  <div class="spin" id="sp-horoscope"><div class="orbit"></div><p>Читаю звёздные послания…</p></div>
-  <div class="eb" id="er-horoscope"></div>
-</div></div>
+<div class="card">
 
-<!-- ── SYNASTRY ──────────────────────────────────────────────── -->
-<div id="p-synastry" class="panel"><div class="card">
-  <span class="c tl">✦</span><span class="c tr">✦</span><span class="c bl">✦</span><span class="c br">✦</span>
-  <p class="note" style="margin-bottom:12px">Синастрия — астрологическая совместимость двух людей</p>
-  <div class="div"><span>✦</span></div>
-  <p class="sl">Первый человек</p>
-  <div class="row r2">
-    <div class="f"><label>Дата рождения</label><input type="date" id="s1-date"/></div>
-    <div class="f"><label>Время рождения</label><input type="time" id="s1-time" value="12:00"/></div>
-  </div>
-  <div class="row r3" style="margin-bottom:16px">
-    <div class="f"><label>Город</label><input type="text" id="s1-city" placeholder="Moscow"/></div>
-    <div class="f"><label>Страна</label><input type="text" id="s1-country" placeholder="RU" maxlength="2"/></div>
-    <div class="f"><label>Имя</label><input type="text" id="s1-name" placeholder="Имя"/></div>
-  </div>
-  <p class="sl">Второй человек</p>
-  <div class="row r2">
-    <div class="f"><label>Дата рождения</label><input type="date" id="s2-date"/></div>
-    <div class="f"><label>Время рождения</label><input type="time" id="s2-time" value="12:00"/></div>
-  </div>
-  <div class="row r3">
-    <div class="f"><label>Город</label><input type="text" id="s2-city" placeholder="Berlin"/></div>
-    <div class="f"><label>Страна</label><input type="text" id="s2-country" placeholder="DE" maxlength="2"/></div>
-    <div class="f"><label>Имя</label><input type="text" id="s2-name" placeholder="Имя"/></div>
-  </div>
-  <button class="btn" onclick="doSynastry()">✦ &nbsp; Проверить совместимость &nbsp; ✦</button>
-  <div class="spin" id="sp-synastry"><div class="orbit"></div><p>Сравниваю звёздные карты…</p></div>
-  <div class="eb" id="er-synastry"></div>
-</div></div>
+<h3>Гороскоп</h3>
 
-<!-- ── MOON ──────────────────────────────────────────────────── -->
-<div id="p-moon" class="panel"><div class="card">
-  <span class="c tl">✦</span><span class="c tr">✦</span><span class="c bl">✦</span><span class="c br">✦</span>
-  <div class="row r3">
-    <div class="f"><label>Город</label><input type="text" id="m-city" placeholder="Moscow"/></div>
-    <div class="f"><label>Страна</label><input type="text" id="m-country" placeholder="RU" maxlength="2"/></div>
-    <div class="f"><label>Дата (пусто = сейчас)</label><input type="date" id="m-date"/></div>
-  </div>
-  <button class="btn" onclick="doMoon()" style="margin-top:10px">✦ &nbsp; Фаза Луны &nbsp; ✦</button>
-  <div class="spin" id="sp-moon"><div class="orbit"></div><p>Смотрю на Луну…</p></div>
-  <div class="eb" id="er-moon"></div>
-</div></div>
+<label>Знак</label>
 
-<!-- ── NUMEROLOGY ─────────────────────────────────────────────── -->
-<div id="p-numerology" class="panel"><div class="card">
-  <span class="c tl">✦</span><span class="c tr">✦</span><span class="c bl">✦</span><span class="c br">✦</span>
-  <div class="row r2e">
-    <div class="f"><label>Полное имя (латиницей)</label><input type="text" id="nu-name" placeholder="Ivan Petrov"/></div>
-    <div class="f"><label>Дата рождения</label><input type="date" id="nu-date"/></div>
-  </div>
-  <button class="btn" onclick="doNumerology()">✦ &nbsp; Нумерологический портрет &nbsp; ✦</button>
-  <div class="spin" id="sp-numerology"><div class="orbit"></div><p>Складываю числа судьбы…</p></div>
-  <div class="eb" id="er-numerology"></div>
-</div></div>
+<select id="h-sign">
+<option value="aries">Овен</option>
+<option value="taurus">Телец</option>
+<option value="gemini">Близнецы</option>
+<option value="cancer">Рак</option>
+<option value="leo">Лев</option>
+<option value="virgo">Дева</option>
+<option value="libra">Весы</option>
+<option value="scorpio">Скорпион</option>
+<option value="sagittarius">Стрелец</option>
+<option value="capricorn">Козерог</option>
+<option value="aquarius">Водолей</option>
+<option value="pisces">Рыбы</option>
+</select>
 
-<!-- ── RESULTS ─────────────────────────────────────────────────── -->
-<div class="res" id="res">
-  <div class="div" style="margin:28px 0 20px"><span>✦</span></div>
-  <div class="rl" id="rl">✦ &nbsp; Ответ небесного свода &nbsp; ✦</div>
-  <div class="tabs" id="tabs"></div>
-  <div id="tcs"></div>
+<label>Период</label>
+
+<select id="h-period">
+<option value="daily">Ежедневный</option>
+<option value="weekly">Еженедельный</option>
+<option value="monthly">Ежемесячный</option>
+<option value="yearly">Ежегодный</option>
+</select>
+
+<button onclick="doHoroscope()">Получить</button>
+
+<div id="err-horoscope" class="error"></div>
+
 </div>
+
+
+<div class="card">
+
+<h3>Фаза Луны</h3>
+
+<label>Город</label>
+<input type="text" id="m-city" placeholder="Berlin">
+
+<label>Страна</label>
+<input type="text" id="m-country" placeholder="DE">
+
+<button onclick="doMoon()">Получить фазу</button>
+
+<div id="err-moon" class="error"></div>
+
 </div>
+
+
+<div class="card">
+
+<h3>Результат</h3>
+
+<pre id="result"></pre>
+
+</div>
+
 
 <script>
-const SYM={Sun:'☉',Moon:'☽',Mercury:'☿',Venus:'♀',Mars:'♂',Jupiter:'♃',Saturn:'♄',Uranus:'♅',Neptune:'♆',Pluto:'♇',Chiron:'⚷',Mean_Node:'☊',True_Node:'☊',Ascendant:'Asc',Medium_Coeli:'MC',Descendant:'Dsc',Imum_Coeli:'IC'};
-const ROMAN=['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
-const MOONS={'New Moon':'🌑','Waxing Crescent':'🌒','First Quarter':'🌓','Waxing Gibbous':'🌔','Full Moon':'🌕','Waning Gibbous':'🌖','Last Quarter':'🌗','Waning Crescent':'🌘'};
 
-function g(id){return(document.getElementById(id)?.value||'').trim()}
-function subj(date,time,city,co,name){
-  const[y,mo,d]=date.split('-').map(Number);
-  const[h,mi]=(time||'12:00').split(':').map(Number);
-  return{name:name||'Subject',birth_data:{year:y,month:mo,day:d,hour:h,minute:mi,second:0,city,country_code:co.toUpperCase()}};
-}
-const OPT={house_system:'P',language:'en',tradition:'universal',detail_level:'standard',zodiac_type:'Tropic',
-  active_points:['Sun','Moon','Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto','Chiron','Mean_Node','Ascendant','Medium_Coeli'],precision:2};
-
-async function api(path,payload){
-  const r=await fetch('/proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({apiPath:path,payload})});
-  const txt=await r.text();
-  let d;try{d=JSON.parse(txt)}catch(e){throw new Error('Ответ API: '+txt.substring(0,150))}
-  if(!r.ok){
-    const msg=d.detail||d.error||d.message;
-    throw new Error(typeof msg==='string'?msg:JSON.stringify(msg).substring(0,200));
-  }
-  return d;
+function g(id){
+return document.getElementById(id).value.trim()
 }
 
-function sw(mode){
-  const ms=['natal','horoscope','synastry','moon','numerology'];
-  document.querySelectorAll('.mb').forEach((b,i)=>b.classList.toggle('on',ms[i]===mode));
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
-  document.getElementById('p-'+mode).classList.add('on');
-  document.getElementById('res').classList.remove('on');
-}
-function spin(id,on){document.getElementById('sp-'+id).classList.toggle('on',on)}
-function err(id,msg){const e=document.getElementById('er-'+id);e.textContent=msg;e.classList.toggle('on',!!msg)}
 
-async function run(id,fn){
-  err(id,'');spin(id,true);
-  document.getElementById('res').classList.remove('on');
-  const btn=document.querySelector('#p-'+id+' .btn');
-  if(btn)btn.disabled=true;
-  try{await fn()}catch(e){err(id,'Ошибка: '+e.message)}
-  finally{spin(id,false);if(btn)btn.disabled=false}
-}
+async function api(path,payload={},method='POST'){
 
-// ── Natal ─────────────────────────────────────────────────────
-async function doNatal(){await run('natal',async()=>{
-  const type=g('n-type')||'positions',date=g('n-date'),city=g('n-city'),co=g('n-country');
-  if(!date||!city||!co)throw new Error('Заполните дату, город и страну');
-  const s=subj(date,g('n-time'),city,co,g('n-name'));
-  if(type==='all'){
-    // fetch positions + houses + aspects in parallel
-    const[pos,houses,asp]=await Promise.all([
-      api('/api/v3/data/positions',{subject:s,options:OPT}),
-      api('/api/v3/data/house-cusps',{subject:s,options:OPT}),
-      api('/api/v3/data/aspects',{subject:s,options:OPT})
-    ]);
-    show({positions:pos,houses:houses,aspects:asp},'Натальная карта');
-  } else {
-    const path='/api/v3/data/'+type;
-    show(await api(path,{subject:s,options:OPT}),'Карта рождения');
-  }
-})}
+const r=await fetch('/proxy',{
+method:'POST',
+headers:{'Content-Type':'application/json'},
+body:JSON.stringify({
+apiPath:path,
+payload,
+method
+})
+})
 
-// ── Horoscope ──────────────────────────────────────────────────
-async function doHoroscope(){await run('horoscope',async()=>{
-  const sign=document.getElementById('h-sign').value;
-  const period=document.getElementById('h-period').value;
-  show(await api('/api/v3/horoscopes/'+period+'/'+sign,{options:{language:'en'}}),'Гороскоп: '+sign);
-})}
+const txt=await r.text()
 
-// ── Synastry ───────────────────────────────────────────────────
-async function doSynastry(){await run('synastry',async()=>{
-  const d1=g('s1-date'),c1=g('s1-city'),co1=g('s1-country');
-  const d2=g('s2-date'),c2=g('s2-city'),co2=g('s2-country');
-  if(!d1||!c1||!co1||!d2||!c2||!co2)throw new Error('Заполните данные обоих людей');
-  show(await api('/api/v3/charts/synastry',{
-    subject1:subj(d1,g('s1-time'),c1,co1,g('s1-name')),
-    subject2:subj(d2,g('s2-time'),c2,co2,g('s2-name')),
-    options:OPT
-  }),'Синастрия');
-})}
+let data
 
-// ── Moon ───────────────────────────────────────────────────────
-async function doMoon(){await run('moon',async()=>{
-  const city=g('m-city'),co=g('m-country');
-  if(!city||!co)throw new Error('Укажите город и страну');
-  const dv=g('m-date');
-  const payload={location:{city,country_code:co.toUpperCase()}};
-  if(dv){const[y,m,d]=dv.split('-').map(Number);payload.date={year:y,month:m,day:d}}
-  show(await api('/api/v3/moon/phase',payload),'Фаза Луны');
-})}
-
-// ── Numerology ─────────────────────────────────────────────────
-async function doNumerology(){await run('numerology',async()=>{
-  const name=g('nu-name'),date=g('nu-date');
-  if(!name||!date)throw new Error('Укажите имя и дату рождения');
-  const[y,m,d]=date.split('-').map(Number);
-  show(await api('/api/v3/numerology/pythagorean',{subject:{name,birth_data:{year:y,month:m,day:d}},options:{language:'en'}}),'Нумерология');
-})}
-
-document.querySelectorAll('input[maxlength="2"]').forEach(el=>el.addEventListener('input',()=>{el.value=el.value.toUpperCase()}));
-
-// ══ RENDER ════════════════════════════════════════════════════
-function show(data,title){
-  document.getElementById('rl').textContent='✦  '+title+'  ✦';
-  const tabs=document.getElementById('tabs'),tcs=document.getElementById('tcs');
-  tabs.innerHTML='';tcs.innerHTML='';
-  const T=[];
-  // handle wrapped multi-call result
-  if(data.positions||data.houses||data.aspects){
-    const pos=(data.positions?.data||data.positions);
-    const hd=(data.houses?.data||data.houses);
-    const asd=(data.aspects?.data||data.aspects);
-    if(pos){const pl=pos.positions||pos.planets||pos.celestial_bodies;if(pl)T.push({l:'Планеты',h:rPl(pl)})}
-    if(hd){const hs=hd.houses||hd.house_cusps;if(hs)T.push({l:'Дома',h:rH(hs)})}
-    if(asd){const as=asd.aspects;if(as?.length)T.push({l:'Аспекты',h:rA(as)})}
-  } else {
-    const inner=data.data||data;
-    const pl=inner.positions||inner.planets||inner.celestial_bodies;
-    if(pl)T.push({l:'Планеты',h:rPl(pl)});
-    const hs=inner.houses||inner.house_cusps;
-    if(hs)T.push({l:'Дома',h:rH(hs)});
-    const as=inner.aspects||inner.synastry_aspects;
-    if(as?.length)T.push({l:'Аспекты',h:rA(as)});
-    const ht=inner.horoscope||inner.prediction||inner.forecast||inner.content||inner.text||inner.description;
-    if(ht)T.push({l:'Гороскоп',h:rHoro(inner,ht)});
-    if(inner.phase_name||inner.phase!==undefined)T.push({l:'Луна',h:rMoon(inner)});
-    const hasnums=inner.life_path!==undefined||inner.expression!==undefined||inner.soul_urge!==undefined||inner.numbers;
-    if(hasnums)T.push({l:'Числа',h:rNum(inner)});
-  }
-  if(!T.length)T.push({l:'Данные',h:rKV(flat(data.data||data))});
-  T.push({l:'JSON',h:'<pre class="rj">'+JSON.stringify(data,null,2)+'</pre>'});
-  T.forEach((t,i)=>{
-    const b=document.createElement('button');
-    b.className='tb'+(i===0?' on':'');b.textContent=t.l;
-    b.onclick=()=>{document.querySelectorAll('.tb').forEach(x=>x.classList.remove('on'));document.querySelectorAll('.tc').forEach(x=>x.classList.remove('on'));b.classList.add('on');document.getElementById('tc'+i).classList.add('on')};
-    tabs.appendChild(b);
-    const dv=document.createElement('div');dv.className='tc'+(i===0?' on':'');dv.id='tc'+i;dv.innerHTML=t.h;tcs.appendChild(dv);
-  });
-  document.getElementById('res').classList.add('on');
-  document.getElementById('res').scrollIntoView({behavior:'smooth',block:'start'});
+try{
+data=JSON.parse(txt)
+}catch{
+throw new Error(txt)
 }
 
-function rPl(pl){
-  const list=Array.isArray(pl)?pl:Object.entries(pl).map(([n,v])=>({name:n,...v}));
-  return '<div class="pg">'+list.map(p=>{
-    const sym=SYM[p.name]||'★';
-    const sign=p.sign||p.zodiac_sign||'';
-    const deg=p.degree!=null?Number(p.degree).toFixed(2)+'°':p.abs_pos!=null?Number(p.abs_pos).toFixed(2)+'°':p.absolute_longitude!=null?Number(p.absolute_longitude).toFixed(2)+'°':'';
-    const house=p.house!=null?'· Дом '+p.house:'';
-    const retro=(p.retrograde||p.is_retrograde)?'<span class="rt">℞</span>':'';
-    return '<div class="pr"><div class="ps">'+sym+'</div><div class="pn">'+(p.name||'')+retro+'</div><div class="psg">'+sign+' '+house+'</div><div class="pd">'+deg+'</div></div>';
-  }).join('')+'</div>';
+if(!r.ok){
+throw new Error(data.error || JSON.stringify(data))
 }
-function rH(h){
-  const list=Array.isArray(h)?h:Object.entries(h).map(([k,v])=>({number:k,...v}));
-  return '<div class="hg">'+list.map((x,i)=>{
-    const sign=x.sign||x.zodiac_sign||'';
-    const deg=x.degree!=null?Number(x.degree).toFixed(1)+'°':x.cusp!=null?Number(x.cusp).toFixed(1)+'°':x.absolute_longitude!=null?Number(x.absolute_longitude).toFixed(1)+'°':'';
-    return '<div class="hc"><div class="hn">Дом '+(ROMAN[i]||i+1)+'</div><div class="hsg">'+sign+'</div><div class="hd">'+deg+'</div></div>';
-  }).join('')+'</div>';
+
+return data
 }
-function rA(asp){
-  return '<div class="al">'+asp.map(a=>{
-    const type=(a.aspect||a.type||a.name||'').toLowerCase();
-    const cls=['trine','sextile','conjunction','opposition','square'].includes(type)?type:'other';
-    const p1=a.p1_name||a.planet1||a.body1||'';
-    const p2=a.p2_name||a.planet2||a.body2||'';
-    const orb=a.orb!=null?'orb '+Number(a.orb).toFixed(2)+'°':'';
-    return '<div class="ai"><span class="at '+cls+'">'+type+'</span><span class="ap">'+p1+' — '+p2+'</span><span class="ao">'+orb+'</span></div>';
-  }).join('')+'</div>';
+
+
+function show(data){
+document.getElementById('result').textContent=
+JSON.stringify(data,null,2)
 }
-function rHoro(obj,text){
-  if(typeof text==='string'){
-    const cats=obj.categories||obj.sections;
-    if(cats&&typeof cats==='object'){
-      let h='<div class="hcard">';
-      if(obj.sign)h+='<div class="htitle">☽ '+obj.sign.charAt(0).toUpperCase()+obj.sign.slice(1)+'</div>';
-      h+='<div class="hcats">';
-      Object.entries(cats).forEach(([k,v])=>{h+='<div class="hcat"><div class="hcatn">'+k+'</div><div class="hcatt">'+v+'</div></div>';});
-      h+='</div>';
-      const lk=[];
-      if(obj.lucky_number!=null)lk.push('Число: <span>'+obj.lucky_number+'</span>');
-      if(obj.lucky_color)lk.push('Цвет: <span>'+obj.lucky_color+'</span>');
-      if(obj.compatible_signs)lk.push('Совм.: <span>'+(Array.isArray(obj.compatible_signs)?obj.compatible_signs.join(', '):obj.compatible_signs)+'</span>');
-      if(lk.length)h+='<div class="hlk">'+lk.map(l=>'<div class="hlki">'+l+'</div>').join('')+'</div>';
-      return h+'</div>';
-    }
-    return '<div class="tb2"><p>'+text.replace(/\n/g,'<br/>')+'</p></div>';
-  }
-  if(typeof text==='object')return rKV(flat(text));
-  return '<div class="tb2"><p>'+String(text)+'</p></div>';
+
+
+
+async function doNatal(){
+
+document.getElementById('err-natal').textContent=''
+
+try{
+
+const date=g('n-date')
+const time=g('n-time') || '12:00'
+const city=g('n-city')
+const co=g('n-country')
+
+if(!date||!city||!co){
+throw new Error('Введите дату, город и страну')
 }
-function rMoon(obj){
-  const phase=obj.phase_name||obj.phase||'';
-  const emoji=MOONS[phase]||'🌙';
-  const illum=obj.illumination!=null?Number(obj.illumination<=1?obj.illumination*100:obj.illumination).toFixed(1)+'%':'';
-  const sign=obj.sign||obj.zodiac_sign||'';
-  const age=obj.age_days!=null?Number(obj.age_days).toFixed(1)+' дней':'';
-  return '<div class="tb2"><div class="mwrap"><div class="msym">'+emoji+'</div><div class="minf"><div class="mph">'+phase+'</div><div class="mdt">'+(sign?'Знак: '+sign+'<br/>':'')+(illum?'Освещённость: '+illum+'<br/>':'')+(age?'Возраст: '+age:'')+'</div></div></div>'+rKV(flat(obj))+'</div>';
+
+const[y,m,d]=date.split('-').map(Number)
+const[h,mi]=time.split(':').map(Number)
+
+const payload={
+subject:{
+name:'User',
+birth_data:{
+year:y,
+month:m,
+day:d,
+hour:h,
+minute:mi,
+second:0,
+city,
+country_code:co.toUpperCase()
 }
-function rNum(obj){
-  const src=obj.numbers&&typeof obj.numbers==='object'?{...obj,...obj.numbers}:obj;
-  const labels={life_path:'Путь жизни',expression:'Выражение',soul_urge:'Душа',personality:'Личность',birthday:'День рождения',maturity:'Зрелость',destiny:'Судьба'};
-  const cells=Object.entries(labels).filter(([k])=>src[k]!=null).map(([k,l])=>'<div class="nc"><div class="nv">'+src[k]+'</div><div class="nl">'+l+'</div></div>');
-  return cells.length?'<div class="ng">'+cells.join('')+'</div>':rKV(flat(obj));
+},
+options:{
+house_system:'P',
+language:'en',
+zodiac_type:'Tropic'
 }
-function rKV(obj){return'<div class="kvg">'+Object.entries(obj).map(([k,v])=>'<div class="kvi"><span class="kvk">'+k+'</span><span class="kvv">'+String(v)+'</span></div>').join('')+'</div>'}
-function flat(obj,p=''){
-  const r={};
-  if(!obj||typeof obj!=='object')return r;
-  Object.entries(obj).forEach(([k,v])=>{
-    const key=p?p+'.'+k:k;
-    if(v&&typeof v==='object'&&!Array.isArray(v))Object.assign(r,flat(v,key));
-    else if(!Array.isArray(v)&&v!=null)r[key]=String(v);
-  });
-  return r;
 }
+
+const data=await api('/api/v3/data/positions',payload)
+
+show(data)
+
+}catch(e){
+document.getElementById('err-natal').textContent=e.message
+}
+
+}
+
+
+
+async function doHoroscope(){
+
+document.getElementById('err-horoscope').textContent=''
+
+try{
+
+const sign=document.getElementById('h-sign').value
+const period=document.getElementById('h-period').value
+
+const path='/api/v3/horoscopes/'+period+'/'+sign
+
+const data=await api(path,null,'GET')
+
+show(data)
+
+}catch(e){
+document.getElementById('err-horoscope').textContent=e.message
+}
+
+}
+
+
+
+async function doMoon(){
+
+document.getElementById('err-moon').textContent=''
+
+try{
+
+const city=g('m-city')
+const co=g('m-country')
+
+if(!city||!co){
+throw new Error('Введите город и страну')
+}
+
+const payload={
+location:{
+city,
+country_code:co.toUpperCase()
+}
+}
+
+const data=await api(
+'/api/v3/data/lunar-metrics',
+payload,
+'POST'
+)
+
+show(data)
+
+}catch(e){
+document.getElementById('err-moon').textContent=e.message
+}
+
+}
+
 </script>
+
 </body>
 </html>
+```
