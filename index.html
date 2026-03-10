@@ -334,11 +334,16 @@ function show(data,title){
     if(asd){const as=asd.aspects;if(as?.length)T.push({l:'Аспекты',h:rA(as)})}
   }else{
     const inner=data.data||data;
-    const pl=pl_arr(inner);if(pl.length)T.push({l:'Планеты',h:rPl(pl)});
-    const hs=hs_arr(inner);if(hs.length)T.push({l:'Дома',h:rH(hs)});
-    const as=inner.aspects||inner.synastry_aspects;if(as?.length)T.push({l:'Аспекты',h:rA(as)});
-    const ht=inner.horoscope||inner.prediction||inner.forecast||inner.content||inner.text||inner.description;
-    if(ht)T.push({l:'Гороскоп',h:rHoro(inner,ht)});
+    // horoscope data detection (pdf/horoscope/data endpoint)
+    if(inner.sign||inner.overall_theme||inner.timeframe){
+      T.push({l:'Гороскоп',h:rHoroData(inner)});
+    } else {
+      const pl=pl_arr(inner);if(pl.length)T.push({l:'Планеты',h:rPl(pl)});
+      const hs=hs_arr(inner);if(hs.length)T.push({l:'Дома',h:rH(hs)});
+      const as=inner.aspects||inner.synastry_aspects;if(as?.length)T.push({l:'Аспекты',h:rA(as)});
+      const ht=inner.horoscope||inner.prediction||inner.forecast||inner.content||inner.text||inner.description;
+      if(ht)T.push({l:'Гороскоп',h:rHoro(inner,ht)});
+    }
   }
   if(!T.length)T.push({l:'Данные',h:rKV(flat(data.data||data))});
   T.push({l:'JSON',h:'<pre class="rj">'+JSON.stringify(data,null,2)+'</pre>'});
@@ -404,6 +409,80 @@ function rA(asp){
     return '<div class="ai"><span class="at '+cls+'">'+type+'</span><span class="ap">'+p1+' — '+p2+'</span><span class="ao">'+orb+'</span></div>';
   }).join('')+'</div>';
 }
+function rHoroData(d){
+  const MOON_EMOJI={'New Moon':'🌑','Waxing Crescent':'🌒','First Quarter':'🌓','Waxing Gibbous':'🌔','Full Moon':'🌕','Waning Gibbous':'🌖','Last Quarter':'🌗','Waning Crescent':'🌘'};
+  const periodLabel={'daily':'Сегодня','weekly':'Неделя','monthly':'Месяц','yearly':'Год'};
+  let h='<div class="hcard">';
+
+  // Header: sign + date + rating
+  const stars='★'.repeat(d.overall_rating||0)+'☆'.repeat(5-(d.overall_rating||0));
+  h+=`<div class="htitle" style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
+    <span>${d.sign||''} · ${periodLabel[d.timeframe]||d.timeframe||''} · ${d.date||''}</span>
+    <span style="color:var(--gold);font-size:.9rem;letter-spacing:.1em">${stars}</span>
+  </div>`;
+
+  // Overall theme
+  if(d.overall_theme){
+    h+=`<div style="font-style:italic;color:var(--silver);font-size:1rem;line-height:1.7;margin-bottom:16px;padding:12px 16px;background:rgba(201,168,76,.05);border-left:2px solid var(--gold);border-radius:1px">${d.overall_theme}</div>`;
+  }
+
+  // Life areas grid
+  const areas=[
+    {k:'love',icon:'♀',label:'Любовь'},
+    {k:'career',icon:'♃',label:'Карьера'},
+    {k:'health',icon:'☽',label:'Здоровье'},
+    {k:'finance',icon:'☿',label:'Финансы'},
+    {k:'spirituality',icon:'☉',label:'Духовность'},
+    {k:'family',icon:'♄',label:'Семья'},
+  ];
+  const areaCells=areas.filter(a=>d[a.k]||d[a.k+'.prediction']||d[a.k+'.theme']);
+  if(areaCells.length){
+    h+='<div class="hcats">';
+    areaCells.forEach(a=>{
+      const text=d[a.k]||d[a.k+'.prediction']||d[a.k+'.theme']||'';
+      const rating=d[a.k+'.rating'];
+      const ratingStr=rating?'★'.repeat(rating):'';
+      h+=`<div class="hcat">
+        <div class="hcatn">${a.icon} ${a.label}${ratingStr?' <span style="color:var(--gold);font-size:.6rem">'+ratingStr+'</span>':''}</div>
+        <div class="hcatt">${text}</div>
+      </div>`;
+    });
+    h+='</div>';
+  }
+
+  // Moon info
+  const moonPhase=d['moon.phase']||d.moon_phase||'';
+  const moonSign=d['moon.sign']||d.moon_sign||'';
+  const moonPred=d['moon.prediction']||'';
+  if(moonPhase||moonSign){
+    const emoji=MOON_EMOJI[moonPhase]||d['moon.emoji']||'🌙';
+    h+=`<div style="display:flex;align-items:center;gap:14px;padding:12px 14px;margin-top:12px;background:rgba(255,255,255,.02);border:1px solid rgba(201,168,76,.1);border-radius:1px">
+      <div style="font-size:2rem">${emoji}</div>
+      <div>
+        <div style="font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold2);margin-bottom:3px">${moonPhase}${moonSign?' · '+moonSign:''}</div>
+        ${moonPred?`<div style="font-size:.86rem;color:var(--silver);line-height:1.6">${moonPred}</div>`:''}
+      </div>
+    </div>`;
+  }
+
+  // Lucky elements
+  const lucky=[];
+  if(d['lucky_elements.day_ruler'])lucky.push('Правитель дня: <span>'+d['lucky_elements.day_ruler']+'</span>');
+  if(d['lucky_elements.number'])lucky.push('Число: <span>'+d['lucky_elements.number']+'</span>');
+  if(d['lucky_elements.color'])lucky.push('Цвет: <span>'+d['lucky_elements.color']+'</span>');
+  if(d.lucky_number!=null)lucky.push('Число удачи: <span>'+d.lucky_number+'</span>');
+  if(lucky.length)h+='<div class="hlk" style="margin-top:12px">'+lucky.map(l=>'<div class="hlki">'+l+'</div>').join('')+'</div>';
+
+  // Advice / void of course
+  const advice=d['metadata.void_of_course_moon.advice']||d.advice||'';
+  if(advice&&d['metadata.void_of_course_moon.is_void']!=='false'&&d['metadata.void_of_course_moon.quality']!=='active'){
+    h+=`<div style="margin-top:12px;padding:10px 14px;background:rgba(150,100,200,.07);border:1px solid rgba(150,100,200,.15);border-radius:1px;font-size:.86rem;color:#c0a0e0;line-height:1.6">🌀 ${advice}</div>`;
+  }
+
+  h+='</div>';
+  return h;
+}
+
 function rHoro(obj,text){
   const cats=obj.categories||obj.sections;
   if(cats&&typeof cats==='object'){
