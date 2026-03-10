@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 
 const PORT = process.env.PORT || 3000;
-const ASTRO_KEY = process.env.ASTRO_KEY || 'ask_ab9c38a38bbaaf9a88931d74109449c6bb62b969533620d845e5fa4d605a8a33';
+const ASTRO_KEY = process.env.ASTRO_KEY || 'ask_58c5d3e0fd0d941fe8eaeb356fe4af9d782556914ea690203cb849e7f48da133';
 const ASTRO_HOST = 'api.astrology-api.io';
 
 const server = http.createServer((req, res) => {
