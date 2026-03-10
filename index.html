@@ -178,7 +178,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
     <div class="home-sub">Натальная карта и персональный гороскоп</div>
   </div>
   <div class="menu">
-    <button class="menu-btn" onclick="open('natal')">
+    <button class="menu-btn" onclick="goTo('natal')">
       <div class="menu-icon blue">☉</div>
       <div class="menu-text">
         <div class="menu-label">Натальная карта</div>
@@ -186,7 +186,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
       </div>
       <div class="menu-arrow">›</div>
     </button>
-    <button class="menu-btn" onclick="open('horoscope')">
+    <button class="menu-btn" onclick="goTo('horoscope')">
       <div class="menu-icon green">☽</div>
       <div class="menu-text">
         <div class="menu-label">Гороскоп</div>
@@ -273,13 +273,13 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
 <script>
 // ── НАВИГАЦИЯ ──────────────────────────────────
 let current='home';
-function open(screen){
+function goTo(screen){
   document.getElementById('s-'+current).classList.add('hidden');
   document.getElementById('s-'+screen).classList.remove('hidden');
   document.getElementById('s-'+screen).scrollTop=0;
   current=screen;
 }
-function back(){open('home')}
+function back(){goTo('home')}
 
 // ── ДАННЫЕ ────────────────────────────────────
 const SYM={Sun:'☉',Moon:'☽',Mercury:'☿',Venus:'♀',Mars:'♂',Jupiter:'♃',Saturn:'♄',Uranus:'♅',Neptune:'♆',Pluto:'♇',Chiron:'⚷',Mean_Node:'☊',True_Node:'☊',Ascendant:'Asc',Medium_Coeli:'MC'};
