@@ -39,7 +39,7 @@ const server = http.createServer((req, res) => {
         path: apiPath,
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${ASTRO_KEY}`,
+          'Authorization': ASTRO_KEY,
           'Content-Type': 'application/json',
           'Accept': 'application/json',
           'Content-Length': Buffer.byteLength(body)
