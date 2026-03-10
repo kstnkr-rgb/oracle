@@ -98,9 +98,9 @@ const options = {
         res.end(JSON.stringify({ error: err.message }))
       })
 
-      if (reqMethod !== 'GET') {
-        proxyReq.write(bodyStr)
-      }
+if (reqMethod !== 'GET' && bodyStr) {
+  proxyReq.write(bodyStr)
+}
 
       proxyReq.end()
 
