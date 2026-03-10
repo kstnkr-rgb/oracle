@@ -77,6 +77,6 @@ const server = http.createServer((req, res) => {
   res.end(JSON.stringify({ error: 'Not found', path: req.url }));
 });
 
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
   console.log(`✦ Astrology server → http://localhost:${PORT}`);
 });
