@@ -1,0 +1,13 @@
+{
+  "name": "astrology-app",
+  "version": "1.0.0",
+  "description": "Natal chart web app with astrology-api.io proxy",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": ">=14"
+  }
+}
