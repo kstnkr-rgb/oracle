@@ -56,16 +56,17 @@ const server = http.createServer((req, res) => {
 
       const bodyStr = JSON.stringify(payload || {})
 
-      const options = {
-        hostname: API_HOST,
-        path: apiPath,
-        method: reqMethod,
-        headers: {
-          Authorization: `Bearer ${ASTRO_KEY}`,
-          Accept: 'application/json',
-          'Content-Type': 'application/json'
-        }
-      }
+const options = {
+  hostname: API_HOST,
+  path: apiPath,
+  method: reqMethod,
+  headers: {
+    Authorization: `Bearer ${ASTRO_KEY}`,
+    Accept: 'application/json',
+    'Content-Type': 'application/json',
+    'Content-Length': Buffer.byteLength(bodyStr)
+  }
+}
 
       console.log(`→ ${reqMethod} https://${API_HOST}${apiPath}`)
 
