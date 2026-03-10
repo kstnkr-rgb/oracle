@@ -195,27 +195,47 @@ select option{background:#0d0d20;color:var(--text)}
 <!-- ══ HOROSCOPE ══════════════════════════════════════════════ -->
 <div id="p-horoscope" class="panel"><div class="card">
   <span class="c tl">✦</span><span class="c tr">✦</span><span class="c bl">✦</span><span class="c br">✦</span>
-  <p class="note" style="margin-bottom:14px">Персональный гороскоп на основе вашей даты рождения</p>
-  <div class="div"><span>✦</span></div>
-  <div class="row r2">
-    <div class="f"><label>Дата рождения</label><input type="date" id="h-date"/></div>
-    <div class="f"><label>Время рождения</label><input type="time" id="h-time" value="12:00"/></div>
+  <div class="row r2e">
+    <div class="f">
+      <label>Знак зодиака</label>
+      <select id="h-sign">
+        <option value="Ari">♈ Овен</option>
+        <option value="Tau">♉ Телец</option>
+        <option value="Gem">♊ Близнецы</option>
+        <option value="Can">♋ Рак</option>
+        <option value="Leo">♌ Лев</option>
+        <option value="Vir">♍ Дева</option>
+        <option value="Lib">♎ Весы</option>
+        <option value="Sco">♏ Скорпион</option>
+        <option value="Sag">♐ Стрелец</option>
+        <option value="Cap">♑ Козерог</option>
+        <option value="Aqu">♒ Водолей</option>
+        <option value="Pis">♓ Рыбы</option>
+      </select>
+    </div>
+    <div class="f">
+      <label>Дата гороскопа</label>
+      <input type="date" id="h-date"/>
+    </div>
   </div>
-  <div class="row r3">
-    <div class="f"><label>Город рождения</label><input type="text" id="h-city" placeholder="Moscow"/></div>
-    <div class="f"><label>Страна</label><input type="text" id="h-country" placeholder="RU" maxlength="2"/></div>
-    <div class="f"><label>Имя</label><input type="text" id="h-name" placeholder="Имя"/></div>
+  <div class="row r2e">
+    <div class="f">
+      <label>Язык</label>
+      <select id="h-lang">
+        <option value="ru">Русский</option>
+        <option value="en">English</option>
+      </select>
+    </div>
+    <div class="f">
+      <label>Традиция</label>
+      <select id="h-tradition">
+        <option value="universal">Universal</option>
+        <option value="psychological">Psychological</option>
+        <option value="classical">Classical</option>
+      </select>
+    </div>
   </div>
-  <div class="f" style="margin-bottom:5px">
-    <label>Период</label>
-    <select id="h-period">
-      <option value="daily">Ежедневный</option>
-      <option value="weekly">Еженедельный</option>
-      <option value="monthly">Ежемесячный</option>
-      <option value="yearly">Ежегодный</option>
-    </select>
-  </div>
-  <button class="btn" onclick="doHoroscope()">✦ &nbsp; Получить персональный гороскоп &nbsp; ✦</button>
+  <button class="btn" onclick="doHoroscope()">✦ &nbsp; Получить гороскоп &nbsp; ✦</button>
   <div class="spin" id="sp-horoscope"><div class="orbit"></div><p>Читаю звёздные послания…</p></div>
   <div class="eb" id="er-horoscope"></div>
 </div></div>
@@ -288,19 +308,14 @@ async function doNatal(){await run('natal',async()=>{
 
 // ── HOROSCOPE ─────────────────────────────────────────────────
 async function doHoroscope(){await run('horoscope',async()=>{
-  const date=g('h-date'),city=g('h-city'),co=g('h-country');
-  if(!date||!city||!co)throw new Error('Заполните дату, город и страну');
-  const period=document.getElementById('h-period').value;
-  const s=subj(date,g('h-time'),city,co,g('h-name'));
-  const data=await api('/api/v3/horoscope/personal/'+period,{
-    subject:s,
-    horoscope_type:period,
-    language:'en',
-    tradition:'universal',
-    include_transits:true,
-    include_progressions:false
-  });
-  show(data,'Гороскоп — '+(g('h-name')||city));
+  const sign=document.getElementById('h-sign').value;
+  const signLabel=document.getElementById('h-sign').selectedOptions[0].text;
+  const lang=document.getElementById('h-lang').value;
+  const tradition=document.getElementById('h-tradition').value;
+  const dateVal=g('h-date') || new Date().toISOString().slice(0,10);
+  const path='/api/v3/pdf/horoscope/data/'+sign+'/'+dateVal+'?language='+lang+'&tradition='+tradition;
+  const data=await api(path, {}, {method:'GET'});
+  show(data,'Гороскоп '+signLabel);
 })}
 
 document.querySelectorAll('input[maxlength="2"]').forEach(el=>el.addEventListener('input',()=>{el.value=el.value.toUpperCase()}));
