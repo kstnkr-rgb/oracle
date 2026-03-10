@@ -74,7 +74,7 @@ const server = http.createServer((req, res) => {
   res.end('Not found');
 });
 
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
   console.log(`✦ Astrology server running at http://localhost:${PORT}`);
   console.log(`  Open http://localhost:${PORT} in your browser`);
 });
