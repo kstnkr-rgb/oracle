@@ -548,47 +548,12 @@ function mechCount(mid) {
 }
 function subCount(mid, sub) { return (history[mid+'_'+sub]||[]).length; }
 
-async function makeText(mechLabel, sub) {
+function makeText(mechLabel, sub, dt) {
   const p = profile;
   const dFormatted = p.date ? p.date.split('-').reverse().join('.') : '—';
-  const tFormatted = p.time || '—';
-  const today = new Date().toLocaleDateString('ru-RU', {day:'2-digit', month:'long', year:'numeric'});
-
-  const periodMap = {
-    'Сегодня': 'на сегодня',
-    'Завтра': 'на завтра',
-    'Неделя': 'на эту неделю',
-    'Месяц': 'на этот месяц',
-    'Год': 'на этот год',
-    'Карта дня': 'карту дня',
-    'Расклад на 3 карты': 'расклад на 3 карты',
-    'Одна руна': 'одну руну',
-    'Три руны': 'три руны',
-    'Руна ситуации': 'руну ситуации',
-  };
-  const period = sub ? (periodMap[sub] || sub) : '';
-
-  const promptMap = {
-    'Гороскоп': `Составь персональный астрологический гороскоп ${period} для человека. Данные: дата рождения — ${dFormatted}, время рождения — ${tFormatted}, место рождения — ${p.city||'неизвестно'}. Сегодняшняя дата: ${today}. Напиши живой, тёплый и вдохновляющий гороскоп на русском языке в 3–5 абзацах. Затрони сферы: общее настроение, любовь и отношения, карьера и финансы, здоровье. Не используй заголовки и маркированные списки — только плавный связный текст.`,
-    'Таро': `Сделай расклад Таро (${period}) для человека. Данные: дата рождения — ${dFormatted}, место — ${p.city||'неизвестно'}. Сегодня: ${today}. Опиши ${sub === 'Расклад на 3 карты' ? 'три карты (прошлое, настоящее, будущее) с их символикой и толкованием' : 'карту дня с её символикой и посланием'}. Пиши на русском, вдохновляюще, без списков — плавным текстом, 3–4 абзаца.`,
-    'Нумерология': `Составь нумерологический прогноз для человека. Дата рождения: ${dFormatted}, время: ${tFormatted}, город: ${p.city||'неизвестно'}. Сегодня: ${today}. Вычисли число жизненного пути и число дня, объясни их значение и как они влияют на текущий период. Пиши на русском, живо и образно, 3–5 абзацев, без маркеров и заголовков.`,
-    'Руны': `Сделай рунический расклад (${period}) для человека. Дата рождения: ${dFormatted}, место: ${p.city||'неизвестно'}. Сегодня: ${today}. ${sub === 'Три руны' ? 'Назови три руны (ситуация, препятствие, совет) и растолкуй каждую.' : sub === 'Руна ситуации' ? 'Выбери одну руну для текущей ситуации и подробно её растолкуй.' : 'Выбери одну руну дня и подробно растолкуй её послание.'} Пиши на русском, таинственно и мудро, плавным текстом без списков, 3–4 абзаца.`,
-  };
-
-  const systemPrompt = promptMap[mechLabel] || `Составь мистический прогноз «${mechLabel}${sub?' · '+sub:''}» для человека. Дата рождения: ${dFormatted}, время: ${tFormatted}, город: ${p.city||'неизвестно'}. Сегодня: ${today}. Пиши на русском языке, вдохновляюще, 3–4 абзаца, без списков.`;
-
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 1000,
-      messages: [{ role: 'user', content: systemPrompt }]
-    })
-  });
-  const data = await response.json();
-  if (!response.ok) throw new Error(data.error?.message || 'Ошибка API');
-  return data.content.map(b => b.text || '').join('').trim();
+  const tFormatted = (p.time || '').replace(':', '-');
+  const origin = 'Исходная информация: ' + (p.city||'—') + ', ' + dFormatted + ', ' + tFormatted;
+  return 'Тестовый прогноз «' + mechLabel + (sub?' · '+sub:'') + '» от ' + dt + '\n\n' + origin;
 }
 
 // ── РЕНДЕР СПИСКА ────────────────────────────────
@@ -755,7 +720,7 @@ function renderHistItems(hlist, mid, sub) {
 }
 
 // ── СОЗДАТЬ ПРОГНОЗ ──────────────────────────────
-async function createAndShow(mid, mechLabel, sub) {
+function createAndShow(mid, mechLabel, sub) {
   if (mid === 'oracle') { openOracleModal(mechLabel, sub); return; }
   if (!spendCrystals(mid, sub)) return;
   if (mid === 'ball')   { openBallModal(); return; }
@@ -763,21 +728,10 @@ async function createAndShow(mid, mechLabel, sub) {
   const dt = nowStr();
   const key = mid + (sub ? '_'+sub : '');
   const title = mechLabel + (sub ? ' · '+sub : '');
-  // Показываем модалку с загрузкой
-  openResultModal(title, null);
-  try {
-    const text = await makeText(mechLabel, sub);
-    if (!history[key]) history[key] = [];
-    history[key].push({ datetime: dt, title, text });
-    // Обновляем текст в уже открытой модалке
-    const el = document.getElementById('rmt-text');
-    if (el) { el.textContent = text; el.style.opacity = '1'; }
-    document.getElementById('rmt-share-btn').style.display = '';
-  } catch(e) {
-    console.error('Ошибка прогноза:', e);
-    const el = document.getElementById('rmt-text');
-    if (el) { el.textContent = 'Не удалось получить прогноз: ' + e.message; el.style.opacity = '1'; }
-  }
+  const text = makeText(mechLabel, sub, dt);
+  if (!history[key]) history[key] = [];
+  history[key].push({ datetime: dt, title, text });
+  openResultModal(title, text);
 }
 
 function openSaved(key, idx) {
@@ -788,18 +742,7 @@ function openSaved(key, idx) {
 
 function openResultModal(title, text) {
   document.getElementById('rmt-title').textContent = title;
-  const el = document.getElementById('rmt-text');
-  const shareBtn = document.getElementById('rmt-share-btn');
-  if (text === null) {
-    // loading state
-    el.innerHTML = '<div style="text-align:center;padding:24px 0"><div class="orbit-ring" style="margin:0 auto 12px"></div><p style="color:var(--text2);font-size:.9rem">Составляю прогноз…</p></div>';
-    el.style.opacity = '1';
-    if (shareBtn) shareBtn.style.display = 'none';
-  } else {
-    el.textContent = text;
-    el.style.opacity = '1';
-    if (shareBtn) shareBtn.style.display = '';
-  }
+  document.getElementById('rmt-text').textContent = text;
   document.getElementById('result-modal').classList.add('open');
 }
 
@@ -833,59 +776,24 @@ function openOracleModal(mechLabel, sub) {
 }
 function closeOracleModal() { document.getElementById('oracle-modal').classList.remove('open'); }
 function closeOracleOutside(e) { if(e.target===document.getElementById('oracle-modal')) closeOracleModal(); }
-async function askOracle() {
+function askOracle() {
   const q = document.getElementById('oracle-question').value.trim();
   if (!q) { document.getElementById('oracle-question').focus(); return; }
   if (!spendCrystals('oracle', _oracleSub)) return;
   const dt = nowStr();
+  const answer = 'Все будет хорошо, надо только стараться';
   const sub = _oracleSub;
   const key = 'oracle' + (sub ? '_'+sub : '');
   const title = 'Совет Оракула' + (sub ? ' · '+sub : '');
-  const p = profile;
-  const dFormatted = p.date ? p.date.split('-').reverse().join('.') : '—';
-
-  const topicMap = {
-    'Отношения': 'любви и отношениям',
-    'Работа': 'карьере и работе',
-    'Самопознание': 'самопознанию и личностному росту',
-    'Общение': 'общению с людьми',
-  };
-  const topic = sub ? (topicMap[sub] || sub) : 'жизни в целом';
-
-  // Показываем загрузку
-  document.getElementById('oracle-ask-btn').disabled = true;
-  document.getElementById('oracle-ask-btn').textContent = '✨ Думаю…';
-
-  try {
-    const prompt = `Ты мудрый и таинственный Оракул. Человек обращается к тебе за советом по ${topic}. Данные человека: дата рождения — ${dFormatted}, город — ${p.city||'неизвестно'}. Вопрос: «${q}». Дай глубокий, мудрый и вдохновляющий ответ на русском языке. Будь конкретным, образным и тёплым. 2–3 абзаца, без списков и заголовков.`;
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 800,
-        messages: [{ role: 'user', content: prompt }]
-      })
-    });
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.error?.message || 'Ошибка API');
-    const answer = data.content.map(b => b.text || '').join('').trim();
-    const text = `Вопрос: ${q}\n\nОракул: ${answer}\n\n${dt}\n\nДата рождения: ${p.date||'—'}\nГород: ${p.city||'—'}`;
-    if (!history[key]) history[key] = [];
-    history[key].push({ datetime: dt, title, text });
-    soundDrum();
-    setTimeout(() => {
-      document.getElementById('oracle-answer').textContent = answer;
-      document.getElementById('oracle-answer-wrap').style.display = 'block';
-      document.getElementById('oracle-ask-btn').style.display = 'none';
-      document.getElementById('oracle-share-btn').style.display = 'flex';
-    }, 300);
-  } catch(e) {
-    document.getElementById('oracle-ask-btn').disabled = false;
-    document.getElementById('oracle-ask-btn').textContent = 'Спросить Оракула';
-    document.getElementById('oracle-answer').textContent = 'Оракул не смог ответить. Попробуйте ещё раз.';
-    document.getElementById('oracle-answer-wrap').style.display = 'block';
-  }
+  const text = `Вопрос: ${q}\n\nОракул: ${answer}\n\n${dt}\n\nДата рождения: ${profile.date||'—'}\nГород: ${profile.city||'—'}`;
+  if (!history[key]) history[key] = [];
+  history[key].push({ datetime: dt, title, text });
+  soundDrum();
+  setTimeout(() => {   document.getElementById('oracle-answer').textContent = answer;
+  document.getElementById('oracle-answer-wrap').style.display = 'block';
+  document.getElementById('oracle-ask-btn').style.display = 'none';
+  document.getElementById('oracle-share-btn').style.display = 'flex';
+  }, 600);
 }
 function doShareOracle() {
   const q = document.getElementById('oracle-question').value.trim();
@@ -1314,7 +1222,7 @@ function hideCitySuggestions(listId) {
       <button class="result-modal-close" onclick="closeResultModal()">✕</button>
     </div>
     <div class="result-modal-text" id="rmt-text"></div>
-    <button class="share-btn" id="rmt-share-btn" onclick="doShareModal()">📤 Поделиться</button>
+    <button class="share-btn" onclick="doShareModal()">📤 Поделиться</button>
   </div>
 </div>
 
