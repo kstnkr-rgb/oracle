@@ -219,15 +219,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
   padding:16px 0 24px;line-height:1.5}
 
 /* ── ORACLE KEYBOARD FIX ── */
-#oracle-modal{align-items:flex-end;padding-bottom:0}
-#oracle-modal .result-modal{
-  border-radius:20px 20px 0 0;
-  padding-bottom:env(safe-area-inset-bottom, 20px);
-  max-height:92vh;
-}
-@supports (height: 100dvh) {
-  #oracle-modal{height:100dvh}
-}
+#oracle-modal .result-modal{ max-height:85vh; }
 </style>
 <style>
 /* ── RESULT MODAL ── */
@@ -746,7 +738,7 @@ function openOracleModal(mechLabel, sub) {
   document.getElementById('oracle-modal-title').textContent = 'Совет Оракула' + (sub ? ' · ' + sub : '');
   document.getElementById('oracle-question').value = '';
   document.getElementById('oracle-answer').textContent = '';
-  document.getElementById('oracle-answer').classList.remove('on');
+  document.getElementById('oracle-answer-wrap').style.display = 'none';
   document.getElementById('oracle-share-btn').style.display = 'none';
   document.getElementById('oracle-ask-btn').style.display = 'block';
   document.getElementById('oracle-modal').classList.add('open');
@@ -767,7 +759,7 @@ function askOracle() {
   history[key].push({ datetime: dt, title, text });
   soundDrum();
   setTimeout(() => {   document.getElementById('oracle-answer').textContent = answer;
-  document.getElementById('oracle-answer').classList.add('on');
+  document.getElementById('oracle-answer-wrap').style.display = 'block';
   document.getElementById('oracle-ask-btn').style.display = 'none';
   document.getElementById('oracle-share-btn').style.display = 'flex';
   }, 600);
@@ -1156,16 +1148,20 @@ function soundDrum() {
 </div>
 
 <!-- ══ МОДАЛ: ОРАКУЛ ══ -->
-<div class="result-modal-overlay" id="oracle-modal">
-  <div class="result-modal">
+<div class="result-modal-overlay" id="oracle-modal" style="align-items:center;padding:24px">
+  <div class="result-modal" style="border-radius:20px">
     <div class="result-modal-header">
       <div class="result-modal-title" id="oracle-modal-title">Совет Оракула</div>
       <button class="result-modal-close" onclick="closeOracleModal()">✕</button>
     </div>
+    <div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--text2);margin-bottom:6px">Вопрос</div>
     <textarea class="oracle-input" id="oracle-question" placeholder="Задайте свой вопрос Оракулу…"></textarea>
     <button class="sbtn" onclick="askOracle()" id="oracle-ask-btn">Спросить Оракула</button>
-    <div class="oracle-answer" id="oracle-answer"></div>
-    <button class="share-btn" id="oracle-share-btn" style="display:none" onclick="doShareOracle()">📤 Поделиться</button>
+    <div id="oracle-answer-wrap" style="display:none;margin-top:14px">
+      <div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:6px">Ответ Оракула</div>
+      <div class="oracle-answer on" id="oracle-answer"></div>
+    </div>
+    <button class="share-btn" id="oracle-share-btn" style="display:none;margin-top:10px" onclick="doShareOracle()">📤 Поделиться</button>
   </div>
 </div>
 
