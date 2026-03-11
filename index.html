@@ -220,6 +220,18 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
 
 /* ── ORACLE KEYBOARD FIX ── */
 #oracle-modal .result-modal{ max-height:85vh; }
+
+/* ── CITY AUTOCOMPLETE ── */
+.city-wrap{position:relative}
+.city-suggestions{position:absolute;top:100%;left:0;right:0;z-index:50;
+  background:#162540;border:1px solid var(--border);border-radius:var(--radius-sm);
+  margin-top:4px;overflow:hidden;display:none;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.city-suggestions.open{display:block}
+.city-suggestion{padding:12px 16px;font-size:.9rem;font-weight:600;color:var(--text);
+  cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s}
+.city-suggestion:last-child{border-bottom:none}
+.city-suggestion:active{background:rgba(74,158,255,.15)}
+.city-sub{font-size:.75rem;color:var(--text2);margin-top:2px}
 </style>
 <style>
 /* ── RESULT MODAL ── */
@@ -349,7 +361,13 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
   <div class="form-body">
     <div class="field"><label>Дата рождения</label><input type="date" id="ob-date"/></div>
     <div class="field"><label>Время рождения</label><input type="time" id="ob-time" value="12:00"/></div>
-    <div class="field"><label>Город рождения (на русском)</label><input type="text" id="ob-city" placeholder="Москва"/></div>
+    <div class="field">
+      <label>Город рождения</label>
+      <div class="city-wrap">
+        <input type="text" id="ob-city" placeholder="Начните вводить город…" autocomplete="off" oninput="cityAutocomplete(this,'ob-city-list')" onblur="hideCitySuggestions('ob-city-list')"/>
+        <div class="city-suggestions" id="ob-city-list"></div>
+      </div>
+    </div>
     <button class="sbtn" onclick="saveProfile(false)">К прогнозам →</button>
     <div class="eb" id="er-onboard"></div>
   </div>
@@ -406,7 +424,13 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
     <div class="modal-fields">
       <div class="field"><label>Дата рождения</label><input type="date" id="m-date"/></div>
       <div class="field"><label>Время рождения</label><input type="time" id="m-time"/></div>
-      <div class="field"><label>Город рождения (на русском)</label><input type="text" id="m-city" placeholder="Москва"/></div>
+      <div class="field">
+        <label>Город рождения</label>
+        <div class="city-wrap">
+          <input type="text" id="m-city" placeholder="Начните вводить город…" autocomplete="off" oninput="cityAutocomplete(this,'m-city-list')" onblur="hideCitySuggestions('m-city-list')"/>
+          <div class="city-suggestions" id="m-city-list"></div>
+        </div>
+      </div>
     </div>
     <button class="sbtn" onclick="saveProfile(true)">Сохранить</button>
   </div>
@@ -827,7 +851,8 @@ function saveProfile(fromModal) {
     else alert('Заполните дату и город');
     return;
   }
-  profile = {date:d, time:t, city:c};
+  const coords = _cityCoords[fromModal ? 'm' : 'ob'] || {lat:55.75, lon:37.62};
+  profile = {date:d, time:t, city:c, lat:coords.lat, lon:coords.lon};
   renderProfileInfo();
   if (fromModal) closeModal(); else goTo('mechanics');
 }
@@ -848,6 +873,7 @@ function openModal() {
   document.getElementById('m-date').value = profile.date||'';
   document.getElementById('m-time').value = profile.time||'';
   document.getElementById('m-city').value = profile.city||'';
+  _cityCoords['m'] = {lat: profile.lat||55.75, lon: profile.lon||37.62};
   document.getElementById('edit-modal').classList.add('open');
 }
 function closeModal() { document.getElementById('edit-modal').classList.remove('open'); }
@@ -1140,6 +1166,51 @@ function soundDrum() {
     og.gain.exponentialRampToValueAtTime(0.001, finalT + 0.3);
     osc.start(finalT); osc.stop(finalT + 0.3);
   } catch(e) {}
+}
+
+// ── АВТОДОПОЛНЕНИЕ ГОРОДА ─────────────────────
+const _cityCoords = {}; // 'ob' или 'm' → {lat, lon}
+let _cityTimer = null;
+
+async function cityAutocomplete(input, listId) {
+  const q = input.value.trim();
+  const list = document.getElementById(listId);
+  if (q.length < 2) { list.classList.remove('open'); return; }
+  clearTimeout(_cityTimer);
+  _cityTimer = setTimeout(async () => {
+    try {
+      const url = 'https://nominatim.openstreetmap.org/search?format=json&limit=5&addressdetails=1&accept-language=ru&q=' + encodeURIComponent(q);
+      const resp = await fetch(url, {headers:{'User-Agent':'OracleApp/1.0'}});
+      const results = await resp.json();
+      const cities = results.filter(r => r.addresstype === 'city' || r.addresstype === 'town' ||
+        r.addresstype === 'village' || r.class === 'place' || r.type === 'city' || r.type === 'town');
+      if (!cities.length) { list.classList.remove('open'); return; }
+      list.innerHTML = cities.slice(0,5).map(r => {
+        const name = r.address?.city || r.address?.town || r.address?.village || r.name;
+        const country = r.address?.country || '';
+        const prefix = listId.split('-')[0]; // 'ob' or 'm'
+        return `<div class="city-suggestion" onmousedown="selectCity('${prefix}','${name}','${country}',${r.lat},${r.lon},'${listId}')">
+          <div>${name}</div>
+          <div class="city-sub">${country}</div>
+        </div>`;
+      }).join('');
+      list.classList.add('open');
+    } catch(e) { list.classList.remove('open'); }
+  }, 350);
+}
+
+function selectCity(prefix, name, country, lat, lon, listId) {
+  const inputId = prefix === 'ob' ? 'ob-city' : 'm-city';
+  document.getElementById(inputId).value = name + (country ? ', ' + country : '');
+  _cityCoords[prefix] = {lat: parseFloat(lat), lon: parseFloat(lon)};
+  document.getElementById(listId).classList.remove('open');
+}
+
+function hideCitySuggestions(listId) {
+  setTimeout(() => {
+    const el = document.getElementById(listId);
+    if (el) el.classList.remove('open');
+  }, 200);
 }
 </script>
 
