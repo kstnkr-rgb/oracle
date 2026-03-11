@@ -579,7 +579,7 @@ async function makeText(mechLabel, sub) {
 
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
     body: JSON.stringify({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 1000,
@@ -774,8 +774,9 @@ async function createAndShow(mid, mechLabel, sub) {
     if (el) { el.textContent = text; el.style.opacity = '1'; }
     document.getElementById('rmt-share-btn').style.display = '';
   } catch(e) {
+    console.error('Ошибка прогноза:', e);
     const el = document.getElementById('rmt-text');
-    if (el) { el.textContent = 'Не удалось получить прогноз. Попробуйте ещё раз.'; el.style.opacity = '1'; }
+    if (el) { el.textContent = 'Не удалось получить прогноз: ' + e.message; el.style.opacity = '1'; }
   }
 }
 
@@ -859,7 +860,7 @@ async function askOracle() {
     const prompt = `Ты мудрый и таинственный Оракул. Человек обращается к тебе за советом по ${topic}. Данные человека: дата рождения — ${dFormatted}, город — ${p.city||'неизвестно'}. Вопрос: «${q}». Дай глубокий, мудрый и вдохновляющий ответ на русском языке. Будь конкретным, образным и тёплым. 2–3 абзаца, без списков и заголовков.`;
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 800,
