@@ -612,7 +612,14 @@ function renderMechList(containerId, withDropdown) {
         // главный экран — кнопка «Получить»
         const getBtn = document.createElement('button');
         getBtn.className = 'sub-item';
-        getBtn.textContent = 'Получить прогноз';
+        const noSubPrice = m.price || 0;
+        const noSubFree = hasFree(m.id, null);
+        const noSubPriceTag = noSubPrice
+          ? (noSubFree
+            ? ' <span style="font-size:.72rem;color:#3ecf8e;font-weight:700;margin-left:6px">Бесплатно</span>'
+            : ' <span style="font-size:.72rem;color:#a78bfa;font-weight:700;margin-left:6px">' + noSubPrice + '💎</span>')
+          : '';
+        getBtn.innerHTML = 'Получить прогноз' + noSubPriceTag;
         getBtn.onclick = (e) => { e.stopPropagation(); createAndShow(m.id, m.label, null); };
         inner.appendChild(getBtn);
       }
@@ -765,9 +772,10 @@ function askOracle() {
   }, 600);
 }
 function doShareOracle() {
-  const text = document.getElementById('oracle-answer').textContent;
-  if (navigator.share) navigator.share({text}).catch(()=>{});
-  else navigator.clipboard?.writeText(text).then(()=>alert('Скопировано!')).catch(()=>{});
+  const q = document.getElementById('oracle-question').value.trim();
+  const a = document.getElementById('oracle-answer').textContent;
+  const text = (q ? 'Вопрос: ' + q + '\n\nОтвет Оракула: ' + a : a);
+  shareText(text);
 }
 
 // ── МАГИЧЕСКИЙ ШАР ────────────────────────────
