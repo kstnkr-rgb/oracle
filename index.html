@@ -496,6 +496,7 @@ function spendCrystals(mid, sub) {
   }
   crystals -= cost;
   updateCrystalDisplay();
+  soundCoin();
   const m = MECHANICS.find(x=>x.id===mid);
   const label = (m ? m.label : mid) + (sub ? ' · ' + sub : '');
   ledgerAdd('spend', cost, label);
@@ -764,10 +765,12 @@ function askOracle() {
   const text = `Вопрос: ${q}\n\nОракул: ${answer}\n\n${dt}\n\nДата рождения: ${profile.date||'—'}\nГород: ${profile.city||'—'}`;
   if (!history[key]) history[key] = [];
   history[key].push({ datetime: dt, title, text });
-  document.getElementById('oracle-answer').textContent = answer;
+  soundDrum();
+  setTimeout(() => {   document.getElementById('oracle-answer').textContent = answer;
   document.getElementById('oracle-answer').classList.add('on');
   document.getElementById('oracle-ask-btn').style.display = 'none';
   document.getElementById('oracle-share-btn').style.display = 'flex';
+  }, 600);
 }
 function doShareOracle() {
   const text = document.getElementById('oracle-answer').textContent;
@@ -786,6 +789,7 @@ function closeBallModal() { document.getElementById('ball-modal').classList.remo
 function closeBallOutside(e) { if(e.target===document.getElementById('ball-modal')) closeBallModal(); }
 function ballReveal() {
   if (!spendCrystals('ball', null)) return;
+  soundMystic();
   const opts = ['Да', 'Нет', 'Не знаю', 'Спроси позже'];
   const ans = opts[Math.floor(Math.random() * opts.length)];
   document.getElementById('ball-options').style.display = 'none';
@@ -795,7 +799,8 @@ function ballReveal() {
 
 // ── ПЕЧЕНЬЕ ───────────────────────────────────
 function openCookieModal() {
-  document.getElementById('cookie-emoji').textContent = '🥠';
+  document.getElementById('cookie-img-whole').style.display = 'block';
+  document.getElementById('cookie-img-broken').style.display = 'none';
   document.getElementById('cookie-prediction').style.display = 'none';
   document.getElementById('cookie-btn-wrap').style.display = 'block';
   document.getElementById('cookie-modal').classList.add('open');
@@ -804,7 +809,9 @@ function closeCookieModal() { document.getElementById('cookie-modal').classList.
 function closeCookieOutside(e) { if(e.target===document.getElementById('cookie-modal')) closeCookieModal(); }
 function cookieReveal() {
   if (!spendCrystals('cookie', null)) return;
-  document.getElementById('cookie-emoji').textContent = '🍪';
+  soundCrunch();
+  document.getElementById('cookie-img-whole').style.display = 'none';
+  document.getElementById('cookie-img-broken').style.display = 'block';
   document.getElementById('cookie-btn-wrap').style.display = 'none';
   document.getElementById('cookie-prediction').style.display = 'block';
 }
@@ -894,6 +901,7 @@ function doExchange() {
   closeRubleShopModal();
   crystals += _pendingCrystals;
   updateCrystalDisplay();
+  soundBell();
   if (_pendingSource === 'bonus') {
     sparBonus -= _pendingBonus;
     if (sparBonus < 0) sparBonus = 0;
@@ -985,6 +993,154 @@ function closeNotEnoughSparModal() {
 function closeNotEnoughSparOutside(e) {
   if (e.target === document.getElementById('not-enough-spar-modal')) closeNotEnoughSparModal();
 }
+
+// ── ЗВУКИ (Web Audio API) ──────────────────────
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let _actx = null;
+function getActx() {
+  if (!_actx) _actx = new AudioCtx();
+  if (_actx.state === 'suspended') _actx.resume();
+  return _actx;
+}
+
+// Звук монетки — при списании кристаллов
+function soundCoin() {
+  try {
+    const ctx = getActx();
+    const t = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(1200, t);
+    osc.frequency.exponentialRampToValueAtTime(900, t + 0.08);
+    osc.frequency.exponentialRampToValueAtTime(1400, t + 0.15);
+    gain.gain.setValueAtTime(0.3, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+    osc.start(t); osc.stop(t + 0.35);
+  } catch(e) {}
+}
+
+// Колокольчик — при начислении кристаллов
+function soundBell() {
+  try {
+    const ctx = getActx();
+    const t = ctx.currentTime;
+    [523, 659, 784, 1047].forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      const start = t + i * 0.12;
+      gain.gain.setValueAtTime(0, start);
+      gain.gain.linearRampToValueAtTime(0.25, start + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, start + 0.6);
+      osc.start(start); osc.stop(start + 0.6);
+    });
+  } catch(e) {}
+}
+
+// Мистический звон — магический шар
+function soundMystic() {
+  try {
+    const ctx = getActx();
+    const t = ctx.currentTime;
+    // низкий гул
+    const osc1 = ctx.createOscillator();
+    const g1 = ctx.createGain();
+    osc1.connect(g1); g1.connect(ctx.destination);
+    osc1.type = 'sine';
+    osc1.frequency.setValueAtTime(80, t);
+    osc1.frequency.linearRampToValueAtTime(120, t + 0.5);
+    g1.gain.setValueAtTime(0.15, t);
+    g1.gain.exponentialRampToValueAtTime(0.001, t + 1.2);
+    osc1.start(t); osc1.stop(t + 1.2);
+    // высокий мерцающий тон
+    const osc2 = ctx.createOscillator();
+    const g2 = ctx.createGain();
+    osc2.connect(g2); g2.connect(ctx.destination);
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(880, t + 0.1);
+    osc2.frequency.exponentialRampToValueAtTime(440, t + 0.8);
+    g2.gain.setValueAtTime(0.18, t + 0.1);
+    g2.gain.exponentialRampToValueAtTime(0.001, t + 1.0);
+    osc2.start(t + 0.1); osc2.stop(t + 1.0);
+  } catch(e) {}
+}
+
+// Хруст/треск — разлом печенья
+function soundCrunch() {
+  try {
+    const ctx = getActx();
+    const t = ctx.currentTime;
+    // белый шум
+    const bufSize = ctx.sampleRate * 0.18;
+    const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1);
+    const src = ctx.createBufferSource();
+    src.buffer = buf;
+    // фильтр для хруста
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = 3000;
+    filter.Q.value = 0.8;
+    const gain = ctx.createGain();
+    src.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+    gain.gain.setValueAtTime(0.6, t);
+    gain.gain.setValueAtTime(0.9, t + 0.03);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+    src.start(t); src.stop(t + 0.18);
+    // щелчок
+    const osc = ctx.createOscillator();
+    const og = ctx.createGain();
+    osc.connect(og); og.connect(ctx.destination);
+    osc.frequency.setValueAtTime(200, t);
+    osc.frequency.exponentialRampToValueAtTime(60, t + 0.06);
+    og.gain.setValueAtTime(0.4, t);
+    og.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+    osc.start(t); osc.stop(t + 0.08);
+  } catch(e) {}
+}
+
+// Барабанная дробь / нарастание — перед ответом оракула
+function soundDrum() {
+  try {
+    const ctx = getActx();
+    const t = ctx.currentTime;
+    const beats = 6;
+    for (let i = 0; i < beats; i++) {
+      const delay = i * (0.08 - i * 0.008);
+      const beat = t + delay;
+      const buf = ctx.createBuffer(1, ctx.sampleRate * 0.05, ctx.sampleRate);
+      const data = buf.getChannelData(0);
+      for (let j = 0; j < data.length; j++) data[j] = Math.random() * 2 - 1;
+      const src = ctx.createBufferSource();
+      src.buffer = buf;
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = 200;
+      const gain = ctx.createGain();
+      src.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+      const vol = 0.1 + (i / beats) * 0.3;
+      gain.gain.setValueAtTime(vol, beat);
+      gain.gain.exponentialRampToValueAtTime(0.001, beat + 0.05);
+      src.start(beat); src.stop(beat + 0.06);
+    }
+    // финальный удар
+    const finalT = t + 0.42;
+    const osc = ctx.createOscillator();
+    const og = ctx.createGain();
+    osc.connect(og); og.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(150, finalT);
+    osc.frequency.exponentialRampToValueAtTime(60, finalT + 0.15);
+    og.gain.setValueAtTime(0.5, finalT);
+    og.gain.exponentialRampToValueAtTime(0.001, finalT + 0.3);
+    osc.start(finalT); osc.stop(finalT + 0.3);
+  } catch(e) {}
+}
 </script>
 
 <!-- ══ МОДАЛЬНОЕ ОКНО РЕЗУЛЬТАТА ══ -->
@@ -1020,7 +1176,34 @@ function closeNotEnoughSparOutside(e) {
       <div class="result-modal-title">Магический шар</div>
       <button class="result-modal-close" onclick="closeBallModal()">✕</button>
     </div>
-    <div class="magic-emoji">🌐</div>
+    <div style="text-align:center;margin:8px 0 16px"><svg id="magic-ball-svg" width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="ballGrad" cx="38%" cy="32%" r="60%">
+      <stop offset="0%" stop-color="#4a4a6a"/>
+      <stop offset="40%" stop-color="#1a1a2e"/>
+      <stop offset="100%" stop-color="#0a0a14"/>
+    </radialGradient>
+    <radialGradient id="shineGrad" cx="35%" cy="30%" r="45%">
+      <stop offset="0%" stop-color="white" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="white" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="circleGrad" cx="50%" cy="40%" r="55%">
+      <stop offset="0%" stop-color="#6a8fff"/>
+      <stop offset="100%" stop-color="#1a2a6e"/>
+    </radialGradient>
+  </defs>
+  <!-- тень -->
+  <ellipse cx="60" cy="113" rx="30" ry="6" fill="rgba(0,0,0,0.35)"/>
+  <!-- шар -->
+  <circle cx="60" cy="60" r="52" fill="url(#ballGrad)"/>
+  <!-- внутренний круг с цифрой -->
+  <circle cx="60" cy="64" r="22" fill="url(#circleGrad)" opacity="0.9"/>
+  <text x="60" y="72" text-anchor="middle" font-family="Georgia,serif" font-size="22" font-weight="bold" fill="white">8</text>
+  <!-- блик -->
+  <circle cx="60" cy="60" r="52" fill="url(#shineGrad)"/>
+  <!-- маленький блик -->
+  <ellipse cx="44" cy="38" rx="10" ry="6" fill="white" opacity="0.12" transform="rotate(-20,44,38)"/>
+</svg></div>
     <div class="ball-options" id="ball-options">
       <div style="font-size:.82rem;color:var(--text2);text-align:center;margin-bottom:8px">Шар уже знает ответ — нажмите, чтобы узнать</div>
       <button class="sbtn" onclick="ballReveal()">✨ Открыть ответ &nbsp;•&nbsp; 1 💎</button>
@@ -1036,7 +1219,58 @@ function closeNotEnoughSparOutside(e) {
       <div class="result-modal-title">Печенье с предсказанием</div>
       <button class="result-modal-close" onclick="closeCookieModal()">✕</button>
     </div>
-    <div class="magic-emoji" id="cookie-emoji">🥠</div>
+    <div style="text-align:center;margin:8px 0 12px" id="cookie-img-whole"><svg width="120" height="100" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="cg1" cx="40%" cy="35%" r="60%">
+      <stop offset="0%" stop-color="#f5c842"/>
+      <stop offset="100%" stop-color="#c8851a"/>
+    </radialGradient>
+    <radialGradient id="cg2" cx="60%" cy="65%" r="55%">
+      <stop offset="0%" stop-color="#e8b830"/>
+      <stop offset="100%" stop-color="#a06010"/>
+    </radialGradient>
+  </defs>
+  <!-- тень -->
+  <ellipse cx="60" cy="94" rx="28" ry="5" fill="rgba(0,0,0,0.2)"/>
+  <!-- левая половина печенья (целое) -->
+  <path d="M60 50 Q30 10 15 35 Q5 55 20 68 Q35 80 60 70 Z" fill="url(#cg1)" stroke="#a06010" stroke-width="1.2"/>
+  <!-- правая половина печенья (целое) -->
+  <path d="M60 50 Q90 10 105 35 Q115 55 100 68 Q85 80 60 70 Z" fill="url(#cg2)" stroke="#a06010" stroke-width="1.2"/>
+  <!-- складка по центру -->
+  <path d="M60 50 Q58 60 60 70 Q62 60 60 50" fill="#a06010" opacity="0.5"/>
+  <!-- блик -->
+  <path d="M28 32 Q38 22 50 28" stroke="rgba(255,255,255,0.35)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+</svg></div>
+    <div style="text-align:center;margin:8px 0 12px;display:none" id="cookie-img-broken"><svg width="140" height="110" viewBox="0 0 140 110" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bg1" cx="40%" cy="35%" r="60%">
+      <stop offset="0%" stop-color="#f5c842"/>
+      <stop offset="100%" stop-color="#c8851a"/>
+    </radialGradient>
+    <radialGradient id="bg2" cx="60%" cy="65%" r="55%">
+      <stop offset="0%" stop-color="#e8b830"/>
+      <stop offset="100%" stop-color="#a06010"/>
+    </radialGradient>
+  </defs>
+  <!-- тень -->
+  <ellipse cx="70" cy="104" rx="38" ry="5" fill="rgba(0,0,0,0.2)"/>
+  <!-- бумажка с предсказанием -->
+  <rect x="44" y="52" width="52" height="14" rx="2" fill="#fffde7" stroke="#d4c070" stroke-width="1"/>
+  <line x1="50" y1="57" x2="88" y2="57" stroke="#bbb" stroke-width="1.2"/>
+  <line x1="50" y1="61" x2="80" y2="61" stroke="#bbb" stroke-width="1.2"/>
+  <!-- левая половина — отлетела влево-вверх -->
+  <g transform="translate(-8,-6) rotate(-18,35,55)">
+    <path d="M70 55 Q42 18 22 40 Q10 58 26 72 Q44 84 70 72 Z" fill="url(#bg1)" stroke="#a06010" stroke-width="1.2"/>
+    <path d="M70 55 Q68 63 70 72" fill="#a06010" opacity="0.4"/>
+    <path d="M30 34 Q40 24 52 30" stroke="rgba(255,255,255,0.35)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  </g>
+  <!-- правая половина — отлетела вправо-вверх -->
+  <g transform="translate(8,-6) rotate(18,105,55)">
+    <path d="M70 55 Q98 18 118 40 Q130 58 114 72 Q96 84 70 72 Z" fill="url(#bg2)" stroke="#a06010" stroke-width="1.2"/>
+    <path d="M70 55 Q72 63 70 72" fill="#a06010" opacity="0.4"/>
+    <path d="M110 34 Q100 24 88 30" stroke="rgba(255,255,255,0.35)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  </g>
+</svg></div>
     <div class="cookie-text" id="cookie-prediction" style="display:none">«Всё будет хорошо, если сможешь не упустить свою удачу»</div>
     <div id="cookie-btn-wrap">
       <button class="sbtn" onclick="cookieReveal()">Разломить печенье &nbsp;•&nbsp; 1 💎</button>
