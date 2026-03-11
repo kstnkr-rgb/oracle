@@ -168,19 +168,34 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
 .kvv{font-size:.85rem;font-weight:600;text-align:right;word-break:break-word}
 </style>
 <style>
-/* дополнительные стили */
+/* ── RESULT MODAL ── */
+.result-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:200;
+  display:flex;align-items:flex-end;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .25s;max-width:480px;margin:0 auto}
+.result-modal-overlay.open{opacity:1;pointer-events:all}
+.result-modal{background:#162540;border-radius:24px 24px 0 0;padding:24px 20px 40px;
+  width:100%;max-height:80vh;overflow-y:auto;
+  transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1)}
+.result-modal-overlay.open .result-modal{transform:translateY(0)}
+.result-modal-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;gap:12px}
+.result-modal-title{font-family:'Philosopher',serif;font-size:1.05rem;font-weight:700;line-height:1.3;flex:1}
+.result-modal-close{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.08);
+  border:none;color:var(--text);font-size:1.1rem;cursor:pointer;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center}
+.result-modal-text{font-size:.95rem;line-height:1.8;color:var(--text);
+  background:rgba(255,255,255,.03);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:16px;margin-bottom:16px;white-space:pre-line}
+
 .profile-btn{position:absolute;right:20px;top:50%;transform:translateY(-50%);
   width:38px;height:38px;border-radius:50%;background:var(--card);
   border:1px solid var(--border);color:var(--text);font-size:1.1rem;
   cursor:pointer;display:flex;align-items:center;justify-content:center}
 .nav{position:relative}
 .nav-right{margin-left:auto}
-
 .onboard-header{padding:56px 24px 28px;flex-shrink:0;text-align:center}
 .onboard-logo{font-size:3.2rem;margin-bottom:14px}
 .onboard-title{font-family:'Philosopher',serif;font-size:2rem;font-weight:700;margin-bottom:8px}
 .onboard-sub{color:var(--text2);font-size:.95rem;line-height:1.5}
-
 .mechanic-list{padding:8px 16px 40px;display:flex;flex-direction:column;gap:12px}
 .mech-btn{display:flex;align-items:center;gap:16px;padding:18px 20px;
   background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
@@ -189,28 +204,75 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
 .mech-icon{width:50px;height:50px;border-radius:14px;display:flex;align-items:center;
   justify-content:center;font-size:1.5rem;flex-shrink:0}
 .mech-label{font-size:1rem;font-weight:800;color:var(--text)}
-.mech-arrow{margin-left:auto;color:var(--text2);font-size:1.2rem;flex-shrink:0}
+.mech-arrow{margin-left:auto;color:var(--text2);font-size:1.2rem;flex-shrink:0;transition:transform .2s}
+.mech-arrow.open{transform:rotate(90deg)}
 .mech-badge{position:absolute;top:12px;right:44px;width:22px;height:22px;border-radius:50%;
   background:var(--accent);color:#fff;font-size:.7rem;font-weight:800;
   display:flex;align-items:center;justify-content:center}
+.icon-c1{background:linear-gradient(135deg,#1e5bbd,#4a9eff)}
+.icon-c2{background:linear-gradient(135deg,#5b1ebd,#9f4aff)}
+.icon-c3{background:linear-gradient(135deg,#bd6e1e,#ff9f4a)}
+.icon-c4{background:linear-gradient(135deg,#1e8fbd,#4adeff)}
+.icon-c5{background:linear-gradient(135deg,#bd1e5b,#ff4a9f)}
+.icon-c6{background:linear-gradient(135deg,#166a4a,#3ecf8e)}
+.icon-c7{background:linear-gradient(135deg,#7a4a1e,#d4924a)}
 
-.profile-info{padding:24px 20px 16px;background:var(--card);margin:0 16px 20px;
+/* dropdown subtypes */
+.dropdown{overflow:hidden;max-height:0;transition:max-height .35s ease;margin-top:0}
+.dropdown.open{max-height:2000px}
+.dropdown-inner{padding:8px 0 4px 0;display:flex;flex-direction:column;gap:8px;align-items:center}
+.sub-item{padding:12px 16px;background:rgba(255,255,255,.04);border:1px solid var(--border);
+  border-radius:var(--radius-sm);cursor:pointer;font-size:.93rem;font-weight:700;
+  color:var(--text);text-align:center;width:90%;margin:0 auto;display:block;transition:all .2s}
+.sub-item:active{background:#1e3566}
+.sub-item.open-sub{border-color:var(--accent);color:var(--accent)}
+
+/* history dropdown */
+.history-list{display:flex;flex-direction:column;gap:6px;padding:6px 0 4px 0}
+.hist-item{padding:11px 14px;background:rgba(74,158,255,.07);border:1px solid rgba(74,158,255,.15);
+  border-radius:var(--radius-sm);cursor:pointer;font-size:.86rem;font-weight:700;
+  color:var(--text);text-align:left;width:100%;display:flex;justify-content:space-between;
+  align-items:center;transition:all .2s}
+.hist-item:active{background:rgba(74,158,255,.18)}
+.hist-date{font-size:.75rem;color:var(--text2);font-weight:600}
+
+/* profile */
+.profile-info{padding:20px;background:var(--card);margin:0 16px 16px;
   border-radius:var(--radius);border:1px solid var(--border)}
 .profile-row{display:flex;justify-content:space-between;align-items:center;
   padding:10px 0;border-bottom:1px solid var(--border)}
-.profile-row:last-child{border-bottom:none}
+.profile-row:last-child{border-bottom:none;padding-bottom:0}
 .profile-key{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text2)}
 .profile-val{font-size:.92rem;font-weight:700}
+.edit-btn{width:100%;padding:13px;border-radius:var(--radius-sm);border:1px solid var(--border);
+  background:transparent;color:var(--text2);font-family:'Nunito',sans-serif;font-size:.88rem;
+  font-weight:700;cursor:pointer;margin:0 0 20px;display:block;transition:all .2s}
+.edit-btn:active{background:var(--card)}
 .profile-section{padding:0 16px;margin-bottom:10px}
 .profile-section-title{font-size:.72rem;font-weight:800;text-transform:uppercase;
   letter-spacing:.12em;color:var(--text2);margin-bottom:12px}
 
+/* modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;
+  display:flex;align-items:flex-end;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .25s;max-width:480px;margin:0 auto}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:#162540;border-radius:24px 24px 0 0;padding:24px 20px 40px;
+  width:100%;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1)}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.modal-title{font-family:'Philosopher',serif;font-size:1.1rem;font-weight:700}
+.modal-close{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.08);
+  border:none;color:var(--text);font-size:1.1rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center}
+.modal-fields{display:flex;flex-direction:column;gap:12px;margin-bottom:20px}
+
+/* result */
 .sub-list{padding:8px 16px 40px;display:flex;flex-direction:column;gap:12px}
 .sub-btn{padding:18px 20px;background:var(--card);border:1px solid var(--border);
   border-radius:var(--radius);cursor:pointer;transition:all .2s;text-align:center;
   width:100%;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:800;color:var(--text)}
 .sub-btn:active{transform:scale(.98);background:#1e3566}
-
 .result-body{padding:20px 20px 40px;flex:1}
 .result-text{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
   padding:24px 20px;font-size:1rem;line-height:1.75;margin-bottom:16px}
@@ -219,19 +281,11 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
   font-size:.95rem;font-weight:800;cursor:pointer;display:flex;align-items:center;
   justify-content:center;gap:8px;transition:all .2s}
 .share-btn:active{background:var(--card)}
-
-.icon-c1{background:linear-gradient(135deg,#1e5bbd,#4a9eff)}
-.icon-c2{background:linear-gradient(135deg,#5b1ebd,#9f4aff)}
-.icon-c3{background:linear-gradient(135deg,#bd6e1e,#ff9f4a)}
-.icon-c4{background:linear-gradient(135deg,#1e8fbd,#4adeff)}
-.icon-c5{background:linear-gradient(135deg,#bd1e5b,#ff4a9f)}
-.icon-c6{background:linear-gradient(135deg,#166a4a,#3ecf8e)}
-.icon-c7{background:linear-gradient(135deg,#7a4a1e,#d4924a)}
 </style>
 </head>
 <body>
 
-<!-- ══ ОНБОРДИНГ: ввод данных ══ -->
+<!-- ══ ОНБОРДИНГ ══ -->
 <div class="screen" id="s-onboard">
   <div class="onboard-header">
     <div class="onboard-logo">🔮</div>
@@ -239,19 +293,10 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
     <div class="onboard-sub">Введите данные о рождении для персонального прогноза</div>
   </div>
   <div class="form-body">
-    <div class="field">
-      <label>Дата рождения</label>
-      <input type="date" id="ob-date"/>
-    </div>
-    <div class="field">
-      <label>Время рождения</label>
-      <input type="time" id="ob-time" value="12:00"/>
-    </div>
-    <div class="field">
-      <label>Город рождения</label>
-      <input type="text" id="ob-city" placeholder="Moscow"/>
-    </div>
-    <button class="sbtn" onclick="saveProfile()">К прогнозам →</button>
+    <div class="field"><label>Дата рождения</label><input type="date" id="ob-date"/></div>
+    <div class="field"><label>Время рождения</label><input type="time" id="ob-time" value="12:00"/></div>
+    <div class="field"><label>Город рождения (на русском)</label><input type="text" id="ob-city" placeholder="Москва"/></div>
+    <button class="sbtn" onclick="saveProfile(false)">К прогнозам →</button>
     <div class="eb" id="er-onboard"></div>
   </div>
 </div>
@@ -260,45 +305,9 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
 <div class="screen hidden" id="s-mechanics">
   <div class="nav" style="padding:52px 20px 16px">
     <div class="nav-title">🔮 Оракул</div>
-    <button class="profile-btn nav-right" onclick="goTo('profile')" title="Профиль">👤</button>
+    <button class="profile-btn nav-right" onclick="goTo('profile')">👤</button>
   </div>
-  <div class="mechanic-list" id="mech-list">
-    <button class="mech-btn" onclick="goTo('horoscope-sub')">
-      <div class="mech-icon icon-c1">☉</div>
-      <div class="mech-label">Гороскоп</div>
-      <div class="mech-arrow">›</div>
-    </button>
-    <button class="mech-btn" onclick="goTo('taro-sub')">
-      <div class="mech-icon icon-c2">🃏</div>
-      <div class="mech-label">Таро</div>
-      <div class="mech-arrow">›</div>
-    </button>
-    <button class="mech-btn" onclick="goTo('oracle-sub')">
-      <div class="mech-icon icon-c3">🔮</div>
-      <div class="mech-label">Совет Оракула</div>
-      <div class="mech-arrow">›</div>
-    </button>
-    <button class="mech-btn" onclick="goTo('ball-result')">
-      <div class="mech-icon icon-c4">🌐</div>
-      <div class="mech-label">Магический шар</div>
-      <div class="mech-arrow">›</div>
-    </button>
-    <button class="mech-btn" onclick="goTo('cookie-result')">
-      <div class="mech-icon icon-c5">🥠</div>
-      <div class="mech-label">Печенье с предсказанием</div>
-      <div class="mech-arrow">›</div>
-    </button>
-    <button class="mech-btn" onclick="goTo('numerology-result')">
-      <div class="mech-icon icon-c6">🔢</div>
-      <div class="mech-label">Нумерология</div>
-      <div class="mech-arrow">›</div>
-    </button>
-    <button class="mech-btn" onclick="goTo('runes-sub')">
-      <div class="mech-icon icon-c7">ᚱ</div>
-      <div class="mech-label">Руны</div>
-      <div class="mech-arrow">›</div>
-    </button>
-  </div>
+  <div class="mechanic-list" id="main-mech-list"></div>
 </div>
 
 <!-- ══ ПРОФИЛЬ ══ -->
@@ -308,107 +317,12 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
     <div class="nav-title">Профиль</div>
   </div>
   <div class="profile-info" id="profile-info"></div>
+  <button class="edit-btn" style="margin:0 16px 16px;width:calc(100% - 32px)" onclick="openModal()">✏️ Редактировать данные</button>
   <div class="profile-section">
     <div class="profile-section-title">Ваши данные</div>
-    <div style="display:flex;flex-direction:column;gap:10px" id="profile-mech-list">
-      <button class="mech-btn" onclick="goTo('horoscope-sub')">
-        <div class="mech-icon icon-c1">☉</div>
-        <div class="mech-label">Гороскоп</div>
-        <div class="mech-badge" id="pb-horoscope" style="display:none"></div>
-        <div class="mech-arrow">›</div>
-      </button>
-      <button class="mech-btn" onclick="goTo('taro-sub')">
-        <div class="mech-icon icon-c2">🃏</div>
-        <div class="mech-label">Таро</div>
-        <div class="mech-badge" id="pb-taro" style="display:none"></div>
-        <div class="mech-arrow">›</div>
-      </button>
-      <button class="mech-btn" onclick="goTo('oracle-sub')">
-        <div class="mech-icon icon-c3">🔮</div>
-        <div class="mech-label">Совет Оракула</div>
-        <div class="mech-badge" id="pb-oracle" style="display:none"></div>
-        <div class="mech-arrow">›</div>
-      </button>
-      <button class="mech-btn" onclick="goTo('ball-result')">
-        <div class="mech-icon icon-c4">🌐</div>
-        <div class="mech-label">Магический шар</div>
-        <div class="mech-badge" id="pb-ball" style="display:none"></div>
-        <div class="mech-arrow">›</div>
-      </button>
-      <button class="mech-btn" onclick="goTo('cookie-result')">
-        <div class="mech-icon icon-c5">🥠</div>
-        <div class="mech-label">Печенье с предсказанием</div>
-        <div class="mech-badge" id="pb-cookie" style="display:none"></div>
-        <div class="mech-arrow">›</div>
-      </button>
-      <button class="mech-btn" onclick="goTo('numerology-result')">
-        <div class="mech-icon icon-c6">🔢</div>
-        <div class="mech-label">Нумерология</div>
-        <div class="mech-badge" id="pb-numerology" style="display:none"></div>
-        <div class="mech-arrow">›</div>
-      </button>
-      <button class="mech-btn" onclick="goTo('runes-sub')">
-        <div class="mech-icon icon-c7">ᚱ</div>
-        <div class="mech-label">Руны</div>
-        <div class="mech-badge" id="pb-runes" style="display:none"></div>
-        <div class="mech-arrow">›</div>
-      </button>
-    </div>
+    <div style="display:flex;flex-direction:column;gap:12px" id="profile-mech-list"></div>
   </div>
-</div>
-
-<!-- ══ ГОРОСКОП: выбор периода ══ -->
-<div class="screen hidden" id="s-horoscope-sub">
-  <div class="nav">
-    <button class="nav-back" onclick="back()">‹</button>
-    <div class="nav-title">Гороскоп</div>
-  </div>
-  <div class="sub-list">
-    <button class="sub-btn" onclick="showResult('horoscope','Сегодня')">Сегодня</button>
-    <button class="sub-btn" onclick="showResult('horoscope','Завтра')">Завтра</button>
-    <button class="sub-btn" onclick="showResult('horoscope','Неделя')">Неделя</button>
-    <button class="sub-btn" onclick="showResult('horoscope','Месяц')">Месяц</button>
-    <button class="sub-btn" onclick="showResult('horoscope','Год')">Год</button>
-  </div>
-</div>
-
-<!-- ══ ТАРО ══ -->
-<div class="screen hidden" id="s-taro-sub">
-  <div class="nav">
-    <button class="nav-back" onclick="back()">‹</button>
-    <div class="nav-title">Таро</div>
-  </div>
-  <div class="sub-list">
-    <button class="sub-btn" onclick="showResult('taro','Карта дня')">Карта дня</button>
-    <button class="sub-btn" onclick="showResult('taro','Расклад на 3 карты')">Расклад на 3 карты</button>
-  </div>
-</div>
-
-<!-- ══ СОВЕТ ОРАКУЛА ══ -->
-<div class="screen hidden" id="s-oracle-sub">
-  <div class="nav">
-    <button class="nav-back" onclick="back()">‹</button>
-    <div class="nav-title">Совет Оракула</div>
-  </div>
-  <div class="sub-list">
-    <button class="sub-btn" onclick="showResult('oracle','Отношения')">Отношения</button>
-    <button class="sub-btn" onclick="showResult('oracle','Работа')">Работа</button>
-    <button class="sub-btn" onclick="showResult('oracle','Самопознание')">Самопознание</button>
-    <button class="sub-btn" onclick="showResult('oracle','Общение')">Общение</button>
-  </div>
-</div>
-
-<!-- ══ РУНЫ ══ -->
-<div class="screen hidden" id="s-runes-sub">
-  <div class="nav">
-    <button class="nav-back" onclick="back()">‹</button>
-    <div class="nav-title">Руны</div>
-  </div>
-  <div class="sub-list">
-    <button class="sub-btn" onclick="showResult('runes','Одна руна')">Одна руна</button>
-    <button class="sub-btn" onclick="showResult('runes','Три руны')">Три руны</button>
-    <button class="sub-btn" onclick="showResult('runes','Руна ситуации')">Руна ситуации</button>
-  </div>
+  <div style="height:32px"></div>
 </div>
 
 <!-- ══ РЕЗУЛЬТАТ ══ -->
@@ -423,104 +337,305 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
   </div>
 </div>
 
-<!-- ══ Шаблонные экраны для прямого перехода ══ -->
-<div class="screen hidden" id="s-ball-result">
-  <div class="nav">
-    <button class="nav-back" onclick="back()">‹</button>
-    <div class="nav-title">Магический шар</div>
-  </div>
-  <div class="result-body">
-    <div class="result-text" id="ball-text">Тестовый текст</div>
-    <button class="share-btn" onclick="doShare()">📤 Поделиться</button>
-  </div>
-</div>
-
-<div class="screen hidden" id="s-cookie-result">
-  <div class="nav">
-    <button class="nav-back" onclick="back()">‹</button>
-    <div class="nav-title">Печенье с предсказанием</div>
-  </div>
-  <div class="result-body">
-    <div class="result-text" id="cookie-text">Тестовый текст</div>
-    <button class="share-btn" onclick="doShare()">📤 Поделиться</button>
-  </div>
-</div>
-
-<div class="screen hidden" id="s-numerology-result">
-  <div class="nav">
-    <button class="nav-back" onclick="back()">‹</button>
-    <div class="nav-title">Нумерология</div>
-  </div>
-  <div class="result-body">
-    <div class="result-text" id="numerology-text">Тестовый текст</div>
-    <button class="share-btn" onclick="doShare()">📤 Поделиться</button>
+<!-- ══ МОДАЛЬНОЕ ОКНО РЕДАКТИРОВАНИЯ ══ -->
+<div class="modal-overlay" id="edit-modal" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Редактировать данные</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-fields">
+      <div class="field"><label>Дата рождения</label><input type="date" id="m-date"/></div>
+      <div class="field"><label>Время рождения</label><input type="time" id="m-time"/></div>
+      <div class="field"><label>Город рождения (на русском)</label><input type="text" id="m-city" placeholder="Москва"/></div>
+    </div>
+    <button class="sbtn" onclick="saveProfile(true)">Сохранить</button>
   </div>
 </div>
 
 <script>
-// ── НАВИГАЦИЯ ──────────────────────────────────────────────
-const history_stack = [];
+// ── НАВИГАЦИЯ ──────────────────────────────────
+const navStack = [];
 let current = 'onboard';
-
-function goTo(screen) {
-  history_stack.push(current);
-  _show(screen);
-}
-function back() {
-  if (history_stack.length === 0) return;
-  const prev = history_stack.pop();
-  _show(prev);
-}
+function goTo(screen) { navStack.push(current); _show(screen); }
+function back() { if(!navStack.length) return; _show(navStack.pop()); }
 function _show(screen) {
-  document.getElementById('s-' + current).classList.add('hidden');
-  const next = document.getElementById('s-' + screen);
+  document.getElementById('s-'+current).classList.add('hidden');
+  const next = document.getElementById('s-'+screen);
+  if (!next) return;
   next.classList.remove('hidden');
   next.scrollTop = 0;
   current = screen;
+  if (screen === 'profile') { renderProfileInfo(); renderMechList('profile-mech-list', true); }
+  if (screen === 'mechanics') { renderMechList('main-mech-list', false); }
 }
 
-// ── ПРОФИЛЬ ───────────────────────────────────────────────
-let profile = {};
+// ── МЕХАНИКИ ────────────────────────────────────
+const MECHANICS = [
+  { id:'horoscope', icon:'☉', cls:'icon-c1', label:'Гороскоп',       subs:['Сегодня','Завтра','Неделя','Месяц','Год'] },
+  { id:'taro',      icon:'🃏', cls:'icon-c2', label:'Таро',            subs:['Карта дня','Расклад на 3 карты'] },
+  { id:'oracle',    icon:'🔮', cls:'icon-c3', label:'Совет Оракула',   subs:['Отношения','Работа','Самопознание','Общение'] },
+  { id:'ball',      icon:'🌐', cls:'icon-c4', label:'Магический шар',  subs:[] },
+  { id:'cookie',    icon:'🥠', cls:'icon-c5', label:'Печенье с предсказанием', subs:[] },
+  { id:'numerology',icon:'🔢', cls:'icon-c6', label:'Нумерология',     subs:[] },
+  { id:'runes',     icon:'ᚱ',  cls:'icon-c7', label:'Руны',            subs:['Одна руна','Три руны','Руна ситуации'] },
+];
 
-function saveProfile() {
-  const date = document.getElementById('ob-date').value;
-  const time = document.getElementById('ob-time').value;
-  const city = document.getElementById('ob-city').value.trim();
-  if (!date || !city) {
-    const e = document.getElementById('er-onboard');
-    e.textContent = 'Заполните дату и город';
-    e.classList.add('on');
+// история: mechId + (sub ? '_'+sub : '') → [{datetime, title, text}]
+const history = {};
+
+function nowStr() {
+  return new Date().toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+}
+function mechCount(mid) {
+  return MECHANICS.find(m=>m.id===mid).subs.length
+    ? MECHANICS.find(m=>m.id===mid).subs.reduce((s,sub)=>s+(history[mid+'_'+sub]||[]).length, 0)
+    : (history[mid]||[]).length;
+}
+function subCount(mid, sub) { return (history[mid+'_'+sub]||[]).length; }
+
+function makeText(mechLabel, sub, dt) {
+  const p = profile;
+  return `Тестовый прогноз «${mechLabel}${sub?' · '+sub:''}» от ${dt}
+
+Дата рождения: ${p.date||'—'}
+Время: ${p.time||'—'}
+Город: ${p.city||'—'}`;
+}
+
+// ── РЕНДЕР СПИСКА ────────────────────────────────
+function renderMechList(containerId, withDropdown) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = '';
+  MECHANICS.forEach(m => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column';
+
+    // ── КНОПКА механики
+    const btn = document.createElement('button');
+    btn.className = 'mech-btn';
+    const cnt = mechCount(m.id);
+    btn.innerHTML = `
+      <div class="mech-icon ${m.cls}">${m.icon}</div>
+      <div class="mech-label">${m.label}</div>
+      ${cnt > 0 ? `<div class="mech-badge" id="badge-${containerId}-${m.id}">${cnt}</div>` : `<div class="mech-badge" id="badge-${containerId}-${m.id}" style="display:none">${cnt}</div>`}
+      <div class="mech-arrow" id="arrow-${containerId}-${m.id}">›</div>
+    `;
+    btn.onclick = () => toggleDrop(containerId, m.id);
+    wrap.appendChild(btn);
+
+    // ── DROPDOWN
+    const drop = document.createElement('div');
+    drop.className = 'dropdown';
+    drop.id = `drop-${containerId}-${m.id}`;
+    const inner = document.createElement('div');
+    inner.className = 'dropdown-inner';
+    inner.style.padding = '8px 0 4px 0';
+
+    if (m.subs.length > 0) {
+      m.subs.forEach(sub => {
+        // кнопка подтипа
+        const sc = withDropdown ? subCount(m.id, sub) : 0;
+        const subBtn = document.createElement('button');
+        subBtn.className = 'sub-item';
+        subBtn.id = `sub-${containerId}-${m.id}-${sub}`;
+        subBtn.innerHTML = sub + (sc > 0 ? ` <span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:var(--accent);color:#fff;font-size:.62rem;font-weight:800;margin-left:6px">${sc}</span>` : '');
+
+        if (withDropdown) {
+          // профиль: показываем историю
+          subBtn.onclick = (e) => { e.stopPropagation(); toggleHistDrop(containerId, m.id, sub); };
+        } else {
+          // главный экран: создаём прогноз
+          subBtn.onclick = (e) => { e.stopPropagation(); createAndShow(m.id, m.label, sub); };
+        }
+        inner.appendChild(subBtn);
+
+        if (withDropdown) {
+          const hd = document.createElement('div');
+          hd.className = 'dropdown';
+          hd.id = `hdrop-${containerId}-${m.id}-${sub}`;
+          const hl = document.createElement('div');
+          hl.className = 'history-list';
+          hl.id = `hlist-${containerId}-${m.id}-${sub}`;
+          hd.appendChild(hl);
+          inner.appendChild(hd);
+        }
+      });
+    } else {
+      // без подтипов
+      if (withDropdown) {
+        const hl = document.createElement('div');
+        hl.className = 'history-list';
+        hl.id = `hlist-${containerId}-${m.id}-_`;
+        hl.style.padding = '4px 12px 4px';
+        renderHistItems(hl, m.id, null);
+        inner.appendChild(hl);
+      } else {
+        // главный экран — кнопка «Получить»
+        const getBtn = document.createElement('button');
+        getBtn.className = 'sub-item';
+        getBtn.textContent = 'Получить прогноз';
+        getBtn.onclick = (e) => { e.stopPropagation(); createAndShow(m.id, m.label, null); };
+        inner.appendChild(getBtn);
+      }
+    }
+
+    drop.appendChild(inner);
+    wrap.appendChild(drop);
+    container.appendChild(wrap);
+  });
+}
+
+function toggleDrop(cid, mid) {
+  MECHANICS.forEach(m => {
+    if (m.id === mid) return;
+    const d = document.getElementById(`drop-${cid}-${m.id}`);
+    if (d && d.classList.contains('open')) { d.classList.remove('open'); }
+    const a = document.getElementById(`arrow-${cid}-${m.id}`);
+    if (a) a.classList.remove('open');
+  });
+  const drop = document.getElementById(`drop-${cid}-${mid}`);
+  const arrow = document.getElementById(`arrow-${cid}-${mid}`);
+  if (!drop) return;
+  const opening = !drop.classList.contains('open');
+  drop.classList.toggle('open');
+  if (arrow) arrow.classList.toggle('open', opening);
+  // populate no-sub history on open
+  if (opening) {
+    const mech = MECHANICS.find(m=>m.id===mid);
+    if (mech && mech.subs.length === 0) {
+      const hl = document.getElementById(`hlist-${cid}-${mid}-_`);
+      if (hl) renderHistItems(hl, mid, null);
+    }
+  }
+}
+
+function toggleHistDrop(cid, mid, sub) {
+  const mech = MECHANICS.find(m=>m.id===mid);
+  if (mech) mech.subs.forEach(s => {
+    if (s === sub) return;
+    const h = document.getElementById(`hdrop-${cid}-${mid}-${s}`); if (h) h.classList.remove('open');
+    const b = document.getElementById(`sub-${cid}-${mid}-${s}`); if (b) b.classList.remove('open-sub');
+  });
+  const hd = document.getElementById(`hdrop-${cid}-${mid}-${sub}`);
+  const sb = document.getElementById(`sub-${cid}-${mid}-${sub}`);
+  if (!hd) return;
+  const opening = !hd.classList.contains('open');
+  hd.classList.toggle('open');
+  if (sb) sb.classList.toggle('open-sub', opening);
+  if (opening) {
+    const hl = document.getElementById(`hlist-${cid}-${mid}-${sub}`);
+    if (hl) renderHistItems(hl, mid, sub);
+  }
+}
+
+function renderHistItems(hlist, mid, sub) {
+  const key = mid + (sub ? '_'+sub : '');
+  const items = (history[key]||[]).slice().reverse(); // newest first
+  if (!items.length) {
+    hlist.innerHTML = '<div style="padding:8px 12px;font-size:.82rem;color:var(--text2)">Нет прогнозов</div>';
     return;
   }
-  profile = { date, time, city };
-  renderProfile();
-  goTo('mechanics');
+  hlist.innerHTML = items.map((item,i) => {
+    const realIdx = (history[key]||[]).length - 1 - i;
+    return `<button class="hist-item" onclick="openSaved('${key}',${realIdx})">
+      <span style="font-size:.85rem">${item.title}</span>
+      <span class="hist-date">${item.datetime}</span>
+    </button>`;
+  }).join('');
 }
 
-function renderProfile() {
+// ── СОЗДАТЬ ПРОГНОЗ ──────────────────────────────
+function createAndShow(mid, mechLabel, sub) {
+  const dt = nowStr();
+  const key = mid + (sub ? '_'+sub : '');
+  const title = mechLabel + (sub ? ' · '+sub : '');
+  const text = makeText(mechLabel, sub, dt);
+  if (!history[key]) history[key] = [];
+  history[key].push({ datetime: dt, title, text });
+  openResultModal(title, text);
+}
+
+function openSaved(key, idx) {
+  const item = (history[key]||[])[idx];
+  if (!item) return;
+  openResultModal(item.title, item.text);
+}
+
+function openResultModal(title, text) {
+  document.getElementById('rmt-title').textContent = title;
+  document.getElementById('rmt-text').textContent = text;
+  document.getElementById('result-modal').classList.add('open');
+}
+
+function closeResultModal() {
+  document.getElementById('result-modal').classList.remove('open');
+}
+
+function closeResultModalOutside(e) {
+  if (e.target === document.getElementById('result-modal')) closeResultModal();
+}
+
+function doShareModal() {
+  const text = document.getElementById('rmt-text').textContent;
+  if (navigator.share) { navigator.share({text}).catch(()=>{}); }
+  else { navigator.clipboard?.writeText(text).then(()=>alert('Скопировано!')).catch(()=>{}); }
+}
+
+function doShare() { doShareModal(); }
+
+// ── ПРОФИЛЬ ────────────────────────────────────
+let profile = {};
+function saveProfile(fromModal) {
+  const d = document.getElementById(fromModal?'m-date':'ob-date').value;
+  const t = document.getElementById(fromModal?'m-time':'ob-time').value;
+  const c = document.getElementById(fromModal?'m-city':'ob-city').value.trim();
+  if (!d || !c) {
+    if (!fromModal) { const e=document.getElementById('er-onboard'); e.textContent='Заполните дату и город'; e.classList.add('on'); }
+    else alert('Заполните дату и город');
+    return;
+  }
+  profile = {date:d, time:t, city:c};
+  renderProfileInfo();
+  if (fromModal) closeModal(); else goTo('mechanics');
+}
+
+function renderProfileInfo() {
   const el = document.getElementById('profile-info');
+  if (!el) return;
+  const d = profile.date ? new Date(profile.date).toLocaleDateString('ru-RU',{day:'2-digit',month:'long',year:'numeric'}) : '—';
   el.innerHTML = `
-    <div class="profile-row"><span class="profile-key">Дата рождения</span><span class="profile-val">${profile.date||'—'}</span></div>
+    <div class="profile-row"><span class="profile-key">Дата рождения</span><span class="profile-val">${d}</span></div>
     <div class="profile-row"><span class="profile-key">Время рождения</span><span class="profile-val">${profile.time||'—'}</span></div>
     <div class="profile-row"><span class="profile-key">Город</span><span class="profile-val">${profile.city||'—'}</span></div>
   `;
 }
 
-// ── РЕЗУЛЬТАТ ─────────────────────────────────────────────
-function showResult(mechanic, sub) {
-  document.getElementById('result-title').textContent = sub;
-  document.getElementById('result-text').textContent = 'Тестовый текст';
-  goTo('result');
+// ── МОДАЛКА ─────────────────────────────────────
+function openModal() {
+  document.getElementById('m-date').value = profile.date||'';
+  document.getElementById('m-time').value = profile.time||'';
+  document.getElementById('m-city').value = profile.city||'';
+  document.getElementById('edit-modal').classList.add('open');
 }
+function closeModal() { document.getElementById('edit-modal').classList.remove('open'); }
+function closeModalOutside(e) { if(e.target===document.getElementById('edit-modal')) closeModal(); }
 
-function doShare() {
-  const text = document.getElementById('result-text')?.textContent || 'Тестовый текст';
-  if (navigator.share) {
-    navigator.share({ text }).catch(() => {});
-  } else {
-    navigator.clipboard?.writeText(text).then(() => alert('Скопировано!')).catch(() => {});
-  }
-}
+// ── ИНИТ ──────────────────────────────────────
+renderMechList('main-mech-list', false);
 </script>
+
+<!-- ══ МОДАЛЬНОЕ ОКНО РЕЗУЛЬТАТА ══ -->
+<div class="result-modal-overlay" id="result-modal" onclick="closeResultModalOutside(event)">
+  <div class="result-modal">
+    <div class="result-modal-header">
+      <div class="result-modal-title" id="rmt-title"></div>
+      <button class="result-modal-close" onclick="closeResultModal()">✕</button>
+    </div>
+    <div class="result-modal-text" id="rmt-text"></div>
+    <button class="share-btn" onclick="doShareModal()">📤 Поделиться</button>
+  </div>
+</div>
 </body>
 </html>
