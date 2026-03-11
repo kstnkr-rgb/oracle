@@ -217,6 +217,17 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
   background:transparent;color:var(--text);font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:800;cursor:pointer}
 .congrats-text{font-size:1.2rem;font-weight:800;text-align:center;color:#a78bfa;
   padding:16px 0 24px;line-height:1.5}
+
+/* ── ORACLE KEYBOARD FIX ── */
+#oracle-modal{align-items:flex-end;padding-bottom:0}
+#oracle-modal .result-modal{
+  border-radius:20px 20px 0 0;
+  padding-bottom:env(safe-area-inset-bottom, 20px);
+  max-height:92vh;
+}
+@supports (height: 100dvh) {
+  #oracle-modal{height:100dvh}
+}
 </style>
 <style>
 /* ── RESULT MODAL ── */
@@ -357,8 +368,8 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
   <div class="nav" style="padding:52px 20px 16px;display:flex;align-items:center;gap:12px">
     <div class="nav-title">🔮 Оракул</div>
     <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
-      <span style="font-size:1rem">💎</span>
-      <span class="crystal-count" id="crystal-display">50</span>
+      <span style="font-size:1rem;cursor:pointer" onclick="openRubleShop()">💎</span>
+      <span class="crystal-count" id="crystal-display" style="cursor:pointer" onclick="openRubleShop()">50</span>
       <button class="profile-btn" style="position:static;transform:none" onclick="goTo('profile')">👤</button>
     </div>
   </div>
@@ -450,6 +461,10 @@ const MECHANICS = [
 
 let crystals = 50;
 const crystalLedger = []; // {type:'spend'|'earn', amount, label, datetime}
+// бесплатные попытки: key = 'mechId_sub', value = кол-во оставшихся бесплатных
+const freeUses = { 'horoscope_Сегодня': 1, 'taro_Карта дня': 1 };
+function freeKey(mid, sub) { return sub ? mid + '_' + sub : mid; }
+function hasFree(mid, sub) { return (freeUses[freeKey(mid, sub)] || 0) > 0; }
 function ledgerAdd(type, amount, label) {
   crystalLedger.push({ type, amount, label, datetime: nowStr() });
 }
@@ -464,6 +479,13 @@ function updateCrystalDisplay() {
   if (el) el.textContent = crystals;
 }
 function spendCrystals(mid, sub) {
+  // бесплатная попытка
+  if (hasFree(mid, sub)) {
+    freeUses[freeKey(mid, sub)]--;
+    // перерисовать кнопки чтобы цена появилась
+    rerenderSubPrices();
+    return true;
+  }
   const cost = getPrice(mid, sub);
   if (cost > crystals) {
     const el = document.getElementById('crystal-display');
@@ -477,6 +499,22 @@ function spendCrystals(mid, sub) {
   const label = (m ? m.label : mid) + (sub ? ' · ' + sub : '');
   ledgerAdd('spend', cost, label);
   return true;
+}
+function rerenderSubPrices() {
+  // обновить текст кнопок подтипов на экране механик
+  MECHANICS.forEach(m => {
+    (m.subs || []).forEach(sub => {
+      const btn = document.getElementById('sub-main-mech-list-' + m.id + '-' + sub);
+      if (!btn) return;
+      const price = (m.prices && m.prices[sub]) ? m.prices[sub] : 0;
+      const free = hasFree(m.id, sub);
+      const priceTag = price ? (free
+        ? ' <span style="font-size:.72rem;color:#3ecf8e;font-weight:700;margin-left:6px">Бесплатно</span>'
+        : ' <span style="font-size:.72rem;color:#a78bfa;font-weight:700;margin-left:6px">' + price + '💎</span>')
+        : '';
+      btn.innerHTML = sub + priceTag;
+    });
+  });
 }
 
 // история: mechId + (sub ? '_'+sub : '') → [{datetime, title, text}]
@@ -539,7 +577,11 @@ function renderMechList(containerId, withDropdown) {
         const subBtn = document.createElement('button');
         subBtn.className = 'sub-item';
         subBtn.id = `sub-${containerId}-${m.id}-${sub}`;
-        const priceTag = (!withDropdown && subPrice) ? ` <span style="font-size:.72rem;color:#a78bfa;font-weight:700;margin-left:6px">${subPrice}💎</span>` : '';
+        const free = !withDropdown && hasFree(m.id, sub);
+        const priceTag = (!withDropdown && subPrice) ? (free
+          ? ` <span style="font-size:.72rem;color:#3ecf8e;font-weight:700;margin-left:6px">Бесплатно</span>`
+          : ` <span style="font-size:.72rem;color:#a78bfa;font-weight:700;margin-left:6px">${subPrice}💎</span>`)
+          : '';
         const cntTag = (withDropdown && sc > 0) ? ` <span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:var(--accent);color:#fff;font-size:.62rem;font-weight:800;margin-left:6px">${sc}</span>` : '';
         subBtn.innerHTML = sub + priceTag + cntTag;
 
@@ -751,9 +793,20 @@ function ballReveal() {
 }
 
 // ── ПЕЧЕНЬЕ ───────────────────────────────────
-function openCookieModal() { document.getElementById('cookie-modal').classList.add('open'); }
+function openCookieModal() {
+  document.getElementById('cookie-emoji').textContent = '🥠';
+  document.getElementById('cookie-prediction').style.display = 'none';
+  document.getElementById('cookie-btn-wrap').style.display = 'block';
+  document.getElementById('cookie-modal').classList.add('open');
+}
 function closeCookieModal() { document.getElementById('cookie-modal').classList.remove('open'); }
 function closeCookieOutside(e) { if(e.target===document.getElementById('cookie-modal')) closeCookieModal(); }
+function cookieReveal() {
+  if (!spendCrystals('cookie', null)) return;
+  document.getElementById('cookie-emoji').textContent = '🍪';
+  document.getElementById('cookie-btn-wrap').style.display = 'none';
+  document.getElementById('cookie-prediction').style.display = 'block';
+}
 
 // ── ПРОФИЛЬ ────────────────────────────────────
 let profile = {};
@@ -803,27 +856,46 @@ function closeNoCrystalsOutside(e) { if(e.target===document.getElementById('no-c
 
 function openShopModal() {
   closeNoCrystalsModal();
+  closeChoiceModal();
+  const el = document.getElementById('spar-bonus-display');
+  if (el) el.textContent = sparBonus;
   document.getElementById('shop-modal').classList.add('open');
 }
 function closeShopModal() { document.getElementById('shop-modal').classList.remove('open'); }
 function closeShopOutside(e) { if(e.target===document.getElementById('shop-modal')) closeShopModal(); }
 
+let _pendingSource = 'bonus'; // 'bonus' or 'ruble'
+let _pendingRubles = 0;
+
 function confirmExchange(gems, bonus) {
-  _pendingCrystals = gems; _pendingBonus = bonus;
+  _pendingCrystals = gems; _pendingBonus = bonus; _pendingSource = 'bonus'; _pendingRubles = 0;
+  closeShopModal();
   document.getElementById('confirm-text').textContent =
-    'Вы точно хотите обменять ' + bonus + ' бонусов на ' + gems + ' 💎?';
+    'Вы точно хотите обменять ' + bonus + ' бонусов Спар на ' + gems + ' 💎?';
+  document.getElementById('confirm-modal').classList.add('open');
+}
+function confirmRubleExchange(gems, rubles) {
+  _pendingCrystals = gems; _pendingRubles = rubles; _pendingSource = 'ruble'; _pendingBonus = 0;
+  closeRubleShopModal();
+  document.getElementById('confirm-text').textContent =
+    'Вы точно хотите купить ' + gems + ' 💎 за ' + rubles + ' ₽?';
   document.getElementById('confirm-modal').classList.add('open');
 }
 function closeConfirmModal() {
   document.getElementById('confirm-modal').classList.remove('open');
   closeShopModal();
+  closeRubleShopModal();
 }
 function doExchange() {
   document.getElementById('confirm-modal').classList.remove('open');
   closeShopModal();
+  closeRubleShopModal();
   crystals += _pendingCrystals;
   updateCrystalDisplay();
-  ledgerAdd('earn', _pendingCrystals, 'Обмен бонусов Спар');
+  const label = _pendingSource === 'ruble'
+    ? 'Покупка за ' + _pendingRubles + ' ₽'
+    : 'Обмен бонусов Спар';
+  ledgerAdd('earn', _pendingCrystals, label);
   document.getElementById('congrats-text').textContent =
     'Поздравляем! Вам начислено ' + _pendingCrystals + ' 💎';
   document.getElementById('congrats-modal').classList.add('open');
@@ -870,6 +942,14 @@ function renderLedger() {
     </div>`;
   }).join('');
 }
+
+// ── МАГАЗИН ЗА РУБЛИ ──────────────────────────
+function openRubleShop() { document.getElementById('choice-modal').classList.add('open'); }
+function openRubleShopModal() { document.getElementById('ruble-shop-modal').classList.add('open'); }
+function closeChoiceModal() { document.getElementById('choice-modal').classList.remove('open'); }
+function closeChoiceOutside(e) { if(e.target===document.getElementById('choice-modal')) closeChoiceModal(); }
+function closeRubleShopModal() { document.getElementById('ruble-shop-modal').classList.remove('open'); }
+function closeRubleShopOutside(e) { if(e.target===document.getElementById('ruble-shop-modal')) closeRubleShopModal(); }
 </script>
 
 <!-- ══ МОДАЛЬНОЕ ОКНО РЕЗУЛЬТАТА ══ -->
@@ -885,7 +965,7 @@ function renderLedger() {
 </div>
 
 <!-- ══ МОДАЛ: ОРАКУЛ ══ -->
-<div class="result-modal-overlay" id="oracle-modal" onclick="closeOracleOutside(event)">
+<div class="result-modal-overlay" id="oracle-modal">
   <div class="result-modal">
     <div class="result-modal-header">
       <div class="result-modal-title" id="oracle-modal-title">Совет Оракула</div>
@@ -921,8 +1001,11 @@ function renderLedger() {
       <div class="result-modal-title">Печенье с предсказанием</div>
       <button class="result-modal-close" onclick="closeCookieModal()">✕</button>
     </div>
-    <div class="magic-emoji">🥠</div>
-    <div class="cookie-text">«Всё будет хорошо, если сможешь не упустить свою удачу»</div>
+    <div class="magic-emoji" id="cookie-emoji">🥠</div>
+    <div class="cookie-text" id="cookie-prediction" style="display:none">«Всё будет хорошо, если сможешь не упустить свою удачу»</div>
+    <div id="cookie-btn-wrap">
+      <button class="sbtn" onclick="cookieReveal()">Разломить печенье &nbsp;•&nbsp; 1 💎</button>
+    </div>
   </div>
 </div>
 
@@ -936,7 +1019,10 @@ function renderLedger() {
     <div style="font-size:.95rem;line-height:1.7;color:var(--text);margin-bottom:20px">
       У вас недостаточно кристаллов. Чтобы их получить, вы можете совершать покупки в сети Спар, либо получить за бонусы Спар.
     </div>
-    <button class="sbtn" onclick="openShopModal()">Получить за бонусы Спар</button>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <button class="sbtn" onclick="closeNoCrystalsModal();openShopModal()">Купить за бонусы Спар</button>
+      <button class="sbtn" style="background:linear-gradient(135deg,#7c3aed,#a855f7)" onclick="closeNoCrystalsModal();openRubleShopModal()">Купить с помощью KD Pay</button>
+    </div>
   </div>
 </div>
 
@@ -947,6 +1033,7 @@ function renderLedger() {
       <div class="result-modal-title">Обменять бонусы на 💎</div>
       <button class="result-modal-close" onclick="closeShopModal()">✕</button>
     </div>
+    <div style="font-size:.85rem;color:var(--text2);margin-bottom:14px">Вам доступно <span id="spar-bonus-display" style="color:var(--accent);font-weight:800">150</span> бонусов Спар</div>
     <div class="shop-opts">
       <button class="shop-opt" onclick="confirmExchange(20,50)">
         <span class="shop-opt-crystals">20 💎</span>
@@ -999,6 +1086,46 @@ function renderLedger() {
       <button class="rtab"    id="ltab-earn"  onclick="ledgerTab('earn')">Покупки</button>
     </div>
     <div id="ledger-list" style="display:flex;flex-direction:column;gap:8px;max-height:55vh;overflow-y:auto"></div>
+  </div>
+</div>
+
+<!-- ══ МОДАЛ: ВЫБОР СПОСОБА ПОКУПКИ (по клику на баланс) ══ -->
+<div class="result-modal-overlay" id="choice-modal" onclick="closeChoiceOutside(event)">
+  <div class="result-modal">
+    <div class="result-modal-header">
+      <div class="result-modal-title">Купить кристаллы 💎</div>
+      <button class="result-modal-close" onclick="closeChoiceModal()">✕</button>
+    </div>
+    <div style="font-size:.9rem;color:var(--text2);margin-bottom:16px">Выберите способ покупки:</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <button class="sbtn" onclick="closeChoiceModal();openShopModal()">Купить за бонусы Спар</button>
+      <button class="sbtn" style="background:linear-gradient(135deg,#7c3aed,#a855f7)" onclick="closeChoiceModal();openRubleShopModal()">Купить с помощью KD Pay</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ МОДАЛ: КУПИТЬ ЗА РУБЛИ ══ -->
+<div class="result-modal-overlay" id="ruble-shop-modal" onclick="closeRubleShopOutside(event)">
+  <div class="result-modal">
+    <div class="result-modal-header">
+      <div class="result-modal-title">KD Pay 💳</div>
+      <button class="result-modal-close" onclick="closeRubleShopModal()">✕</button>
+    </div>
+    <div style="font-size:.9rem;color:var(--text2);margin-bottom:14px">Выберите пакет кристаллов:</div>
+    <div class="shop-opts">
+      <button class="shop-opt" onclick="confirmRubleExchange(20,50)">
+        <span class="shop-opt-crystals">20 💎</span>
+        <span class="shop-opt-bonus">за 50 ₽</span>
+      </button>
+      <button class="shop-opt" onclick="confirmRubleExchange(50,100)">
+        <span class="shop-opt-crystals">50 💎</span>
+        <span class="shop-opt-bonus">за 100 ₽</span>
+      </button>
+      <button class="shop-opt" onclick="confirmRubleExchange(100,180)">
+        <span class="shop-opt-crystals">100 💎</span>
+        <span class="shop-opt-bonus">за 180 ₽</span>
+      </button>
+    </div>
   </div>
 </div>
 </body>
