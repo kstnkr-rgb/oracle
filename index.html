@@ -372,7 +372,8 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
     <div class="nav-title">Профиль</div>
   </div>
   <div class="profile-info" id="profile-info"></div>
-  <button class="edit-btn" style="margin:0 16px 16px;width:calc(100% - 32px)" onclick="openModal()">✏️ Редактировать данные</button>
+  <button class="edit-btn" style="margin:0 16px 8px;width:calc(100% - 32px)" onclick="openModal()">✏️ Редактировать данные</button>
+  <button class="edit-btn" style="margin:0 16px 16px;width:calc(100% - 32px)" onclick="openLedgerModal()">💎 История покупок</button>
   <div class="profile-section">
     <div class="profile-section-title">Ваши данные</div>
     <div style="display:flex;flex-direction:column;gap:12px" id="profile-mech-list"></div>
@@ -448,6 +449,10 @@ const MECHANICS = [
 ];
 
 let crystals = 50;
+const crystalLedger = []; // {type:'spend'|'earn', amount, label, datetime}
+function ledgerAdd(type, amount, label) {
+  crystalLedger.push({ type, amount, label, datetime: nowStr() });
+}
 function getPrice(mid, sub) {
   const m = MECHANICS.find(x=>x.id===mid);
   if (!m) return 0;
@@ -468,6 +473,9 @@ function spendCrystals(mid, sub) {
   }
   crystals -= cost;
   updateCrystalDisplay();
+  const m = MECHANICS.find(x=>x.id===mid);
+  const label = (m ? m.label : mid) + (sub ? ' · ' + sub : '');
+  ledgerAdd('spend', cost, label);
   return true;
 }
 
@@ -734,6 +742,7 @@ function openBallModal() {
 function closeBallModal() { document.getElementById('ball-modal').classList.remove('open'); }
 function closeBallOutside(e) { if(e.target===document.getElementById('ball-modal')) closeBallModal(); }
 function ballReveal() {
+  if (!spendCrystals('ball', null)) return;
   const opts = ['Да', 'Нет', 'Не знаю', 'Спроси позже'];
   const ans = opts[Math.floor(Math.random() * opts.length)];
   document.getElementById('ball-options').style.display = 'none';
@@ -814,11 +823,53 @@ function doExchange() {
   closeShopModal();
   crystals += _pendingCrystals;
   updateCrystalDisplay();
+  ledgerAdd('earn', _pendingCrystals, 'Обмен бонусов Спар');
   document.getElementById('congrats-text').textContent =
     'Поздравляем! Вам начислено ' + _pendingCrystals + ' 💎';
   document.getElementById('congrats-modal').classList.add('open');
 }
 function closeCongratsModal() { document.getElementById('congrats-modal').classList.remove('open'); }
+
+// ── ИСТОРИЯ КРИСТАЛЛОВ ────────────────────────
+let _ledgerFilter = 'all';
+function openLedgerModal() {
+  _ledgerFilter = 'all';
+  ['all','spend','earn'].forEach(t => {
+    document.getElementById('ltab-'+t).classList.toggle('on', t === 'all');
+  });
+  renderLedger();
+  document.getElementById('ledger-modal').classList.add('open');
+}
+function closeLedgerModal() { document.getElementById('ledger-modal').classList.remove('open'); }
+function closeLedgerOutside(e) { if(e.target===document.getElementById('ledger-modal')) closeLedgerModal(); }
+function ledgerTab(filter) {
+  _ledgerFilter = filter;
+  ['all','spend','earn'].forEach(t => {
+    document.getElementById('ltab-'+t).classList.toggle('on', t === filter);
+  });
+  renderLedger();
+}
+function renderLedger() {
+  const list = document.getElementById('ledger-list');
+  const items = crystalLedger.filter(x => _ledgerFilter === 'all' || x.type === _ledgerFilter).slice().reverse();
+  if (!items.length) {
+    list.innerHTML = '<div style="padding:16px 0;text-align:center;font-size:.88rem;color:var(--text2)">Записей нет</div>';
+    return;
+  }
+  list.innerHTML = items.map(x => {
+    const isEarn = x.type === 'earn';
+    const sign = isEarn ? '+' : '−';
+    const color = isEarn ? '#3ecf8e' : '#f87171';
+    return `<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:11px 14px;
+      background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);gap:10px">
+      <div>
+        <div style="font-size:.88rem;font-weight:700;margin-bottom:3px">${x.label}</div>
+        <div style="font-size:.74rem;color:var(--text2)">${x.datetime}</div>
+      </div>
+      <div style="font-size:1rem;font-weight:800;color:${color};flex-shrink:0">${sign}${x.amount} 💎</div>
+    </div>`;
+  }).join('');
+}
 </script>
 
 <!-- ══ МОДАЛЬНОЕ ОКНО РЕЗУЛЬТАТА ══ -->
@@ -857,7 +908,7 @@ function closeCongratsModal() { document.getElementById('congrats-modal').classL
     <div class="magic-emoji">🌐</div>
     <div class="ball-options" id="ball-options">
       <div style="font-size:.82rem;color:var(--text2);text-align:center;margin-bottom:8px">Шар уже знает ответ — нажмите, чтобы узнать</div>
-      <button class="sbtn" onclick="ballReveal()">✨ Открыть ответ</button>
+      <button class="sbtn" onclick="ballReveal()">✨ Открыть ответ &nbsp;•&nbsp; 1 💎</button>
     </div>
     <div class="ball-answer" id="ball-answer"></div>
   </div>
@@ -932,6 +983,22 @@ function closeCongratsModal() { document.getElementById('congrats-modal').classL
   <div class="result-modal" onclick="closeCongratsModal()">
     <div class="congrats-text" id="congrats-text"></div>
     <button class="sbtn" onclick="closeCongratsModal()">Отлично!</button>
+  </div>
+</div>
+
+<!-- ══ МОДАЛ: ИСТОРИЯ КРИСТАЛЛОВ ══ -->
+<div class="result-modal-overlay" id="ledger-modal" onclick="closeLedgerOutside(event)">
+  <div class="result-modal" style="max-height:85vh">
+    <div class="result-modal-header">
+      <div class="result-modal-title">История кристаллов 💎</div>
+      <button class="result-modal-close" onclick="closeLedgerModal()">✕</button>
+    </div>
+    <div style="display:flex;gap:6px;margin-bottom:14px">
+      <button class="rtab on" id="ltab-all"   onclick="ledgerTab('all')">Все</button>
+      <button class="rtab"    id="ltab-spend" onclick="ledgerTab('spend')">Траты</button>
+      <button class="rtab"    id="ltab-earn"  onclick="ledgerTab('earn')">Покупки</button>
+    </div>
+    <div id="ledger-list" style="display:flex;flex-direction:column;gap:8px;max-height:55vh;overflow-y:auto"></div>
   </div>
 </div>
 </body>
