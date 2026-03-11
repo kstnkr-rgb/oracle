@@ -166,6 +166,57 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
   background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm)}
 .kvk{font-size:.74rem;color:var(--text2);font-weight:600;flex-shrink:0}
 .kvv{font-size:.85rem;font-weight:600;text-align:right;word-break:break-word}
+
+/* ── ORACLE MODAL ── */
+.oracle-input{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:13px 15px;color:var(--text);
+  font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:600;outline:none;
+  resize:none;min-height:90px;transition:border-color .2s;margin-bottom:12px}
+.oracle-input:focus{border-color:var(--accent)}
+.oracle-input::placeholder{color:var(--text2);font-weight:400}
+.oracle-answer{background:rgba(74,158,255,.07);border:1px solid rgba(74,158,255,.2);
+  border-radius:var(--radius-sm);padding:14px 16px;font-size:.95rem;line-height:1.75;
+  color:var(--text);margin-bottom:14px;display:none;white-space:pre-line}
+.oracle-answer.on{display:block}
+
+/* ── BALL / COOKIE MODAL ── */
+.magic-emoji{font-size:5rem;text-align:center;margin:8px 0 16px;line-height:1}
+.ball-options{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+.ball-opt{padding:14px;border-radius:var(--radius-sm);border:1px solid var(--border);
+  background:rgba(255,255,255,.04);color:var(--text);font-family:'Nunito',sans-serif;
+  font-size:1rem;font-weight:700;cursor:pointer;text-align:center;transition:all .2s}
+.ball-opt:active{background:rgba(74,158,255,.18);border-color:var(--accent)}
+.ball-answer{font-size:1.3rem;font-weight:800;text-align:center;color:var(--accent);
+  padding:16px;display:none}
+.ball-answer.on{display:block}
+.cookie-text{font-size:1rem;line-height:1.75;text-align:center;color:var(--text);
+  padding:8px 0 16px;font-style:italic}
+
+/* ── CRYSTAL BALANCE ── */
+.crystal-icon{font-size:1.3rem;line-height:1}
+.crystal-count{font-size:1rem;font-weight:800;color:#a78bfa;
+  background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.25);
+  border-radius:20px;padding:4px 12px}
+.not-enough{animation:shake .4s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+
+/* ── SHOP / CONFIRM MODALS ── */
+.shop-opt{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;
+  background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.2);
+  border-radius:var(--radius-sm);cursor:pointer;transition:all .2s;width:100%}
+.shop-opt:active{background:rgba(167,139,250,.2)}
+.shop-opt-crystals{font-size:1rem;font-weight:800;color:#a78bfa}
+.shop-opt-bonus{font-size:.85rem;color:var(--text2);font-weight:600}
+.shop-opts{display:flex;flex-direction:column;gap:10px;margin-bottom:4px}
+.confirm-text{font-size:1rem;line-height:1.65;text-align:center;color:var(--text);padding:8px 0 20px}
+.confirm-btns{display:flex;gap:10px}
+.confirm-yes{flex:1;padding:14px;border-radius:var(--radius-sm);border:none;
+  background:linear-gradient(135deg,var(--accent2),var(--accent));
+  color:#fff;font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:800;cursor:pointer}
+.confirm-no{flex:1;padding:14px;border-radius:var(--radius-sm);border:1px solid var(--border);
+  background:transparent;color:var(--text);font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:800;cursor:pointer}
+.congrats-text{font-size:1.2rem;font-weight:800;text-align:center;color:#a78bfa;
+  padding:16px 0 24px;line-height:1.5}
 </style>
 <style>
 /* ── RESULT MODAL ── */
@@ -303,9 +354,13 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
 
 <!-- ══ МЕХАНИКИ ══ -->
 <div class="screen hidden" id="s-mechanics">
-  <div class="nav" style="padding:52px 20px 16px">
+  <div class="nav" style="padding:52px 20px 16px;display:flex;align-items:center;gap:12px">
     <div class="nav-title">🔮 Оракул</div>
-    <button class="profile-btn nav-right" onclick="goTo('profile')">👤</button>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+      <span style="font-size:1rem">💎</span>
+      <span class="crystal-count" id="crystal-display">50</span>
+      <button class="profile-btn" style="position:static;transform:none" onclick="goTo('profile')">👤</button>
+    </div>
   </div>
   <div class="mechanic-list" id="main-mech-list"></div>
 </div>
@@ -372,14 +427,49 @@ function _show(screen) {
 
 // ── МЕХАНИКИ ────────────────────────────────────
 const MECHANICS = [
-  { id:'horoscope', icon:'☉', cls:'icon-c1', label:'Гороскоп',       subs:['Сегодня','Завтра','Неделя','Месяц','Год'] },
-  { id:'taro',      icon:'🃏', cls:'icon-c2', label:'Таро',            subs:['Карта дня','Расклад на 3 карты'] },
-  { id:'oracle',    icon:'🔮', cls:'icon-c3', label:'Совет Оракула',   subs:['Отношения','Работа','Самопознание','Общение'] },
-  { id:'ball',      icon:'🌐', cls:'icon-c4', label:'Магический шар',  subs:[] },
-  { id:'cookie',    icon:'🥠', cls:'icon-c5', label:'Печенье с предсказанием', subs:[] },
-  { id:'numerology',icon:'🔢', cls:'icon-c6', label:'Нумерология',     subs:[] },
-  { id:'runes',     icon:'ᚱ',  cls:'icon-c7', label:'Руны',            subs:['Одна руна','Три руны','Руна ситуации'] },
+  { id:'horoscope', icon:'☉', cls:'icon-c1', label:'Гороскоп',
+    subs:['Сегодня','Завтра','Неделя','Месяц','Год'],
+    prices:{'Сегодня':1,'Завтра':2,'Неделя':5,'Месяц':10,'Год':30} },
+  { id:'taro',      icon:'🃏', cls:'icon-c2', label:'Таро',
+    subs:['Карта дня','Расклад на 3 карты'],
+    prices:{'Карта дня':1,'Расклад на 3 карты':5} },
+  { id:'oracle',    icon:'🔮', cls:'icon-c3', label:'Совет Оракула',
+    subs:['Отношения','Работа','Самопознание','Общение'],
+    prices:{'Отношения':20,'Работа':20,'Самопознание':20,'Общение':20} },
+  { id:'ball',      icon:'🌐', cls:'icon-c4', label:'Магический шар',
+    subs:[], direct:true, noHistory:true, price:1 },
+  { id:'cookie',    icon:'🥠', cls:'icon-c5', label:'Печенье с предсказанием',
+    subs:[], direct:true, noHistory:true, price:1 },
+  { id:'numerology',icon:'🔢', cls:'icon-c6', label:'Нумерология',
+    subs:[], price:5 },
+  { id:'runes',     icon:'ᚱ',  cls:'icon-c7', label:'Руны',
+    subs:['Одна руна','Три руны','Руна ситуации'],
+    prices:{'Одна руна':5,'Три руны':10,'Руна ситуации':5} },
 ];
+
+let crystals = 50;
+function getPrice(mid, sub) {
+  const m = MECHANICS.find(x=>x.id===mid);
+  if (!m) return 0;
+  if (sub && m.prices) return m.prices[sub] || 0;
+  return m.price || 0;
+}
+function updateCrystalDisplay() {
+  const el = document.getElementById('crystal-display');
+  if (el) el.textContent = crystals;
+}
+function spendCrystals(mid, sub) {
+  const cost = getPrice(mid, sub);
+  if (cost > crystals) {
+    const el = document.getElementById('crystal-display');
+    if (el) { el.classList.remove('not-enough'); void el.offsetWidth; el.classList.add('not-enough'); }
+    document.getElementById('no-crystals-modal').classList.add('open');
+    return false;
+  }
+  crystals -= cost;
+  updateCrystalDisplay();
+  return true;
+}
 
 // история: mechId + (sub ? '_'+sub : '') → [{datetime, title, text}]
 const history = {};
@@ -396,11 +486,10 @@ function subCount(mid, sub) { return (history[mid+'_'+sub]||[]).length; }
 
 function makeText(mechLabel, sub, dt) {
   const p = profile;
-  return `Тестовый прогноз «${mechLabel}${sub?' · '+sub:''}» от ${dt}
-
-Дата рождения: ${p.date||'—'}
-Время: ${p.time||'—'}
-Город: ${p.city||'—'}`;
+  const dFormatted = p.date ? p.date.split('-').reverse().join('.') : '—';
+  const tFormatted = (p.time || '').replace(':', '-');
+  const origin = 'Исходная информация: ' + (p.city||'—') + ', ' + dFormatted + ', ' + tFormatted;
+  return 'Тестовый прогноз «' + mechLabel + (sub?' · '+sub:'') + '» от ' + dt + '\n\n' + origin;
 }
 
 // ── РЕНДЕР СПИСКА ────────────────────────────────
@@ -438,10 +527,13 @@ function renderMechList(containerId, withDropdown) {
       m.subs.forEach(sub => {
         // кнопка подтипа
         const sc = withDropdown ? subCount(m.id, sub) : 0;
+        const subPrice = (m.prices && m.prices[sub]) ? m.prices[sub] : 0;
         const subBtn = document.createElement('button');
         subBtn.className = 'sub-item';
         subBtn.id = `sub-${containerId}-${m.id}-${sub}`;
-        subBtn.innerHTML = sub + (sc > 0 ? ` <span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:var(--accent);color:#fff;font-size:.62rem;font-weight:800;margin-left:6px">${sc}</span>` : '');
+        const priceTag = (!withDropdown && subPrice) ? ` <span style="font-size:.72rem;color:#a78bfa;font-weight:700;margin-left:6px">${subPrice}💎</span>` : '';
+        const cntTag = (withDropdown && sc > 0) ? ` <span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:var(--accent);color:#fff;font-size:.62rem;font-weight:800;margin-left:6px">${sc}</span>` : '';
+        subBtn.innerHTML = sub + priceTag + cntTag;
 
         if (withDropdown) {
           // профиль: показываем историю
@@ -472,7 +564,7 @@ function renderMechList(containerId, withDropdown) {
         hl.style.padding = '4px 12px 4px';
         renderHistItems(hl, m.id, null);
         inner.appendChild(hl);
-      } else {
+      } else if (!m.direct) {
         // главный экран — кнопка «Получить»
         const getBtn = document.createElement('button');
         getBtn.className = 'sub-item';
@@ -480,15 +572,22 @@ function renderMechList(containerId, withDropdown) {
         getBtn.onclick = (e) => { e.stopPropagation(); createAndShow(m.id, m.label, null); };
         inner.appendChild(getBtn);
       }
+      // direct: no dropdown content
     }
 
     drop.appendChild(inner);
-    wrap.appendChild(drop);
+    if (!m.direct || withDropdown) wrap.appendChild(drop);
     container.appendChild(wrap);
   });
 }
 
 function toggleDrop(cid, mid) {
+  const mech = MECHANICS.find(m=>m.id===mid);
+  // direct modals — open immediately, no dropdown
+  if (mech && mech.direct && cid === 'main-mech-list') {
+    if (mid === 'ball') { openBallModal(); return; }
+    if (mid === 'cookie') { openCookieModal(); return; }
+  }
   MECHANICS.forEach(m => {
     if (m.id === mid) return;
     const d = document.getElementById(`drop-${cid}-${m.id}`);
@@ -502,9 +601,7 @@ function toggleDrop(cid, mid) {
   const opening = !drop.classList.contains('open');
   drop.classList.toggle('open');
   if (arrow) arrow.classList.toggle('open', opening);
-  // populate no-sub history on open
   if (opening) {
-    const mech = MECHANICS.find(m=>m.id===mid);
     if (mech && mech.subs.length === 0) {
       const hl = document.getElementById(`hlist-${cid}-${mid}-_`);
       if (hl) renderHistItems(hl, mid, null);
@@ -549,6 +646,10 @@ function renderHistItems(hlist, mid, sub) {
 
 // ── СОЗДАТЬ ПРОГНОЗ ──────────────────────────────
 function createAndShow(mid, mechLabel, sub) {
+  if (mid === 'oracle') { openOracleModal(mechLabel, sub); return; }
+  if (!spendCrystals(mid, sub)) return;
+  if (mid === 'ball')   { openBallModal(); return; }
+  if (mid === 'cookie') { openCookieModal(); return; }
   const dt = nowStr();
   const key = mid + (sub ? '_'+sub : '');
   const title = mechLabel + (sub ? ' · '+sub : '');
@@ -585,6 +686,65 @@ function doShareModal() {
 }
 
 function doShare() { doShareModal(); }
+
+// ── ОРАКУЛ ────────────────────────────────────
+let _oracleMid = 'oracle', _oracleSub = null;
+function openOracleModal(mechLabel, sub) {
+  _oracleSub = sub;
+  document.getElementById('oracle-modal-title').textContent = 'Совет Оракула' + (sub ? ' · ' + sub : '');
+  document.getElementById('oracle-question').value = '';
+  document.getElementById('oracle-answer').textContent = '';
+  document.getElementById('oracle-answer').classList.remove('on');
+  document.getElementById('oracle-share-btn').style.display = 'none';
+  document.getElementById('oracle-ask-btn').style.display = 'block';
+  document.getElementById('oracle-modal').classList.add('open');
+}
+function closeOracleModal() { document.getElementById('oracle-modal').classList.remove('open'); }
+function closeOracleOutside(e) { if(e.target===document.getElementById('oracle-modal')) closeOracleModal(); }
+function askOracle() {
+  const q = document.getElementById('oracle-question').value.trim();
+  if (!q) { document.getElementById('oracle-question').focus(); return; }
+  if (!spendCrystals('oracle', _oracleSub)) return;
+  const dt = nowStr();
+  const answer = 'Все будет хорошо, надо только стараться';
+  const sub = _oracleSub;
+  const key = 'oracle' + (sub ? '_'+sub : '');
+  const title = 'Совет Оракула' + (sub ? ' · '+sub : '');
+  const text = `Вопрос: ${q}\n\nОракул: ${answer}\n\n${dt}\n\nДата рождения: ${profile.date||'—'}\nГород: ${profile.city||'—'}`;
+  if (!history[key]) history[key] = [];
+  history[key].push({ datetime: dt, title, text });
+  document.getElementById('oracle-answer').textContent = answer;
+  document.getElementById('oracle-answer').classList.add('on');
+  document.getElementById('oracle-ask-btn').style.display = 'none';
+  document.getElementById('oracle-share-btn').style.display = 'flex';
+}
+function doShareOracle() {
+  const text = document.getElementById('oracle-answer').textContent;
+  if (navigator.share) navigator.share({text}).catch(()=>{});
+  else navigator.clipboard?.writeText(text).then(()=>alert('Скопировано!')).catch(()=>{});
+}
+
+// ── МАГИЧЕСКИЙ ШАР ────────────────────────────
+function openBallModal() {
+  document.getElementById('ball-answer').textContent = '';
+  document.getElementById('ball-answer').classList.remove('on');
+  document.getElementById('ball-options').style.display = 'flex';
+  document.getElementById('ball-modal').classList.add('open');
+}
+function closeBallModal() { document.getElementById('ball-modal').classList.remove('open'); }
+function closeBallOutside(e) { if(e.target===document.getElementById('ball-modal')) closeBallModal(); }
+function ballReveal() {
+  const opts = ['Да', 'Нет', 'Не знаю', 'Спроси позже'];
+  const ans = opts[Math.floor(Math.random() * opts.length)];
+  document.getElementById('ball-options').style.display = 'none';
+  document.getElementById('ball-answer').textContent = ans;
+  document.getElementById('ball-answer').classList.add('on');
+}
+
+// ── ПЕЧЕНЬЕ ───────────────────────────────────
+function openCookieModal() { document.getElementById('cookie-modal').classList.add('open'); }
+function closeCookieModal() { document.getElementById('cookie-modal').classList.remove('open'); }
+function closeCookieOutside(e) { if(e.target===document.getElementById('cookie-modal')) closeCookieModal(); }
 
 // ── ПРОФИЛЬ ────────────────────────────────────
 let profile = {};
@@ -625,6 +785,40 @@ function closeModalOutside(e) { if(e.target===document.getElementById('edit-moda
 
 // ── ИНИТ ──────────────────────────────────────
 renderMechList('main-mech-list', false);
+
+// ── КРИСТАЛЛЫ: МОДАЛЫ ─────────────────────────
+let _pendingCrystals = 0, _pendingBonus = 0;
+
+function closeNoCrystalsModal() { document.getElementById('no-crystals-modal').classList.remove('open'); }
+function closeNoCrystalsOutside(e) { if(e.target===document.getElementById('no-crystals-modal')) closeNoCrystalsModal(); }
+
+function openShopModal() {
+  closeNoCrystalsModal();
+  document.getElementById('shop-modal').classList.add('open');
+}
+function closeShopModal() { document.getElementById('shop-modal').classList.remove('open'); }
+function closeShopOutside(e) { if(e.target===document.getElementById('shop-modal')) closeShopModal(); }
+
+function confirmExchange(gems, bonus) {
+  _pendingCrystals = gems; _pendingBonus = bonus;
+  document.getElementById('confirm-text').textContent =
+    'Вы точно хотите обменять ' + bonus + ' бонусов на ' + gems + ' 💎?';
+  document.getElementById('confirm-modal').classList.add('open');
+}
+function closeConfirmModal() {
+  document.getElementById('confirm-modal').classList.remove('open');
+  closeShopModal();
+}
+function doExchange() {
+  document.getElementById('confirm-modal').classList.remove('open');
+  closeShopModal();
+  crystals += _pendingCrystals;
+  updateCrystalDisplay();
+  document.getElementById('congrats-text').textContent =
+    'Поздравляем! Вам начислено ' + _pendingCrystals + ' 💎';
+  document.getElementById('congrats-modal').classList.add('open');
+}
+function closeCongratsModal() { document.getElementById('congrats-modal').classList.remove('open'); }
 </script>
 
 <!-- ══ МОДАЛЬНОЕ ОКНО РЕЗУЛЬТАТА ══ -->
@@ -636,6 +830,108 @@ renderMechList('main-mech-list', false);
     </div>
     <div class="result-modal-text" id="rmt-text"></div>
     <button class="share-btn" onclick="doShareModal()">📤 Поделиться</button>
+  </div>
+</div>
+
+<!-- ══ МОДАЛ: ОРАКУЛ ══ -->
+<div class="result-modal-overlay" id="oracle-modal" onclick="closeOracleOutside(event)">
+  <div class="result-modal">
+    <div class="result-modal-header">
+      <div class="result-modal-title" id="oracle-modal-title">Совет Оракула</div>
+      <button class="result-modal-close" onclick="closeOracleModal()">✕</button>
+    </div>
+    <textarea class="oracle-input" id="oracle-question" placeholder="Задайте свой вопрос Оракулу…"></textarea>
+    <button class="sbtn" onclick="askOracle()" id="oracle-ask-btn">Спросить Оракула</button>
+    <div class="oracle-answer" id="oracle-answer"></div>
+    <button class="share-btn" id="oracle-share-btn" style="display:none" onclick="doShareOracle()">📤 Поделиться</button>
+  </div>
+</div>
+
+<!-- ══ МОДАЛ: МАГИЧЕСКИЙ ШАР ══ -->
+<div class="result-modal-overlay" id="ball-modal" onclick="closeBallOutside(event)">
+  <div class="result-modal">
+    <div class="result-modal-header">
+      <div class="result-modal-title">Магический шар</div>
+      <button class="result-modal-close" onclick="closeBallModal()">✕</button>
+    </div>
+    <div class="magic-emoji">🌐</div>
+    <div class="ball-options" id="ball-options">
+      <div style="font-size:.82rem;color:var(--text2);text-align:center;margin-bottom:8px">Шар уже знает ответ — нажмите, чтобы узнать</div>
+      <button class="sbtn" onclick="ballReveal()">✨ Открыть ответ</button>
+    </div>
+    <div class="ball-answer" id="ball-answer"></div>
+  </div>
+</div>
+
+<!-- ══ МОДАЛ: ПЕЧЕНЬЕ ══ -->
+<div class="result-modal-overlay" id="cookie-modal" onclick="closeCookieOutside(event)">
+  <div class="result-modal">
+    <div class="result-modal-header">
+      <div class="result-modal-title">Печенье с предсказанием</div>
+      <button class="result-modal-close" onclick="closeCookieModal()">✕</button>
+    </div>
+    <div class="magic-emoji">🥠</div>
+    <div class="cookie-text">«Всё будет хорошо, если сможешь не упустить свою удачу»</div>
+  </div>
+</div>
+
+<!-- ══ МОДАЛ: НЕТ КРИСТАЛЛОВ ══ -->
+<div class="result-modal-overlay" id="no-crystals-modal" onclick="closeNoCrystalsOutside(event)">
+  <div class="result-modal">
+    <div class="result-modal-header">
+      <div class="result-modal-title">Недостаточно кристаллов 💎</div>
+      <button class="result-modal-close" onclick="closeNoCrystalsModal()">✕</button>
+    </div>
+    <div style="font-size:.95rem;line-height:1.7;color:var(--text);margin-bottom:20px">
+      У вас недостаточно кристаллов. Чтобы их получить, вы можете совершать покупки в сети Спар, либо получить за бонусы Спар.
+    </div>
+    <button class="sbtn" onclick="openShopModal()">Получить за бонусы Спар</button>
+  </div>
+</div>
+
+<!-- ══ МОДАЛ: МАГАЗИН ══ -->
+<div class="result-modal-overlay" id="shop-modal" onclick="closeShopOutside(event)">
+  <div class="result-modal">
+    <div class="result-modal-header">
+      <div class="result-modal-title">Обменять бонусы на 💎</div>
+      <button class="result-modal-close" onclick="closeShopModal()">✕</button>
+    </div>
+    <div class="shop-opts">
+      <button class="shop-opt" onclick="confirmExchange(20,50)">
+        <span class="shop-opt-crystals">20 💎</span>
+        <span class="shop-opt-bonus">за 50 бонусов Спар</span>
+      </button>
+      <button class="shop-opt" onclick="confirmExchange(50,100)">
+        <span class="shop-opt-crystals">50 💎</span>
+        <span class="shop-opt-bonus">за 100 бонусов Спар</span>
+      </button>
+      <button class="shop-opt" onclick="confirmExchange(100,180)">
+        <span class="shop-opt-crystals">100 💎</span>
+        <span class="shop-opt-bonus">за 180 бонусов Спар</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ МОДАЛ: ПОДТВЕРЖДЕНИЕ ══ -->
+<div class="result-modal-overlay" id="confirm-modal">
+  <div class="result-modal">
+    <div class="result-modal-header">
+      <div class="result-modal-title">Подтверждение обмена</div>
+    </div>
+    <div class="confirm-text" id="confirm-text"></div>
+    <div class="confirm-btns">
+      <button class="confirm-no" onclick="closeConfirmModal()">Нет</button>
+      <button class="confirm-yes" onclick="doExchange()">Да</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ МОДАЛ: ПОЗДРАВЛЕНИЕ ══ -->
+<div class="result-modal-overlay" id="congrats-modal" onclick="closeCongratsModal()">
+  <div class="result-modal" onclick="closeCongratsModal()">
+    <div class="congrats-text" id="congrats-text"></div>
+    <button class="sbtn" onclick="closeCongratsModal()">Отлично!</button>
   </div>
 </div>
 </body>
