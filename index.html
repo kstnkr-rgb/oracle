@@ -460,6 +460,7 @@ const MECHANICS = [
 ];
 
 let crystals = 50;
+let sparBonus = 150; // баланс бонусов Спар (тестовое значение)
 const crystalLedger = []; // {type:'spend'|'earn', amount, label, datetime}
 // бесплатные попытки: key = 'mechId_sub', value = кол-во оставшихся бесплатных
 const freeUses = { 'horoscope_Сегодня': 1, 'taro_Карта дня': 1 };
@@ -859,6 +860,7 @@ function openShopModal() {
   closeChoiceModal();
   const el = document.getElementById('spar-bonus-display');
   if (el) el.textContent = sparBonus;
+  renderSparShopOpts();
   document.getElementById('shop-modal').classList.add('open');
 }
 function closeShopModal() { document.getElementById('shop-modal').classList.remove('open'); }
@@ -892,9 +894,13 @@ function doExchange() {
   closeRubleShopModal();
   crystals += _pendingCrystals;
   updateCrystalDisplay();
+  if (_pendingSource === 'bonus') {
+    sparBonus -= _pendingBonus;
+    if (sparBonus < 0) sparBonus = 0;
+  }
   const label = _pendingSource === 'ruble'
     ? 'Покупка за ' + _pendingRubles + ' ₽'
-    : 'Обмен бонусов Спар';
+    : 'Покупка за ' + _pendingBonus + ' бонусов Спар';
   ledgerAdd('earn', _pendingCrystals, label);
   document.getElementById('congrats-text').textContent =
     'Поздравляем! Вам начислено ' + _pendingCrystals + ' 💎';
@@ -950,6 +956,35 @@ function closeChoiceModal() { document.getElementById('choice-modal').classList.
 function closeChoiceOutside(e) { if(e.target===document.getElementById('choice-modal')) closeChoiceModal(); }
 function closeRubleShopModal() { document.getElementById('ruble-shop-modal').classList.remove('open'); }
 function closeRubleShopOutside(e) { if(e.target===document.getElementById('ruble-shop-modal')) closeRubleShopModal(); }
+
+// ── БОНУСЫ СПАР: ДИНАМИЧЕСКИЕ КНОПКИ ──────────
+const SPAR_PACKAGES = [{gems:20,bonus:50},{gems:50,bonus:100},{gems:100,bonus:180}];
+
+function renderSparShopOpts() {
+  const container = document.getElementById('spar-shop-opts');
+  if (!container) return;
+  container.innerHTML = SPAR_PACKAGES.map(p => {
+    const canAfford = sparBonus >= p.bonus;
+    const bonusColor = canAfford ? 'var(--text2)' : '#f87171';
+    const onclick = canAfford
+      ? `confirmExchange(${p.gems},${p.bonus})`
+      : `showNotEnoughSpar(${p.gems},${p.bonus})`;
+    return `<button class="shop-opt" onclick="${onclick}">
+      <span class="shop-opt-crystals">${p.gems} 💎</span>
+      <span class="shop-opt-bonus" style="color:${bonusColor}">за ${p.bonus} бонусов Спар</span>
+    </button>`;
+  }).join('');
+}
+
+function showNotEnoughSpar(gems, bonus) {
+  document.getElementById('not-enough-spar-modal').classList.add('open');
+}
+function closeNotEnoughSparModal() {
+  document.getElementById('not-enough-spar-modal').classList.remove('open');
+}
+function closeNotEnoughSparOutside(e) {
+  if (e.target === document.getElementById('not-enough-spar-modal')) closeNotEnoughSparModal();
+}
 </script>
 
 <!-- ══ МОДАЛЬНОЕ ОКНО РЕЗУЛЬТАТА ══ -->
@@ -1034,20 +1069,7 @@ function closeRubleShopOutside(e) { if(e.target===document.getElementById('ruble
       <button class="result-modal-close" onclick="closeShopModal()">✕</button>
     </div>
     <div style="font-size:.85rem;color:var(--text2);margin-bottom:14px">Вам доступно <span id="spar-bonus-display" style="color:var(--accent);font-weight:800">150</span> бонусов Спар</div>
-    <div class="shop-opts">
-      <button class="shop-opt" onclick="confirmExchange(20,50)">
-        <span class="shop-opt-crystals">20 💎</span>
-        <span class="shop-opt-bonus">за 50 бонусов Спар</span>
-      </button>
-      <button class="shop-opt" onclick="confirmExchange(50,100)">
-        <span class="shop-opt-crystals">50 💎</span>
-        <span class="shop-opt-bonus">за 100 бонусов Спар</span>
-      </button>
-      <button class="shop-opt" onclick="confirmExchange(100,180)">
-        <span class="shop-opt-crystals">100 💎</span>
-        <span class="shop-opt-bonus">за 180 бонусов Спар</span>
-      </button>
-    </div>
+    <div class="shop-opts" id="spar-shop-opts"></div>
   </div>
 </div>
 
@@ -1125,6 +1147,23 @@ function closeRubleShopOutside(e) { if(e.target===document.getElementById('ruble
         <span class="shop-opt-crystals">100 💎</span>
         <span class="shop-opt-bonus">за 180 ₽</span>
       </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ МОДАЛ: НЕ ХВАТАЕТ БОНУСОВ СПАР ══ -->
+<div class="result-modal-overlay" id="not-enough-spar-modal" onclick="closeNotEnoughSparOutside(event)">
+  <div class="result-modal">
+    <div class="result-modal-header">
+      <div class="result-modal-title">Недостаточно бонусов 🛒</div>
+      <button class="result-modal-close" onclick="closeNotEnoughSparModal()">✕</button>
+    </div>
+    <div style="font-size:.95rem;line-height:1.7;color:var(--text);margin-bottom:20px">
+      У вас не хватает бонусов Спар на эту покупку. Купить с помощью KD Pay?
+    </div>
+    <div class="confirm-btns">
+      <button class="confirm-no" onclick="closeNotEnoughSparModal()">Закрыть</button>
+      <button class="confirm-yes" onclick="closeNotEnoughSparModal();closeShopModal();openRubleShopModal()">Да</button>
     </div>
   </div>
 </div>
