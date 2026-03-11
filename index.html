@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
-<title>Астрология</title>
+<title>Оракул</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Philosopher:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -167,340 +167,360 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
 .kvk{font-size:.74rem;color:var(--text2);font-weight:600;flex-shrink:0}
 .kvv{font-size:.85rem;font-weight:600;text-align:right;word-break:break-word}
 </style>
+<style>
+/* дополнительные стили */
+.profile-btn{position:absolute;right:20px;top:50%;transform:translateY(-50%);
+  width:38px;height:38px;border-radius:50%;background:var(--card);
+  border:1px solid var(--border);color:var(--text);font-size:1.1rem;
+  cursor:pointer;display:flex;align-items:center;justify-content:center}
+.nav{position:relative}
+.nav-right{margin-left:auto}
+
+.onboard-header{padding:56px 24px 28px;flex-shrink:0;text-align:center}
+.onboard-logo{font-size:3.2rem;margin-bottom:14px}
+.onboard-title{font-family:'Philosopher',serif;font-size:2rem;font-weight:700;margin-bottom:8px}
+.onboard-sub{color:var(--text2);font-size:.95rem;line-height:1.5}
+
+.mechanic-list{padding:8px 16px 40px;display:flex;flex-direction:column;gap:12px}
+.mech-btn{display:flex;align-items:center;gap:16px;padding:18px 20px;
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  cursor:pointer;transition:all .2s;text-align:left;width:100%;position:relative}
+.mech-btn:active{transform:scale(.98);background:#1e3566}
+.mech-icon{width:50px;height:50px;border-radius:14px;display:flex;align-items:center;
+  justify-content:center;font-size:1.5rem;flex-shrink:0}
+.mech-label{font-size:1rem;font-weight:800;color:var(--text)}
+.mech-arrow{margin-left:auto;color:var(--text2);font-size:1.2rem;flex-shrink:0}
+.mech-badge{position:absolute;top:12px;right:44px;width:22px;height:22px;border-radius:50%;
+  background:var(--accent);color:#fff;font-size:.7rem;font-weight:800;
+  display:flex;align-items:center;justify-content:center}
+
+.profile-info{padding:24px 20px 16px;background:var(--card);margin:0 16px 20px;
+  border-radius:var(--radius);border:1px solid var(--border)}
+.profile-row{display:flex;justify-content:space-between;align-items:center;
+  padding:10px 0;border-bottom:1px solid var(--border)}
+.profile-row:last-child{border-bottom:none}
+.profile-key{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text2)}
+.profile-val{font-size:.92rem;font-weight:700}
+.profile-section{padding:0 16px;margin-bottom:10px}
+.profile-section-title{font-size:.72rem;font-weight:800;text-transform:uppercase;
+  letter-spacing:.12em;color:var(--text2);margin-bottom:12px}
+
+.sub-list{padding:8px 16px 40px;display:flex;flex-direction:column;gap:12px}
+.sub-btn{padding:18px 20px;background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);cursor:pointer;transition:all .2s;text-align:center;
+  width:100%;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:800;color:var(--text)}
+.sub-btn:active{transform:scale(.98);background:#1e3566}
+
+.result-body{padding:20px 20px 40px;flex:1}
+.result-text{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:24px 20px;font-size:1rem;line-height:1.75;margin-bottom:16px}
+.share-btn{width:100%;padding:15px;border-radius:var(--radius);border:1px solid var(--border);
+  background:transparent;color:var(--text);font-family:'Nunito',sans-serif;
+  font-size:.95rem;font-weight:800;cursor:pointer;display:flex;align-items:center;
+  justify-content:center;gap:8px;transition:all .2s}
+.share-btn:active{background:var(--card)}
+
+.icon-c1{background:linear-gradient(135deg,#1e5bbd,#4a9eff)}
+.icon-c2{background:linear-gradient(135deg,#5b1ebd,#9f4aff)}
+.icon-c3{background:linear-gradient(135deg,#bd6e1e,#ff9f4a)}
+.icon-c4{background:linear-gradient(135deg,#1e8fbd,#4adeff)}
+.icon-c5{background:linear-gradient(135deg,#bd1e5b,#ff4a9f)}
+.icon-c6{background:linear-gradient(135deg,#166a4a,#3ecf8e)}
+.icon-c7{background:linear-gradient(135deg,#7a4a1e,#d4924a)}
+</style>
 </head>
 <body>
 
-<!-- ══════════════ ГЛАВНЫЙ ЭКРАН ══════════════ -->
-<div class="screen" id="s-home">
-  <div class="home-header">
-    <div class="home-logo">🔮</div>
-    <div class="home-title">Астрология</div>
-    <div class="home-sub">Натальная карта и персональный гороскоп</div>
-  </div>
-  <div class="menu">
-    <button class="menu-btn" onclick="goTo('natal')">
-      <div class="menu-icon blue">☉</div>
-      <div class="menu-text">
-        <div class="menu-label">Натальная карта</div>
-        <div class="menu-desc">Позиции планет, дома и аспекты по дате рождения</div>
-      </div>
-      <div class="menu-arrow">›</div>
-    </button>
-    <button class="menu-btn" onclick="goTo('horoscope')">
-      <div class="menu-icon green">☽</div>
-      <div class="menu-text">
-        <div class="menu-label">Гороскоп</div>
-        <div class="menu-desc">Астрологический прогноз на выбранную дату</div>
-      </div>
-      <div class="menu-arrow">›</div>
-    </button>
-  </div>
-</div>
-
-<!-- ══════════════ НАТАЛЬНАЯ КАРТА ══════════════ -->
-<div class="screen hidden" id="s-natal">
-  <div class="nav">
-    <button class="nav-back" onclick="back()">‹</button>
-    <div class="nav-title">Натальная карта</div>
+<!-- ══ ОНБОРДИНГ: ввод данных ══ -->
+<div class="screen" id="s-onboard">
+  <div class="onboard-header">
+    <div class="onboard-logo">🔮</div>
+    <div class="onboard-title">Оракул</div>
+    <div class="onboard-sub">Введите данные о рождении для персонального прогноза</div>
   </div>
   <div class="form-body">
     <div class="field">
-      <label>Тип расчёта</label>
-      <select id="n-type">
-        <option value="all">Полная карта (планеты + дома + аспекты)</option>
-        <option value="positions">Позиции планет</option>
-        <option value="house-cusps">Дома (куспиды)</option>
-        <option value="aspects">Аспекты</option>
-      </select>
-    </div>
-    <div class="field">
       <label>Дата рождения</label>
-      <input type="date" id="n-date"/>
+      <input type="date" id="ob-date"/>
     </div>
     <div class="field">
       <label>Время рождения</label>
-      <input type="time" id="n-time" value="12:00"/>
+      <input type="time" id="ob-time" value="12:00"/>
     </div>
     <div class="field">
       <label>Город рождения</label>
-      <input type="text" id="n-city" placeholder="Moscow"/>
+      <input type="text" id="ob-city" placeholder="Moscow"/>
     </div>
-    <div class="field">
-      <label>Страна (код)</label>
-      <input type="text" id="n-country" placeholder="RU" maxlength="2"/>
-    </div>
-    <div class="field">
-      <label>Имя</label>
-      <input type="text" id="n-name" placeholder="Имя (необязательно)"/>
-    </div>
-    <button class="sbtn" onclick="doNatal()">Рассчитать</button>
-    <div class="spin" id="sp-natal"><div class="orbit-ring"></div><p>Считываю звёздные координаты…</p></div>
-    <div class="eb" id="er-natal"></div>
-    <div class="res" id="res-natal"></div>
+    <button class="sbtn" onclick="saveProfile()">К прогнозам →</button>
+    <div class="eb" id="er-onboard"></div>
   </div>
 </div>
 
-<!-- ══════════════ ГОРОСКОП ══════════════ -->
-<div class="screen hidden" id="s-horoscope">
+<!-- ══ МЕХАНИКИ ══ -->
+<div class="screen hidden" id="s-mechanics">
+  <div class="nav" style="padding:52px 20px 16px">
+    <div class="nav-title">🔮 Оракул</div>
+    <button class="profile-btn nav-right" onclick="goTo('profile')" title="Профиль">👤</button>
+  </div>
+  <div class="mechanic-list" id="mech-list">
+    <button class="mech-btn" onclick="goTo('horoscope-sub')">
+      <div class="mech-icon icon-c1">☉</div>
+      <div class="mech-label">Гороскоп</div>
+      <div class="mech-arrow">›</div>
+    </button>
+    <button class="mech-btn" onclick="goTo('taro-sub')">
+      <div class="mech-icon icon-c2">🃏</div>
+      <div class="mech-label">Таро</div>
+      <div class="mech-arrow">›</div>
+    </button>
+    <button class="mech-btn" onclick="goTo('oracle-sub')">
+      <div class="mech-icon icon-c3">🔮</div>
+      <div class="mech-label">Совет Оракула</div>
+      <div class="mech-arrow">›</div>
+    </button>
+    <button class="mech-btn" onclick="goTo('ball-result')">
+      <div class="mech-icon icon-c4">🌐</div>
+      <div class="mech-label">Магический шар</div>
+      <div class="mech-arrow">›</div>
+    </button>
+    <button class="mech-btn" onclick="goTo('cookie-result')">
+      <div class="mech-icon icon-c5">🥠</div>
+      <div class="mech-label">Печенье с предсказанием</div>
+      <div class="mech-arrow">›</div>
+    </button>
+    <button class="mech-btn" onclick="goTo('numerology-result')">
+      <div class="mech-icon icon-c6">🔢</div>
+      <div class="mech-label">Нумерология</div>
+      <div class="mech-arrow">›</div>
+    </button>
+    <button class="mech-btn" onclick="goTo('runes-sub')">
+      <div class="mech-icon icon-c7">ᚱ</div>
+      <div class="mech-label">Руны</div>
+      <div class="mech-arrow">›</div>
+    </button>
+  </div>
+</div>
+
+<!-- ══ ПРОФИЛЬ ══ -->
+<div class="screen hidden" id="s-profile">
+  <div class="nav">
+    <button class="nav-back" onclick="back()">‹</button>
+    <div class="nav-title">Профиль</div>
+  </div>
+  <div class="profile-info" id="profile-info"></div>
+  <div class="profile-section">
+    <div class="profile-section-title">Ваши данные</div>
+    <div style="display:flex;flex-direction:column;gap:10px" id="profile-mech-list">
+      <button class="mech-btn" onclick="goTo('horoscope-sub')">
+        <div class="mech-icon icon-c1">☉</div>
+        <div class="mech-label">Гороскоп</div>
+        <div class="mech-badge" id="pb-horoscope" style="display:none"></div>
+        <div class="mech-arrow">›</div>
+      </button>
+      <button class="mech-btn" onclick="goTo('taro-sub')">
+        <div class="mech-icon icon-c2">🃏</div>
+        <div class="mech-label">Таро</div>
+        <div class="mech-badge" id="pb-taro" style="display:none"></div>
+        <div class="mech-arrow">›</div>
+      </button>
+      <button class="mech-btn" onclick="goTo('oracle-sub')">
+        <div class="mech-icon icon-c3">🔮</div>
+        <div class="mech-label">Совет Оракула</div>
+        <div class="mech-badge" id="pb-oracle" style="display:none"></div>
+        <div class="mech-arrow">›</div>
+      </button>
+      <button class="mech-btn" onclick="goTo('ball-result')">
+        <div class="mech-icon icon-c4">🌐</div>
+        <div class="mech-label">Магический шар</div>
+        <div class="mech-badge" id="pb-ball" style="display:none"></div>
+        <div class="mech-arrow">›</div>
+      </button>
+      <button class="mech-btn" onclick="goTo('cookie-result')">
+        <div class="mech-icon icon-c5">🥠</div>
+        <div class="mech-label">Печенье с предсказанием</div>
+        <div class="mech-badge" id="pb-cookie" style="display:none"></div>
+        <div class="mech-arrow">›</div>
+      </button>
+      <button class="mech-btn" onclick="goTo('numerology-result')">
+        <div class="mech-icon icon-c6">🔢</div>
+        <div class="mech-label">Нумерология</div>
+        <div class="mech-badge" id="pb-numerology" style="display:none"></div>
+        <div class="mech-arrow">›</div>
+      </button>
+      <button class="mech-btn" onclick="goTo('runes-sub')">
+        <div class="mech-icon icon-c7">ᚱ</div>
+        <div class="mech-label">Руны</div>
+        <div class="mech-badge" id="pb-runes" style="display:none"></div>
+        <div class="mech-arrow">›</div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ГОРОСКОП: выбор периода ══ -->
+<div class="screen hidden" id="s-horoscope-sub">
   <div class="nav">
     <button class="nav-back" onclick="back()">‹</button>
     <div class="nav-title">Гороскоп</div>
   </div>
-  <div class="form-body">
-    <div class="field">
-      <label>Дата рождения</label>
-      <input type="date" id="h-bdate"/>
-    </div>
-    <div class="field">
-      <label>Дата прогноза</label>
-      <input type="date" id="h-date"/>
-    </div>
-    <div class="field">
-      <label>Традиция</label>
-      <select id="h-tradition">
-        <option value="universal">Универсальная</option>
-        <option value="psychological">Психологическая</option>
-        <option value="classical">Классическая</option>
-      </select>
-    </div>
-    <button class="sbtn" onclick="doHoroscope()">Получить гороскоп</button>
-    <div class="spin" id="sp-horoscope"><div class="orbit-ring"></div><p>Читаю звёздные послания…</p></div>
-    <div class="eb" id="er-horoscope"></div>
-    <div class="res" id="res-horoscope"></div>
+  <div class="sub-list">
+    <button class="sub-btn" onclick="showResult('horoscope','Сегодня')">Сегодня</button>
+    <button class="sub-btn" onclick="showResult('horoscope','Завтра')">Завтра</button>
+    <button class="sub-btn" onclick="showResult('horoscope','Неделя')">Неделя</button>
+    <button class="sub-btn" onclick="showResult('horoscope','Месяц')">Месяц</button>
+    <button class="sub-btn" onclick="showResult('horoscope','Год')">Год</button>
+  </div>
+</div>
+
+<!-- ══ ТАРО ══ -->
+<div class="screen hidden" id="s-taro-sub">
+  <div class="nav">
+    <button class="nav-back" onclick="back()">‹</button>
+    <div class="nav-title">Таро</div>
+  </div>
+  <div class="sub-list">
+    <button class="sub-btn" onclick="showResult('taro','Карта дня')">Карта дня</button>
+    <button class="sub-btn" onclick="showResult('taro','Расклад на 3 карты')">Расклад на 3 карты</button>
+  </div>
+</div>
+
+<!-- ══ СОВЕТ ОРАКУЛА ══ -->
+<div class="screen hidden" id="s-oracle-sub">
+  <div class="nav">
+    <button class="nav-back" onclick="back()">‹</button>
+    <div class="nav-title">Совет Оракула</div>
+  </div>
+  <div class="sub-list">
+    <button class="sub-btn" onclick="showResult('oracle','Отношения')">Отношения</button>
+    <button class="sub-btn" onclick="showResult('oracle','Работа')">Работа</button>
+    <button class="sub-btn" onclick="showResult('oracle','Самопознание')">Самопознание</button>
+    <button class="sub-btn" onclick="showResult('oracle','Общение')">Общение</button>
+  </div>
+</div>
+
+<!-- ══ РУНЫ ══ -->
+<div class="screen hidden" id="s-runes-sub">
+  <div class="nav">
+    <button class="nav-back" onclick="back()">‹</button>
+    <div class="nav-title">Руны</div>
+  </div>
+  <div class="sub-list">
+    <button class="sub-btn" onclick="showResult('runes','Одна руна')">Одна руна</button>
+    <button class="sub-btn" onclick="showResult('runes','Три руны')">Три руны</button>
+    <button class="sub-btn" onclick="showResult('runes','Руна ситуации')">Руна ситуации</button>
+  </div>
+</div>
+
+<!-- ══ РЕЗУЛЬТАТ ══ -->
+<div class="screen hidden" id="s-result">
+  <div class="nav">
+    <button class="nav-back" onclick="back()">‹</button>
+    <div class="nav-title" id="result-title">Результат</div>
+  </div>
+  <div class="result-body">
+    <div class="result-text" id="result-text">Тестовый текст</div>
+    <button class="share-btn" onclick="doShare()">📤 Поделиться</button>
+  </div>
+</div>
+
+<!-- ══ Шаблонные экраны для прямого перехода ══ -->
+<div class="screen hidden" id="s-ball-result">
+  <div class="nav">
+    <button class="nav-back" onclick="back()">‹</button>
+    <div class="nav-title">Магический шар</div>
+  </div>
+  <div class="result-body">
+    <div class="result-text" id="ball-text">Тестовый текст</div>
+    <button class="share-btn" onclick="doShare()">📤 Поделиться</button>
+  </div>
+</div>
+
+<div class="screen hidden" id="s-cookie-result">
+  <div class="nav">
+    <button class="nav-back" onclick="back()">‹</button>
+    <div class="nav-title">Печенье с предсказанием</div>
+  </div>
+  <div class="result-body">
+    <div class="result-text" id="cookie-text">Тестовый текст</div>
+    <button class="share-btn" onclick="doShare()">📤 Поделиться</button>
+  </div>
+</div>
+
+<div class="screen hidden" id="s-numerology-result">
+  <div class="nav">
+    <button class="nav-back" onclick="back()">‹</button>
+    <div class="nav-title">Нумерология</div>
+  </div>
+  <div class="result-body">
+    <div class="result-text" id="numerology-text">Тестовый текст</div>
+    <button class="share-btn" onclick="doShare()">📤 Поделиться</button>
   </div>
 </div>
 
 <script>
-// ── НАВИГАЦИЯ ──────────────────────────────────
-let current='home';
-function goTo(screen){
-  document.getElementById('s-'+current).classList.add('hidden');
-  document.getElementById('s-'+screen).classList.remove('hidden');
-  document.getElementById('s-'+screen).scrollTop=0;
-  current=screen;
+// ── НАВИГАЦИЯ ──────────────────────────────────────────────
+const history_stack = [];
+let current = 'onboard';
+
+function goTo(screen) {
+  history_stack.push(current);
+  _show(screen);
 }
-function back(){goTo('home')}
+function back() {
+  if (history_stack.length === 0) return;
+  const prev = history_stack.pop();
+  _show(prev);
+}
+function _show(screen) {
+  document.getElementById('s-' + current).classList.add('hidden');
+  const next = document.getElementById('s-' + screen);
+  next.classList.remove('hidden');
+  next.scrollTop = 0;
+  current = screen;
+}
 
-// ── ДАННЫЕ ────────────────────────────────────
-const SYM={Sun:'☉',Moon:'☽',Mercury:'☿',Venus:'♀',Mars:'♂',Jupiter:'♃',Saturn:'♄',Uranus:'♅',Neptune:'♆',Pluto:'♇',Chiron:'⚷',Mean_Node:'☊',True_Node:'☊',Ascendant:'Asc',Medium_Coeli:'MC'};
-const ROMAN=['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
-const SIGN_RU={Ari:'Овен',Tau:'Телец',Gem:'Близнецы',Can:'Рак',Leo:'Лев',Vir:'Дева',Lib:'Весы',Sco:'Скорпион',Sag:'Стрелец',Cap:'Козерог',Aqu:'Водолей',Pis:'Рыбы'};
-const MOON_EMOJI={'New Moon':'🌑','Waxing Crescent':'🌒','First Quarter':'🌓','Waxing Gibbous':'🌔','Full Moon':'🌕','Waning Gibbous':'🌖','Last Quarter':'🌗','Waning Crescent':'🌘'};
+// ── ПРОФИЛЬ ───────────────────────────────────────────────
+let profile = {};
 
-function birthSign(dateStr){
-  if(!dateStr)return'Ari';
-  const[,m,d]=dateStr.split('-').map(Number);
-  const cuts=[[3,21,'Ari'],[4,20,'Tau'],[5,21,'Gem'],[6,21,'Can'],[7,23,'Leo'],[8,23,'Vir'],[9,23,'Lib'],[10,23,'Sco'],[11,22,'Sag'],[12,22,'Cap'],[1,20,'Aqu'],[2,19,'Pis']];
-  for(let i=0;i<cuts.length;i++){
-    const[cm,cd,s]=cuts[i];const[nm,nd]=cuts[(i+1)%cuts.length];
-    if(m===cm&&d>=cd)return s;
-    if(m===nm&&d<nd)return s;
+function saveProfile() {
+  const date = document.getElementById('ob-date').value;
+  const time = document.getElementById('ob-time').value;
+  const city = document.getElementById('ob-city').value.trim();
+  if (!date || !city) {
+    const e = document.getElementById('er-onboard');
+    e.textContent = 'Заполните дату и город';
+    e.classList.add('on');
+    return;
   }
-  return'Cap';
+  profile = { date, time, city };
+  renderProfile();
+  goTo('mechanics');
 }
 
-function g(id){return(document.getElementById(id)?.value||'').trim()}
-function subj(date,time,city,co,name){
-  const[y,mo,d]=date.split('-').map(Number);
-  const[h,mi]=(time||'12:00').split(':').map(Number);
-  return{name:name||'Subject',birth_data:{year:y,month:mo,day:d,hour:h,minute:mi,second:0,city,country_code:co.toUpperCase()}};
-}
-const OPT={house_system:'P',language:'ru',tradition:'universal',detail_level:'standard',zodiac_type:'Tropic',
-  active_points:['Sun','Moon','Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto','Chiron','Mean_Node','Ascendant','Medium_Coeli'],precision:2};
-
-async function api(path,payload,extra={}){
-  const r=await fetch('/proxy',{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({apiPath:path,payload,...extra})});
-  const txt=await r.text();
-  let d;try{d=JSON.parse(txt)}catch(e){throw new Error('Ответ сервера: '+txt.substring(0,200))}
-  if(!r.ok){const m=d.detail||d.error||d.message;throw new Error(typeof m==='string'?m:JSON.stringify(m).substring(0,200))}
-  return d;
+function renderProfile() {
+  const el = document.getElementById('profile-info');
+  el.innerHTML = `
+    <div class="profile-row"><span class="profile-key">Дата рождения</span><span class="profile-val">${profile.date||'—'}</span></div>
+    <div class="profile-row"><span class="profile-key">Время рождения</span><span class="profile-val">${profile.time||'—'}</span></div>
+    <div class="profile-row"><span class="profile-key">Город</span><span class="profile-val">${profile.city||'—'}</span></div>
+  `;
 }
 
-function spin(id,on){document.getElementById('sp-'+id).classList.toggle('on',on)}
-function err(id,msg){const e=document.getElementById('er-'+id);e.textContent=msg;e.classList.toggle('on',!!msg)}
-async function run(id,fn){
-  err(id,'');spin(id,true);
-  document.getElementById('res-'+id).classList.remove('on');
-  const btn=document.querySelector('#s-'+id+' .sbtn');if(btn)btn.disabled=true;
-  try{await fn()}catch(e){err(id,'Ошибка: '+e.message)}
-  finally{spin(id,false);if(btn)btn.disabled=false}
+// ── РЕЗУЛЬТАТ ─────────────────────────────────────────────
+function showResult(mechanic, sub) {
+  document.getElementById('result-title').textContent = sub;
+  document.getElementById('result-text').textContent = 'Тестовый текст';
+  goTo('result');
 }
 
-document.querySelectorAll('input[maxlength="2"]').forEach(el=>el.addEventListener('input',()=>{el.value=el.value.toUpperCase()}));
-
-// ── НАТАЛЬНАЯ КАРТА ────────────────────────────
-async function doNatal(){await run('natal',async()=>{
-  const type=g('n-type')||'all',date=g('n-date'),city=g('n-city'),co=g('n-country');
-  if(!date||!city||!co)throw new Error('Заполните дату, город и страну');
-  const s=subj(date,g('n-time'),city,co,g('n-name'));
-  let data;
-  if(type==='all'){
-    const[pos,houses,asp]=await Promise.all([
-      api('/api/v3/data/positions',{subject:s,options:OPT}),
-      api('/api/v3/data/house-cusps',{subject:s,options:OPT}),
-      api('/api/v3/data/aspects',{subject:s,options:OPT})
-    ]);
-    data={positions:pos,houses:houses,aspects:asp};
-  }else{
-    data=await api('/api/v3/data/'+type,{subject:s,options:OPT});
+function doShare() {
+  const text = document.getElementById('result-text')?.textContent || 'Тестовый текст';
+  if (navigator.share) {
+    navigator.share({ text }).catch(() => {});
+  } else {
+    navigator.clipboard?.writeText(text).then(() => alert('Скопировано!')).catch(() => {});
   }
-  showNatal(data);
-})}
-
-// ── ГОРОСКОП ────────────────────────────────────
-async function doHoroscope(){await run('horoscope',async()=>{
-  const bdate=g('h-bdate');
-  if(!bdate)throw new Error('Укажите дату рождения');
-  const sign=birthSign(bdate);
-  const dateVal=g('h-date')||new Date().toISOString().slice(0,10);
-  const tradition=document.getElementById('h-tradition').value;
-  const path='/api/v3/pdf/horoscope/data/'+sign+'/'+dateVal+'?language=ru&tradition='+tradition;
-  const data=await api(path,{},{method:'GET'});
-  showHoroscope(data);
-})}
-
-// ── РЕНДЕР НАТАЛЬНОЙ КАРТЫ ─────────────────────
-function showNatal(data){
-  const T=[];
-  if(data.positions||data.houses||data.aspects){
-    const pos=data.positions?.data||data.positions;
-    const hd=data.houses?.data||data.houses;
-    const asd=data.aspects?.data||data.aspects;
-    if(pos){const pl=plArr(pos);if(pl.length)T.push({l:'Планеты',h:rPl(pl)})}
-    if(hd){const hs=hsArr(hd);if(hs.length)T.push({l:'Дома',h:rH(hs)})}
-    if(asd){const as=asd.aspects;if(as?.length)T.push({l:'Аспекты',h:rA(as)})}
-  }else{
-    const inner=data.data||data;
-    const pl=plArr(inner);if(pl.length)T.push({l:'Планеты',h:rPl(pl)});
-    const hs=hsArr(inner);if(hs.length)T.push({l:'Дома',h:rH(hs)});
-    const as=inner.aspects;if(as?.length)T.push({l:'Аспекты',h:rA(as)});
-  }
-  if(!T.length)T.push({l:'Данные',h:rKV(flat(data.data||data))});
-  T.push({l:'JSON',h:'<pre class="rjson">'+JSON.stringify(data,null,2)+'</pre>'});
-  buildRes('natal',T);
 }
-
-// ── РЕНДЕР ГОРОСКОПА ───────────────────────────
-function showHoroscope(data){
-  const T=[{l:'Гороскоп',h:rHoroData(data.data||data)}];
-  T.push({l:'JSON',h:'<pre class="rjson">'+JSON.stringify(data,null,2)+'</pre>'});
-  buildRes('horoscope',T);
-}
-
-function buildRes(id,T){
-  const el=document.getElementById('res-'+id);
-  el.innerHTML='';
-  const tabs=document.createElement('div');tabs.className='rtabs';
-  T.forEach((t,i)=>{
-    const b=document.createElement('button');b.className='rtab'+(i===0?' on':'');b.textContent=t.l;
-    b.onclick=()=>{el.querySelectorAll('.rtab').forEach(x=>x.classList.remove('on'));
-      el.querySelectorAll('.rtc').forEach(x=>x.classList.remove('on'));
-      b.classList.add('on');el.querySelector('#rtc_'+id+i).classList.add('on')};
-    tabs.appendChild(b);
-  });
-  el.appendChild(tabs);
-  T.forEach((t,i)=>{
-    const dv=document.createElement('div');dv.className='rtc'+(i===0?' on':'');dv.id='rtc_'+id+i;dv.innerHTML=t.h;el.appendChild(dv);
-  });
-  el.classList.add('on');
-  setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'start'}),100);
-}
-
-// ── ВСПОМОГАТЕЛЬНЫЕ ────────────────────────────
-function plArr(obj){
-  if(!obj)return[];
-  const pl=obj.positions||obj.planets||obj.celestial_bodies;
-  if(Array.isArray(pl))return pl;
-  if(pl&&typeof pl==='object')return Object.entries(pl).map(([n,v])=>({name:n,...v}));
-  return[];
-}
-function hsArr(obj){
-  if(!obj)return[];
-  const hs=obj.houses||obj.house_cusps;
-  if(Array.isArray(hs))return hs;
-  if(hs&&typeof hs==='object')return Object.values(hs);
-  return[];
-}
-function sru(s){return SIGN_RU[s]||s||''}
-function rPl(list){
-  return '<div class="plist">'+list.map(p=>{
-    const sym=SYM[p.name]||'★';
-    const sign=sru(p.sign||p.zodiac_sign);
-    const deg=p.degree!=null?Number(p.degree).toFixed(1)+'°':p.absolute_longitude!=null?Number(p.absolute_longitude).toFixed(1)+'°':'';
-    const house=p.house!=null?' · д.'+p.house:'';
-    const retro=(p.retrograde||p.is_retrograde)?'<span class="retro">℞</span>':'';
-    return`<div class="prow"><div class="psym">${sym}</div><div class="pinfo"><div class="pname">${p.name||''}${retro}</div><div class="psign">${sign}${house}</div></div><div class="pdeg">${deg}</div></div>`;
-  }).join('')+'</div>';
-}
-function rH(list){
-  return '<div class="hgrid">'+list.map((x,i)=>{
-    const sign=sru(x.sign||x.zodiac_sign);
-    const deg=x.degree!=null?Number(x.degree).toFixed(1)+'°':x.absolute_longitude!=null?Number(x.absolute_longitude).toFixed(1)+'°':'';
-    return`<div class="hcell"><div class="hnum">Дом ${ROMAN[i]||i+1}</div><div class="hsign">${sign}</div><div class="hdeg">${deg}</div></div>`;
-  }).join('')+'</div>';
-}
-function rA(asp){
-  return '<div class="alist">'+asp.map(a=>{
-    const type=(a.aspect||a.type||a.name||'').toLowerCase();
-    const cls=['trine','sextile','conjunction','opposition','square'].includes(type)?type:'other';
-    const p1=a.p1_name||a.planet1||a.body1||'';
-    const p2=a.p2_name||a.planet2||a.body2||'';
-    const orb=a.orb!=null?Number(a.orb).toFixed(1)+'°':'';
-    return`<div class="arow"><span class="abadge ${cls}">${type}</span><span class="apair">${p1} — ${p2}</span><span class="aorb">${orb}</span></div>`;
-  }).join('')+'</div>';
-}
-function rKV(obj){return'<div class="kvlist">'+Object.entries(obj).map(([k,v])=>`<div class="kvrow"><span class="kvk">${k}</span><span class="kvv">${v}</span></div>`).join('')+'</div>'}
-function flat(obj,p=''){
-  const r={};if(!obj||typeof obj!=='object')return r;
-  Object.entries(obj).forEach(([k,v])=>{
-    const key=p?p+'.'+k:k;
-    if(v&&typeof v==='object'&&!Array.isArray(v))Object.assign(r,flat(v,key));
-    else if(!Array.isArray(v)&&v!=null)r[key]=String(v);
-  });return r;
-}
-function rHoroData(d){
-  const stars=d.overall_rating?'★'.repeat(d.overall_rating)+'☆'.repeat(5-d.overall_rating):'';
-  const signName=SIGN_RU[d.sign]||d.sign||'';
-  let h='<div class="horo-card">';
-  h+=`<div class="horo-header"><div class="horo-title">${signName}${d.date?' · '+d.date:''}</div>${stars?'<div class="horo-stars">'+stars+'</div>':''}</div>`;
-  if(d.overall_theme)h+=`<div class="horo-theme">${d.overall_theme}</div>`;
-  const areas=[
-    {k:'love',icon:'♀',label:'Любовь и отношения'},
-    {k:'career',icon:'♃',label:'Карьера'},
-    {k:'health',icon:'☽',label:'Здоровье'},
-    {k:'finance',icon:'☿',label:'Финансы'},
-    {k:'spirituality',icon:'✦',label:'Духовность'},
-    {k:'family',icon:'♄',label:'Семья'},
-  ];
-  const filled=areas.filter(a=>d[a.k]||d[a.k+'.prediction']||d[a.k+'.theme']);
-  if(filled.length){
-    h+='<div class="horo-areas">';
-    filled.forEach(a=>{
-      const text=d[a.k]||d[a.k+'.prediction']||d[a.k+'.theme']||'';
-      h+=`<div class="horo-area"><div class="horo-area-title">${a.icon} ${a.label}</div><div class="horo-area-text">${text}</div></div>`;
-    });
-    h+='</div>';
-  }
-  const moonPhase=d['moon.phase']||d.moon_phase||'';
-  const moonSign=d['moon.sign']||d.moon_sign||'';
-  const moonPred=d['moon.prediction']||'';
-  if(moonPhase||moonSign){
-    const emoji=MOON_EMOJI[moonPhase]||d['moon.emoji']||'🌙';
-    h+=`<div class="horo-moon"><div class="horo-moon-emoji">${emoji}</div><div><div class="horo-moon-phase">${moonPhase}${moonSign?' · '+moonSign:''}</div>${moonPred?'<div class="horo-moon-pred">'+moonPred+'</div>':''}</div></div>`;
-  }
-  const lucky=[];
-  if(d['lucky_elements.day_ruler'])lucky.push('Правитель дня: <span>'+d['lucky_elements.day_ruler']+'</span>');
-  if(d['lucky_elements.number'])lucky.push('Число: <span>'+d['lucky_elements.number']+'</span>');
-  if(d['lucky_elements.color'])lucky.push('Цвет: <span>'+d['lucky_elements.color']+'</span>');
-  if(lucky.length)h+='<div class="horo-lucky">'+lucky.map(l=>'<div class="horo-lucky-item">'+l+'</div>').join('')+'</div>';
-  if(!filled.length&&!moonPhase&&!d.overall_theme)h='<div class="horo-card">'+rKV(flat(d))+'</div>';
-  else h+='</div>';
-  return h;
-}
-
-// дата по умолчанию
-document.getElementById('h-date').value=new Date().toISOString().slice(0,10);
 </script>
 </body>
 </html>
