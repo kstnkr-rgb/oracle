@@ -725,6 +725,7 @@ function createAndShow(mid, mechLabel, sub) {
   if (mid === 'ball')   { if (!spendCrystals(mid, sub)) return; openBallModal(); return; }
   if (mid === 'cookie') { openCookieModal(); return; }
   if (mid === 'horoscope') { createHoroscope(mechLabel, sub); return; }
+  if (mid === 'taro') { createTaro(mechLabel, sub); return; }
   if (!spendCrystals(mid, sub)) return;
   const dt = nowStr();
   const key = mid + (sub ? '_'+sub : '');
@@ -865,6 +866,195 @@ function formatHoroscope(d, sub) {
   }
 
   html += '<div style="margin-top:4px">' + origin + '</div>';
+  return html;
+}
+
+// ── ТАРО: API ─────────────────────────────────
+async function createTaro(mechLabel, sub) {
+  if (!spendCrystals('taro', sub)) return;
+  const title = mechLabel + ' · ' + sub;
+  openResultModal(title, '⏳ Загружаю расклад…');
+  try {
+    const p = profile;
+    const [y,mo,day] = (p.date||'1990-01-01').split('-').map(Number);
+    const [h,mi] = (p.time||'12:00').split(':').map(Number);
+    const cityName = p.city || 'Moscow';
+    const countryCode = p.countryCode || 'RU';
+    const subject = {
+      name: 'User',
+      birth_data: { year:y, month:mo, day:day, hour:h, minute:mi, second:0,
+        city: cityName, country_code: countryCode }
+    };
+
+    let html = '';
+
+    if (sub === 'Карта дня') {
+      // Шаг 1: получить карту дня
+      const dailyResp = await fetch('/proxy', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ apiPath: '/api/v3/tarot/cards/daily', method: 'GET' })
+      });
+      const dailyJson = await dailyResp.json();
+      if (!dailyJson.success) throw new Error(dailyJson.error?.message || 'Ошибка получения карты');
+      const cardId = dailyJson.card?.id;
+      if (!cardId) throw new Error('Карта не получена');
+
+      // Шаг 2: получить отчёт по карте
+      const reportResp = await fetch('/proxy', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          apiPath: '/api/v3/tarot/reports/single',
+          payload: { subject, card_id: cardId, language: 'ru', tradition: 'universal' }
+        })
+      });
+      const reportJson = await reportResp.json();
+      const data = reportJson.data || reportJson;
+      html = formatTaroSingle(dailyJson.card, data);
+
+    } else if (sub === 'Расклад на 3 карты') {
+      const resp = await fetch('/proxy', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          apiPath: '/api/v3/tarot/reports/three-card',
+          payload: { subject, language: 'ru', tradition: 'universal' }
+        })
+      });
+      const json = await resp.json();
+      if (!json.success) throw new Error(json.error?.message || 'Ошибка API');
+      html = formatTaroThree(json.data || json);
+    }
+
+    document.getElementById('rmt-text').innerHTML = html;
+    const dt = nowStr();
+    const key = 'taro_' + sub;
+    if (!history[key]) history[key] = [];
+    history[key].push({ datetime: dt, title, text: html });
+  } catch(e) {
+    document.getElementById('rmt-text').textContent = '❌ Ошибка: ' + e.message;
+  }
+}
+
+const ARCANA_RU = { minor: 'Младший аркан', major: 'Старший аркан' };
+const SUIT_RU = { cups: 'Кубки', wands: 'Жезлы', swords: 'Мечи', pentacles: 'Пентакли' };
+const ORIENTATION_RU = { upright: 'Прямое положение', reversed: 'Перевёрнутое положение' };
+const ELEMENT_RU = { Water:'Вода', Fire:'Огонь', Air:'Воздух', Earth:'Земля' };
+
+function taroCardBadge(card) {
+  if (!card) return '';
+  const arcana = ARCANA_RU[card.arcana] || card.arcana || '';
+  const suit = card.suit ? (SUIT_RU[card.suit] || card.suit) : '';
+  const orientation = ORIENTATION_RU[card.orientation] || '';
+  const element = card.element ? (ELEMENT_RU[card.element] || card.element) : '';
+  const keywords = Array.isArray(card.keywords) && card.keywords.length
+    ? card.keywords.slice(0,4).join(', ') : '';
+  let html = '<div style="background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.25);border-radius:10px;padding:13px 15px;margin-bottom:14px">';
+  html += '<div style="font-size:1.1rem;font-weight:800;color:#c084fc;margin-bottom:6px">' + (card.name || '') + '</div>';
+  html += '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px">';
+  if (arcana) html += '<span style="font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(167,139,250,.15);color:#c084fc">' + arcana + '</span>';
+  if (suit) html += '<span style="font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(74,158,255,.12);color:#4a9eff">' + suit + '</span>';
+  if (element) html += '<span style="font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(62,207,142,.1);color:#3ecf8e">' + element + '</span>';
+  if (orientation) html += '<span style="font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(245,200,66,.1);color:#f5c842">' + orientation + '</span>';
+  html += '</div>';
+  if (keywords) html += '<div style="font-size:.8rem;color:var(--text2)">Ключевые слова: ' + keywords + '</div>';
+  html += '</div>';
+  return html;
+}
+
+function formatTaroSingle(card, data) {
+  const p = profile;
+  const dF = p.date ? p.date.split('-').reverse().join('.') : '—';
+  const origin = '<span style="font-size:.75rem;color:var(--text2)">Исходная информация: ' + (p.city||'—') + ', ' + dF + '</span>';
+
+  let html = '<div style="font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#c084fc;margin-bottom:10px">🃏 Карта дня</div>';
+  html += taroCardBadge(card);
+
+  // Интерпретация из daily
+  if (data && (data.interpretation || data.report)) {
+    const interp = data.interpretation || data.report?.interpretation || '';
+    if (interp) {
+      html += '<div style="font-size:.9rem;line-height:1.7;margin-bottom:14px;padding:13px 15px;background:rgba(74,158,255,.07);border-left:3px solid #4a9eff;border-radius:0 10px 10px 0">' + interp + '</div>';
+    }
+  }
+
+  // Сферы жизни из отчёта
+  const report = data?.report || data;
+  if (report?.life_areas && report.life_areas.length) {
+    html += '<div style="margin-bottom:14px">';
+    html += '<div style="font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:8px">Сферы жизни</div>';
+    report.life_areas.forEach(area => {
+      html += '<div style="margin-bottom:10px;padding:10px 12px;background:var(--card);border-radius:10px;border:1px solid var(--border)">';
+      html += '<b style="font-size:.88rem">' + (area.title || area.area || '') + '</b>';
+      html += '<div style="font-size:.84rem;color:var(--text2);line-height:1.55;margin-top:4px">' + (area.prediction || area.text || '') + '</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+  }
+
+  // Советы
+  if (report?.advice || report?.message) {
+    html += '<div style="background:rgba(245,200,66,.07);border:1px solid rgba(245,200,66,.18);border-radius:10px;padding:12px 14px;margin-bottom:14px">';
+    html += '<div style="font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#f5c842;margin-bottom:6px">Совет</div>';
+    html += '<div style="font-size:.87rem;line-height:1.6">' + (report.advice || report.message) + '</div>';
+    html += '</div>';
+  }
+
+  html += '<div style="margin-top:6px">' + origin + '</div>';
+  return html;
+}
+
+function formatTaroThree(data) {
+  const p = profile;
+  const dF = p.date ? p.date.split('-').reverse().join('.') : '—';
+  const origin = '<span style="font-size:.75rem;color:var(--text2)">Исходная информация: ' + (p.city||'—') + ', ' + dF + '</span>';
+
+  const positionNames = ['Прошлое', 'Настоящее', 'Будущее'];
+  let html = '<div style="font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#c084fc;margin-bottom:12px">🃏 Расклад на 3 карты</div>';
+
+  // Синтез
+  if (data.synthesis) {
+    html += '<div style="font-size:.95rem;font-weight:700;line-height:1.65;margin-bottom:16px;color:var(--text)">' + data.synthesis + '</div>';
+  }
+
+  // Карты
+  const cards = data.cards || [];
+  cards.forEach((c, i) => {
+    const card = c.card || c;
+    const posLabel = c.position_name || c.position || positionNames[i] || ('Карта ' + (i+1));
+    html += '<div style="margin-bottom:14px">';
+    html += '<div style="font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin-bottom:6px">' + posLabel + '</div>';
+    html += taroCardBadge(card);
+    const interp = c.interpretation || c.reading || card.interpretation || '';
+    if (interp) {
+      html += '<div style="font-size:.87rem;line-height:1.65;color:var(--text2);margin-bottom:6px">' + interp + '</div>';
+    }
+    html += '</div>';
+  });
+
+  // Советы
+  if (data.suggestions && data.suggestions.length) {
+    html += '<div style="background:rgba(245,200,66,.07);border:1px solid rgba(245,200,66,.18);border-radius:10px;padding:12px 14px;margin-bottom:14px">';
+    html += '<div style="font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#f5c842;margin-bottom:8px">Советы</div>';
+    data.suggestions.forEach(s => {
+      const txt = typeof s === 'string' ? s : (s.text || s.suggestion || '');
+      if (txt) html += '<div style="font-size:.85rem;color:var(--text2);line-height:1.55;margin-bottom:5px">• ' + txt + '</div>';
+    });
+    html += '</div>';
+  }
+
+  // Отчёт
+  if (data.report) {
+    const r = data.report;
+    if (r.overall || r.summary || r.interpretation) {
+      html += '<div style="font-size:.87rem;line-height:1.65;padding:12px 14px;background:rgba(74,158,255,.07);border-left:3px solid #4a9eff;border-radius:0 10px 10px 0;margin-bottom:14px">';
+      html += r.overall || r.summary || r.interpretation;
+      html += '</div>';
+    }
+  }
+
+  html += '<div style="margin-top:6px">' + origin + '</div>';
   return html;
 }
 
