@@ -947,6 +947,32 @@ const ELEMENT_RU = { Water:'Вода', Fire:'Огонь', Air:'Воздух', Ea
 const POSITION_RU = { Past:'Прошлое', Present:'Настоящее', Future:'Будущее',
   'Card 1':'Карта 1', 'Card 2':'Карта 2', 'Card 3':'Карта 3' };
 
+// Маппинг id карты → URL изображения (Rider-Waite, public domain)
+const MAJOR_ARCANA_NUM = {
+  the_fool:0, the_magician:1, the_high_priestess:2, the_empress:3, the_emperor:4,
+  the_hierophant:5, the_lovers:6, the_chariot:7, strength:8, the_hermit:9,
+  wheel_of_fortune:10, justice:11, the_hanged_man:12, death:13, temperance:14,
+  the_devil:15, the_tower:16, the_star:17, the_moon:18, the_sun:19,
+  judgement:20, the_world:21
+};
+function tarotImageUrl(cardId) {
+  if (!cardId) return null;
+  const id = cardId.toLowerCase().replace(/-/g,'_');
+  const base = 'https://ishtarcollective.blob.core.windows.net/rider-waite-tarot/';
+  // Старший аркан
+  if (id in MAJOR_ARCANA_NUM) {
+    return base + 'major-' + String(MAJOR_ARCANA_NUM[id]).padStart(2,'0') + '.jpg';
+  }
+  // Младший аркан: cups_10 → cups-10.jpg
+  const parts = id.split('_');
+  if (parts.length === 2) {
+    const suit = parts[0]; // cups, wands, swords, pentacles
+    const num = parseInt(parts[1], 10);
+    if (!isNaN(num)) return base + suit + '-' + String(num).padStart(2,'0') + '.jpg';
+  }
+  return null;
+}
+
 function cardName(card) {
   if (!card) return '';
   if (typeof card.name === 'string') return card.name;
@@ -963,14 +989,28 @@ function taroCardBadge(card, orientation) {
   const orientStr = orientation || card.orientation || '';
   const orientRu = ORIENTATION_RU[orientStr] || '';
   const element = card.element ? (ELEMENT_RU[card.element] || card.element) : '';
-  let html = '<div style="background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.25);border-radius:10px;padding:13px 15px;margin-bottom:10px">';
+  const imgUrl = tarotImageUrl(card.id);
+  const isReversed = orientStr === 'reversed';
+
+  let html = '<div style="background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.25);border-radius:10px;padding:13px 15px;margin-bottom:10px;display:flex;gap:14px;align-items:flex-start">';
+  // Картинка
+  if (imgUrl) {
+    html += '<div style="flex-shrink:0;width:60px">'
+      + '<img src="' + imgUrl + '" alt="' + name + '" '
+      + 'style="width:60px;height:103px;object-fit:cover;border-radius:6px;'
+      + (isReversed ? 'transform:rotate(180deg);' : '')
+      + 'box-shadow:0 2px 8px rgba(0,0,0,.4)" onerror="this.style.display=\'none\'">'
+      + '</div>';
+  }
+  // Текст
+  html += '<div style="flex:1;min-width:0">';
   if (name) html += '<div style="font-size:1.05rem;font-weight:800;color:#c084fc;margin-bottom:6px">' + name + '</div>';
-  html += '<div style="display:flex;flex-wrap:wrap;gap:6px">';
+  html += '<div style="display:flex;flex-wrap:wrap;gap:5px">';
   if (arcana) html += '<span style="font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(167,139,250,.15);color:#c084fc">' + arcana + '</span>';
   if (suit) html += '<span style="font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(74,158,255,.12);color:#4a9eff">' + suit + '</span>';
   if (element) html += '<span style="font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(62,207,142,.1);color:#3ecf8e">' + element + '</span>';
   if (orientRu) html += '<span style="font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(245,200,66,.1);color:#f5c842">' + orientRu + '</span>';
-  html += '</div></div>';
+  html += '</div></div></div>';
   return html;
 }
 
@@ -1257,8 +1297,11 @@ function runeCard(r, orientation) {
   const orient = orientation || r.orientation || '';
   const orientRu = ORIENTATION_RUNE_RU[orient] || '';
   const element = r.element ? (ELEMENT_RUNE_RU[r.element] || r.element) : '';
-  const keywords = r.keywords ? (typeof r.keywords === 'string' ? r.keywords : (r.keywords.upright||'')) : '';
-  const keyArr = keywords ? keywords.split(' ').filter(Boolean).slice(0,4) : [];
+  const keywords = r.keywords
+    ? (typeof r.keywords === 'string' ? r.keywords : (r.keywords.upright || ''))
+    : '';
+  const keyArr = typeof keywords === 'string' && keywords
+    ? keywords.split(/[\s,]+/).filter(Boolean).slice(0, 4) : [];
 
   let html = '<div style="background:rgba(212,146,74,.08);border:1px solid rgba(212,146,74,.25);border-radius:10px;padding:12px 14px;margin-bottom:10px">';
   // Символ + имя
