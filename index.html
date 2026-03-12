@@ -726,6 +726,7 @@ function createAndShow(mid, mechLabel, sub) {
   if (mid === 'cookie') { openCookieModal(); return; }
   if (mid === 'horoscope') { createHoroscope(mechLabel, sub); return; }
   if (mid === 'taro') { createTaro(mechLabel, sub); return; }
+  if (mid === 'numerology') { createNumerology(mechLabel); return; }
   if (!spendCrystals(mid, sub)) return;
   const dt = nowStr();
   const key = mid + (sub ? '_'+sub : '');
@@ -1070,6 +1071,138 @@ function formatTaroThree(data) {
   return html;
 }
 
+// ── НУМЕРОЛОГИЯ: API ──────────────────────────
+async function createNumerology(mechLabel) {
+  if (!spendCrystals('numerology', null)) return;
+  openResultModal(mechLabel, '⏳ Считаю числа…');
+  try {
+    const p = profile;
+    const [y,mo,day] = (p.date||'1990-01-01').split('-').map(Number);
+    const [h,mi] = (p.time||'12:00').split(':').map(Number);
+    const resp = await fetch('/proxy', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        apiPath: '/api/v3/numerology/core-numbers',
+        payload: {
+          subject: {
+            name: 'User',
+            birth_data: { year:y, month:mo, day:day, hour:h, minute:mi,
+              city: p.city||'Moscow', country_code: p.countryCode||'RU' }
+          },
+          options: { system: 'pythagorean', language: 'ru', target_year: new Date().getFullYear() }
+        }
+      })
+    });
+    const json = await resp.json();
+    if (!json.success) throw new Error(json.error?.message || 'Ошибка API');
+    const data = json.data?.pythagorean || json.data;
+    const html = formatNumerology(data);
+    document.getElementById('rmt-text').innerHTML = html;
+    const dt = nowStr();
+    if (!history['numerology']) history['numerology'] = [];
+    history['numerology'].push({ datetime: dt, title: mechLabel, text: html });
+  } catch(e) {
+    document.getElementById('rmt-text').textContent = '❌ Ошибка: ' + e.message;
+  }
+}
+
+function numSection(icon, title, content) {
+  return '<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 15px;margin-bottom:10px">'
+    + '<div style="font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#a78bfa;margin-bottom:10px">' + icon + ' ' + title + '</div>'
+    + content + '</div>';
+}
+
+function formatNumerology(d) {
+  const p = profile;
+  const dF = p.date ? p.date.split('-').reverse().join('.') : '—';
+  const origin = '<span style="font-size:.75rem;color:var(--text2)">Исходная информация: ' + (p.city||'—') + ', ' + dF + '</span>';
+
+  let html = '<div style="font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#a78bfa;margin-bottom:14px">🔢 Нумерология</div>';
+
+  // Ключевые числа — сетка
+  const keys = [
+    { key:'life_path',     label:'Жизненный путь' },
+    { key:'destiny',       label:'Число судьбы' },
+    { key:'soul_urge',     label:'Зов души' },
+    { key:'personality',   label:'Личность' },
+    { key:'birthday',      label:'День рождения' },
+    { key:'personal_year', label:'Личный год' },
+    { key:'maturity_number', label:'Зрелость' },
+  ];
+  let gridHtml = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">';
+  keys.forEach(function(item) {
+    const it = d[item.key];
+    if (!it) return;
+    const num = it.number != null ? it.number : '—';
+    const theme = it.theme || '';
+    gridHtml += '<div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 12px">'
+      + '<div style="font-size:1.6rem;font-weight:800;color:#a78bfa;line-height:1">' + num + '</div>'
+      + '<div style="font-size:.7rem;font-weight:700;color:var(--text);margin-top:3px">' + item.label + '</div>'
+      + (theme ? '<div style="font-size:.65rem;color:#7c3aed;margin-top:2px">' + theme + '</div>' : '')
+      + '</div>';
+  });
+  gridHtml += '</div>';
+  html += gridHtml;
+
+  // Детальные интерпретации
+  const sections = [
+    { key:'life_path',     icon:'☀️', label:'Жизненный путь' },
+    { key:'personal_year', icon:'📅', label:'Личный год' },
+    { key:'destiny',       icon:'🎯', label:'Число судьбы' },
+    { key:'soul_urge',     icon:'💫', label:'Зов души' },
+  ];
+  sections.forEach(function(s) {
+    const it = d[s.key];
+    if (!it || !it.interpretation) return;
+    const num = it.number != null ? it.number : '—';
+    const inner = '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">'
+      + '<div style="min-width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#4a2d8a,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:800;color:#fff;flex-shrink:0">' + num + '</div>'
+      + '<div><div style="font-size:.85rem;font-weight:800;color:var(--text)">' + s.label + '</div>'
+      + (it.theme ? '<div style="font-size:.75rem;color:#a78bfa">' + it.theme + '</div>' : '')
+      + '</div></div>'
+      + '<div style="font-size:.85rem;line-height:1.65;color:var(--text2)">' + it.interpretation + '</div>';
+    html += numSection(s.icon, s.label, inner);
+  });
+
+  // Пиковые периоды
+  const pinnacles = d.pinnacle_numbers && d.pinnacle_numbers.pinnacles;
+  if (pinnacles && pinnacles.length) {
+    let pHtml = '';
+    pinnacles.forEach(function(pin) {
+      const border = pin.is_active ? 'border-color:rgba(167,139,250,.5)' : '';
+      pHtml += '<div style="padding:10px 12px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;margin-bottom:8px;' + border + '">'
+        + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">'
+        + '<span style="font-size:.78rem;font-weight:700;color:var(--text)">' + (pin.period||'') + '</span>'
+        + '<span style="font-size:1.1rem;font-weight:800;color:#a78bfa">' + pin.number + '</span></div>'
+        + (pin.is_active ? '<div style="font-size:.65rem;color:#3ecf8e;font-weight:700;margin-bottom:4px">● ТЕКУЩИЙ ПЕРИОД</div>' : '')
+        + '<div style="font-size:.8rem;color:var(--text2);line-height:1.5">' + (pin.interpretation||'') + '</div>'
+        + '</div>';
+    });
+    html += numSection('🏔️', 'Пиковые периоды', pHtml);
+  }
+
+  // Активные вызовы
+  const challenges = d.challenge_numbers && d.challenge_numbers.challenges;
+  if (challenges && challenges.length) {
+    let cHtml = '';
+    challenges.filter(function(c){ return c.is_active || c.is_main_challenge; }).forEach(function(ch) {
+      const badge = ch.is_main_challenge ? '⚡ Главный вызов' : '● Активный вызов';
+      cHtml += '<div style="padding:10px 12px;background:rgba(248,113,113,.06);border:1px solid rgba(248,113,113,.2);border-radius:8px;margin-bottom:8px">'
+        + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">'
+        + '<span style="font-size:.72rem;font-weight:800;color:#f87171">' + badge + '</span>'
+        + '<span style="font-size:1.1rem;font-weight:800;color:#f87171">' + ch.number + '</span></div>'
+        + '<div style="font-size:.78rem;color:var(--text2);margin-bottom:3px">' + (ch.period||'') + '</div>'
+        + '<div style="font-size:.82rem;color:var(--text2);line-height:1.5">' + (ch.interpretation||'') + '</div>'
+        + '</div>';
+    });
+    if (cHtml) html += numSection('⚡', 'Вызовы жизни', cHtml);
+  }
+
+  html += '<div style="margin-top:6px">' + origin + '</div>';
+  return html;
+}
+
 function translateSign(sign) {
   const map = {Aries:'Овне',Taurus:'Тельце',Gemini:'Близнецах',Cancer:'Раке',
     Leo:'Льве',Virgo:'Деве',Libra:'Весах',Scorpio:'Скорпионе',
@@ -1192,12 +1325,18 @@ function saveProfile(fromModal) {
   const d = document.getElementById(fromModal?'m-date':'ob-date').value;
   const t = document.getElementById(fromModal?'m-time':'ob-time').value;
   const c = document.getElementById(fromModal?'m-city':'ob-city').value.trim();
+  const prefix = fromModal ? 'm' : 'ob';
   if (!d || !c) {
     if (!fromModal) { const e=document.getElementById('er-onboard'); e.textContent='Заполните дату и город'; e.classList.add('on'); }
     else alert('Заполните дату и город');
     return;
   }
-  const coords = _cityCoords[fromModal ? 'm' : 'ob'] || {lat:55.75, lon:37.62, countryCode:'RU'};
+  if (!_cityCoords[prefix]) {
+    if (!fromModal) { const e=document.getElementById('er-onboard'); e.textContent='Выберите город из списка подсказок'; e.classList.add('on'); }
+    else alert('Выберите город из списка подсказок');
+    return;
+  }
+  const coords = _cityCoords[prefix];
   profile = {date:d, time:t, city:c, lat:coords.lat, lon:coords.lon, countryCode: coords.countryCode || 'RU'};
   try { localStorage.setItem('oracul_profile', JSON.stringify(profile)); } catch(e) {}
   renderProfileInfo();
@@ -1531,6 +1670,8 @@ const _cityCoords = {}; // 'ob' или 'm' → {lat, lon}
 let _cityTimer = null;
 
 async function cityAutocomplete(input, listId) {
+  const prefix = listId.split('-')[0];
+  _cityCoords[prefix] = null; // сбрасываем при ручном вводе
   const q = input.value.trim();
   const list = document.getElementById(listId);
   if (q.length < 2) { list.classList.remove('open'); return; }
