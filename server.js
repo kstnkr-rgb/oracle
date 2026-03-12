@@ -38,6 +38,7 @@ function translateViaOpenRouter(text, res) {
       proxyRes.on('end', () => {
         try {
           const data = JSON.parse(Buffer.concat(chunks).toString('utf8'));
+          console.log('[translate] OpenRouter response:', JSON.stringify(data).slice(0, 300));
           const translated = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content || '';
           res.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
           res.end(JSON.stringify({ success: true, text: translated }));
