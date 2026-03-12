@@ -979,7 +979,7 @@ function formatTaroSingle(card, data) {
   const origin = '<span style="font-size:.75rem;color:var(--text2)">Исходная информация: ' + (p.city||'—') + ', ' + dF + '</span>';
 
   let html = '<div style="font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#c084fc;margin-bottom:10px">🃏 Карта дня</div>';
-  html += taroCardBadge(card, dailyJson?.card?.orientation || card?.orientation);
+  html += taroCardBadge(card, card?.orientation);
 
   // Интерпретация из daily
   if (data && (data.interpretation || data.report)) {
