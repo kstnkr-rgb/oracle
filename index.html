@@ -751,11 +751,16 @@ async function createHoroscope(mechLabel, sub) {
       targetDate = d.toISOString().slice(0,10);
     }
     const horoType = (sub === 'Неделя') ? 'weekly' : (sub === 'Месяц') ? 'monthly' : (sub === 'Год') ? 'yearly' : 'daily';
+    const apiEndpoint = `/api/v3/horoscope/personal/${horoType}`;
+    // Determine city and country for API
+    const cityName = p.city || 'Moscow';
+    // Try to get country code from stored coords; default to RU
+    const countryCode = p.countryCode || 'RU';
     const body = {
       subject: {
-        name: p.city || 'User',
+        name: 'User',
         birth_data: { year:y, month:mo, day:day, hour:h, minute:mi, second:0,
-          latitude: p.lat||55.75, longitude: p.lon||37.62, country_code:'RU' }
+          city: cityName, country_code: countryCode }
       },
       horoscope_type: horoType,
       language: 'ru',
@@ -767,7 +772,7 @@ async function createHoroscope(mechLabel, sub) {
     const resp = await fetch('/proxy', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ apiPath:'/api/v3/horoscope/personal/daily', payload:body })
+      body: JSON.stringify({ apiPath: apiEndpoint, payload:body })
     });
     const json = await resp.json();
     if (!json.success && !json.data) throw new Error(json.message || 'Ошибка API');
@@ -990,8 +995,8 @@ function saveProfile(fromModal) {
     else alert('Заполните дату и город');
     return;
   }
-  const coords = _cityCoords[fromModal ? 'm' : 'ob'] || {lat:55.75, lon:37.62};
-  profile = {date:d, time:t, city:c, lat:coords.lat, lon:coords.lon};
+  const coords = _cityCoords[fromModal ? 'm' : 'ob'] || {lat:55.75, lon:37.62, countryCode:'RU'};
+  profile = {date:d, time:t, city:c, lat:coords.lat, lon:coords.lon, countryCode: coords.countryCode || 'RU'};
   renderProfileInfo();
   if (fromModal) closeModal(); else goTo('mechanics');
 }
@@ -1327,8 +1332,9 @@ async function cityAutocomplete(input, listId) {
       list.innerHTML = cities.slice(0,5).map(r => {
         const name = r.address?.city || r.address?.town || r.address?.village || r.name;
         const country = r.address?.country || '';
+        const countryCode = (r.address?.country_code || 'ru').toUpperCase();
         const prefix = listId.split('-')[0]; // 'ob' or 'm'
-        return `<div class="city-suggestion" onmousedown="selectCity('${prefix}','${name}','${country}',${r.lat},${r.lon},'${listId}')">
+        return `<div class="city-suggestion" onmousedown="selectCity('${prefix}','${name}','${country}','${countryCode}',${r.lat},${r.lon},'${listId}')">
           <div>${name}</div>
           <div class="city-sub">${country}</div>
         </div>`;
@@ -1338,10 +1344,10 @@ async function cityAutocomplete(input, listId) {
   }, 350);
 }
 
-function selectCity(prefix, name, country, lat, lon, listId) {
+function selectCity(prefix, name, country, countryCode, lat, lon, listId) {
   const inputId = prefix === 'ob' ? 'ob-city' : 'm-city';
   document.getElementById(inputId).value = name + (country ? ', ' + country : '');
-  _cityCoords[prefix] = {lat: parseFloat(lat), lon: parseFloat(lon)};
+  _cityCoords[prefix] = {lat: parseFloat(lat), lon: parseFloat(lon), countryCode: countryCode || 'RU'};
   document.getElementById(listId).classList.remove('open');
 }
 
