@@ -722,9 +722,10 @@ function renderHistItems(hlist, mid, sub) {
 // ── СОЗДАТЬ ПРОГНОЗ ──────────────────────────────
 function createAndShow(mid, mechLabel, sub) {
   if (mid === 'oracle') { openOracleModal(mechLabel, sub); return; }
-  if (!spendCrystals(mid, sub)) return;
-  if (mid === 'ball')   { openBallModal(); return; }
+  if (mid === 'ball')   { if (!spendCrystals(mid, sub)) return; openBallModal(); return; }
   if (mid === 'cookie') { openCookieModal(); return; }
+  if (mid === 'horoscope') { createHoroscope(mechLabel, sub); return; }
+  if (!spendCrystals(mid, sub)) return;
   const dt = nowStr();
   const key = mid + (sub ? '_'+sub : '');
   const title = mechLabel + (sub ? ' · '+sub : '');
@@ -732,6 +733,141 @@ function createAndShow(mid, mechLabel, sub) {
   if (!history[key]) history[key] = [];
   history[key].push({ datetime: dt, title, text });
   openResultModal(title, text);
+}
+
+// ── ГОРОСКОП: API ─────────────────────────────
+async function createHoroscope(mechLabel, sub) {
+  if (!spendCrystals('horoscope', sub)) return;
+  const title = mechLabel + ' · ' + sub;
+  openResultModal(title, '⏳ Загружаю прогноз…');
+  try {
+    const p = profile;
+    const [y,mo,day] = (p.date||'1990-01-01').split('-').map(Number);
+    const [h,mi] = (p.time||'12:00').split(':').map(Number);
+    // target_date for Завтра
+    let targetDate = null;
+    if (sub === 'Завтра') {
+      const d = new Date(); d.setDate(d.getDate()+1);
+      targetDate = d.toISOString().slice(0,10);
+    }
+    const horoType = (sub === 'Неделя') ? 'weekly' : (sub === 'Месяц') ? 'monthly' : (sub === 'Год') ? 'yearly' : 'daily';
+    const body = {
+      subject: {
+        name: p.city || 'User',
+        birth_data: { year:y, month:mo, day:day, hour:h, minute:mi, second:0,
+          latitude: p.lat||55.75, longitude: p.lon||37.62, country_code:'RU' }
+      },
+      horoscope_type: horoType,
+      language: 'ru',
+      tradition: 'universal',
+      include_transits: true,
+      include_progressions: false
+    };
+    if (targetDate) body.target_date = targetDate;
+    const resp = await fetch('/proxy', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ apiPath:'/api/v3/horoscope/personal/daily', payload:body })
+    });
+    const json = await resp.json();
+    if (!json.success && !json.data) throw new Error(json.message || 'Ошибка API');
+    const data = json.data || json;
+    const text = formatHoroscope(data, sub);
+    document.getElementById('rmt-text').innerHTML = text;
+    const dt = nowStr();
+    const key = 'horoscope_' + sub;
+    if (!history[key]) history[key] = [];
+    history[key].push({ datetime: dt, title, text: data.overall_theme || text });
+  } catch(e) {
+    document.getElementById('rmt-text').textContent = '❌ Ошибка: ' + e.message;
+  }
+}
+
+function formatHoroscope(d, sub) {
+  const p = profile;
+  const dF = p.date ? p.date.split('-').reverse().join('.') : '—';
+  const tF = (p.time||'').replace(':','-');
+  const origin = '<span style="font-size:.75rem;color:var(--text2)">Исходная информация: ' + (p.city||'—') + ', ' + dF + ', ' + tF + '</span>';
+
+  let html = '';
+
+  // Общая тема
+  if (d.overall_theme) {
+    html += '<div style="font-size:1rem;font-weight:700;line-height:1.6;margin-bottom:14px;color:var(--text)">' + d.overall_theme + '</div>';
+  }
+
+  // Рейтинг дня
+  if (d.overall_rating) {
+    const stars = '★'.repeat(d.overall_rating) + '☆'.repeat(5 - d.overall_rating);
+    html += '<div style="font-size:1.1rem;color:#f5c842;margin-bottom:16px;letter-spacing:2px">' + stars + '</div>';
+  }
+
+  // Луна
+  if (d.moon && d.moon.phase) {
+    const moonSignRu = translateSign(d.moon.sign);
+    html += '<div style="background:rgba(74,158,255,.08);border:1px solid rgba(74,158,255,.2);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:.88rem">';
+    html += '🌙 <b>' + d.moon.phase + '</b> в ' + moonSignRu;
+    if (d.moon.prediction) html += '<br><span style="color:var(--text2)">' + d.moon.prediction + '</span>';
+    html += '</div>';
+  }
+
+  // Void of course moon
+  if (d.void_of_course_moon && d.void_of_course_moon.is_void && d.void_of_course_moon.advice) {
+    html += '<div style="background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:.85rem;color:#f87171">';
+    html += '⚠️ ' + d.void_of_course_moon.advice;
+    html += '</div>';
+  }
+
+  // Сферы жизни
+  if (d.life_areas && d.life_areas.length) {
+    html += '<div style="margin-bottom:14px">';
+    d.life_areas.forEach(area => {
+      const emoji = (area.extra && area.extra.emoji) ? area.extra.emoji : '▸';
+      const rating = area.rating || 0;
+      const bar = '●'.repeat(rating) + '○'.repeat(5-rating);
+      html += '<div style="margin-bottom:12px;padding:10px 12px;background:var(--card);border-radius:10px;border:1px solid var(--border)">';
+      html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">';
+      html += '<b style="font-size:.9rem">' + emoji + ' ' + area.title + '</b>';
+      html += '<span style="font-size:.75rem;color:#f5c842;letter-spacing:1px">' + bar + '</span>';
+      html += '</div>';
+      html += '<div style="font-size:.85rem;color:var(--text2);line-height:1.55">' + area.prediction + '</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+  }
+
+  // Советы
+  if (d.tips && d.tips.length) {
+    html += '<div style="margin-bottom:14px">';
+    html += '<div style="font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:8px">Советы дня</div>';
+    d.tips.forEach(tip => {
+      const txt = (typeof tip === 'string') ? tip : (tip.text || '');
+      html += '<div style="font-size:.85rem;color:var(--text2);line-height:1.55;margin-bottom:6px">• ' + txt + '</div>';
+    });
+    html += '</div>';
+  }
+
+  // Удачные элементы
+  if (d.lucky_elements) {
+    const le = d.lucky_elements;
+    html += '<div style="background:rgba(167,139,250,.07);border:1px solid rgba(167,139,250,.2);border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:.83rem">';
+    html += '<div style="font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#a78bfa;margin-bottom:8px">Удача сегодня</div>';
+    if (le.colors && le.colors.length) html += '<div style="margin-bottom:4px">🎨 Цвета: <span style="color:var(--text)">' + le.colors.join(', ') + '</span></div>';
+    if (le.numbers && le.numbers.length) html += '<div style="margin-bottom:4px">🔢 Числа: <span style="color:var(--text)">' + le.numbers.join(', ') + '</span></div>';
+    if (le.stones && le.stones.length) html += '<div style="margin-bottom:4px">💎 Камни: <span style="color:var(--text)">' + le.stones.join(', ') + '</span></div>';
+    if (le.times && le.times.length) html += '<div>⏰ Часы удачи: <span style="color:var(--text)">' + le.times.join(', ') + '</span></div>';
+    html += '</div>';
+  }
+
+  html += '<div style="margin-top:4px">' + origin + '</div>';
+  return html;
+}
+
+function translateSign(sign) {
+  const map = {Aries:'Овне',Taurus:'Тельце',Gemini:'Близнецах',Cancer:'Раке',
+    Leo:'Льве',Virgo:'Деве',Libra:'Весах',Scorpio:'Скорпионе',
+    Sagittarius:'Стрельце',Capricorn:'Козероге',Aquarius:'Водолее',Pisces:'Рыбах'};
+  return map[sign] || sign;
 }
 
 function openSaved(key, idx) {
@@ -742,7 +878,10 @@ function openSaved(key, idx) {
 
 function openResultModal(title, text) {
   document.getElementById('rmt-title').textContent = title;
-  document.getElementById('rmt-text').textContent = text;
+  const el = document.getElementById('rmt-text');
+  // if text contains HTML tags use innerHTML, else textContent
+  if (text && text.includes('<')) el.innerHTML = text;
+  else el.textContent = text;
   document.getElementById('result-modal').classList.add('open');
 }
 
@@ -755,7 +894,7 @@ function closeResultModalOutside(e) {
 }
 
 function doShareModal() {
-  const text = document.getElementById('rmt-text').textContent;
+  const text = document.getElementById('rmt-text').innerText || document.getElementById('rmt-text').textContent;
   if (navigator.share) { navigator.share({text}).catch(()=>{}); }
   else { navigator.clipboard?.writeText(text).then(()=>alert('Скопировано!')).catch(()=>{}); }
 }
