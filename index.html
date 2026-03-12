@@ -1199,6 +1199,7 @@ function saveProfile(fromModal) {
   }
   const coords = _cityCoords[fromModal ? 'm' : 'ob'] || {lat:55.75, lon:37.62, countryCode:'RU'};
   profile = {date:d, time:t, city:c, lat:coords.lat, lon:coords.lon, countryCode: coords.countryCode || 'RU'};
+  try { localStorage.setItem('oracul_profile', JSON.stringify(profile)); } catch(e) {}
   renderProfileInfo();
   if (fromModal) closeModal(); else goTo('mechanics');
 }
@@ -1227,6 +1228,17 @@ function closeModalOutside(e) { if(e.target===document.getElementById('edit-moda
 
 // ── ИНИТ ──────────────────────────────────────
 renderMechList('main-mech-list', false);
+
+// Загружаем сохранённый профиль
+try {
+  const saved = localStorage.getItem('oracul_profile');
+  if (saved) {
+    profile = JSON.parse(saved);
+    _cityCoords['ob'] = {lat: profile.lat||55.75, lon: profile.lon||37.62, countryCode: profile.countryCode||'RU'};
+    renderProfileInfo();
+    _show('mechanics');
+  }
+} catch(e) {}
 
 // ── КРИСТАЛЛЫ: МОДАЛЫ ─────────────────────────
 let _pendingCrystals = 0, _pendingBonus = 0;
