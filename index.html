@@ -744,7 +744,7 @@ function createAndShow(mid, mechLabel, sub) {
 async function createHoroscope(mechLabel, sub) {
   if (!spendCrystals('horoscope', sub)) return;
   const title = mechLabel + ' · ' + sub;
-  openResultModal(title, '⏳ Загружаю прогноз…');
+  openResultModal(title, '⏳ Загружаю прогноз… (может занять ~15 сек)');
   try {
     const p = profile;
     const [y,mo,day] = (p.date||'1990-01-01').split('-').map(Number);
@@ -768,7 +768,7 @@ async function createHoroscope(mechLabel, sub) {
           city: cityName, country_code: countryCode }
       },
       horoscope_type: horoType,
-      language: 'ru',
+      language: 'en',
       tradition: 'universal',
       include_transits: true,
       include_progressions: false
@@ -782,6 +782,33 @@ async function createHoroscope(mechLabel, sub) {
     const json = await resp.json();
     if (!json.success && !json.data) throw new Error(json.message || 'Ошибка API');
     const data = json.data || json;
+    // Переводим текстовые поля через OpenRouter
+    const fieldsToTranslate = [];
+    if (data.overall_theme) fieldsToTranslate.push('overall_theme');
+    if (data.summary) fieldsToTranslate.push('summary');
+    if (data.advice) fieldsToTranslate.push('advice');
+    if (fieldsToTranslate.length) {
+      const translated = await translateFields(data, fieldsToTranslate);
+      Object.assign(data, translated);
+    }
+    // Переводим life_areas
+    if (data.life_areas && Array.isArray(data.life_areas)) {
+      const areaTexts = data.life_areas.map(a => (a.description || a.interpretation || '')).filter(Boolean);
+      if (areaTexts.length) {
+        const combined = areaTexts.map((t, i) => '<<<' + i + '>>>' + t).join('\n');
+        const translatedAreas = await translateText(combined);
+        data.life_areas = data.life_areas.map(function(a, i) {
+          const match = translatedAreas.match(new RegExp('<<<' + i + '>>>([\\s\\S]*?)(?=<<<' + (i+1) + '>>>|$)'));
+          if (match) {
+            const copy = Object.assign({}, a);
+            if (a.description) copy.description = match[1].trim();
+            else if (a.interpretation) copy.interpretation = match[1].trim();
+            return copy;
+          }
+          return a;
+        });
+      }
+    }
     const text = formatHoroscope(data, sub);
     document.getElementById('rmt-text').innerHTML = text;
     const dt = nowStr();
@@ -877,7 +904,7 @@ function formatHoroscope(d, sub) {
 async function createTaro(mechLabel, sub) {
   if (!spendCrystals('taro', sub)) return;
   const title = mechLabel + ' · ' + sub;
-  openResultModal(title, '⏳ Загружаю расклад…');
+  openResultModal(title, '⏳ Загружаю расклад… (может занять ~15 сек)');
   try {
     const p = profile;
     const [y,mo,day] = (p.date||'1990-01-01').split('-').map(Number);
@@ -910,11 +937,15 @@ async function createTaro(mechLabel, sub) {
         headers:{'Content-Type':'application/json'},
         body: JSON.stringify({
           apiPath: '/api/v3/tarot/reports/single',
-          payload: { subject, card_id: cardId, language: 'ru', tradition: 'universal' }
+          payload: { subject, card_id: cardId, language: 'en', tradition: 'universal' }
         })
       });
       const reportJson = await reportResp.json();
       const data = reportJson.data || reportJson;
+      // Переводим интерпретацию карты
+      if (data.interpretation) data.interpretation = await translateText(data.interpretation);
+      if (data.report && data.report.summary) data.report.summary = await translateText(data.report.summary);
+      if (data.report && data.report.advice) data.report.advice = await translateText(data.report.advice);
       html = formatTaroSingle(dailyJson.card, data);
 
     } else if (sub === 'Расклад на 3 карты') {
@@ -923,12 +954,25 @@ async function createTaro(mechLabel, sub) {
         headers:{'Content-Type':'application/json'},
         body: JSON.stringify({
           apiPath: '/api/v3/tarot/reports/three-card',
-          payload: { subject, language: 'ru', tradition: 'universal' }
+          payload: { subject, language: 'en', tradition: 'universal' }
         })
       });
       const json = await resp.json();
       if (!json.success) throw new Error(json.error?.message || 'Ошибка API');
-      html = formatTaroThree(json.data || json);
+      const threeData = json.data || json;
+      // Переводим интерпретации позиций
+      if (threeData.cards && Array.isArray(threeData.cards)) {
+        const interps = threeData.cards.map(c => c.interpretation || '');
+        const combined = interps.map((t, i) => '<<<' + i + '>>>' + t).join('\n');
+        const translatedInterps = await translateText(combined);
+        threeData.cards = threeData.cards.map(function(c, i) {
+          const match = translatedInterps.match(new RegExp('<<<' + i + '>>>([\\s\\S]*?)(?=<<<' + (i+1) + '>>>|$)'));
+          return match ? Object.assign({}, c, { interpretation: match[1].trim() }) : c;
+        });
+      }
+      if (threeData.report && threeData.report.synthesis) threeData.report.synthesis = await translateText(threeData.report.synthesis);
+      if (threeData.report && threeData.report.advice) threeData.report.advice = await translateText(threeData.report.advice);
+      html = formatTaroThree(threeData);
     }
 
     document.getElementById('rmt-text').innerHTML = html;
@@ -1117,7 +1161,7 @@ function formatTaroThree(data) {
 // ── НУМЕРОЛОГИЯ: API ──────────────────────────
 async function createNumerology(mechLabel) {
   if (!spendCrystals('numerology', null)) return;
-  openResultModal(mechLabel, '⏳ Считаю числа…');
+  openResultModal(mechLabel, '⏳ Считаю числа… (может занять ~15 сек)');
   try {
     const p = profile;
     const [y,mo,day] = (p.date||'1990-01-01').split('-').map(Number);
@@ -1133,13 +1177,23 @@ async function createNumerology(mechLabel) {
             birth_data: { year:y, month:mo, day:day, hour:h, minute:mi,
               city: p.city||'Moscow', country_code: p.countryCode||'RU' }
           },
-          options: { system: 'pythagorean', language: 'ru', target_year: new Date().getFullYear() }
+          options: { system: 'pythagorean', language: 'en', target_year: new Date().getFullYear() }
         }
       })
     });
     const json = await resp.json();
     if (!json.success) throw new Error(json.error?.message || 'Ошибка API');
     const data = json.data?.pythagorean || json.data;
+    // Переводим описания числовых секций
+    const numFields = ['life_path', 'personal_year', 'destiny', 'soul_urge'];
+    for (const f of numFields) {
+      if (data[f] && data[f].description) {
+        data[f].description = await translateText(data[f].description);
+      }
+      if (data[f] && data[f].interpretation) {
+        data[f].interpretation = await translateText(data[f].interpretation);
+      }
+    }
     const html = formatNumerology(data);
     document.getElementById('rmt-text').innerHTML = html;
     const dt = nowStr();
@@ -1258,7 +1312,7 @@ const ELEMENT_RUNE_RU = { Fire:'Огонь', Water:'Вода', Air:'Воздух
 async function createRunes(mechLabel, sub) {
   if (!spendCrystals('runes', sub)) return;
   const title = mechLabel + ' · ' + sub;
-  openResultModal(title, '⏳ Бросаю руны…');
+  openResultModal(title, '⏳ Бросаю руны… (может занять ~15 сек)');
   try {
     const p = profile;
     const [y,mo,day] = (p.date||'1990-01-01').split('-').map(Number);
@@ -1275,14 +1329,29 @@ async function createRunes(mechLabel, sub) {
             birth_data: { year:y, month:mo, day:day, hour:h, minute:mi,
               city: p.city||'Moscow', country_code: p.countryCode||'RU' }
           },
-          language: 'ru',
+          language: 'en',
           tradition: 'universal'
         }
       })
     });
     const json = await resp.json();
     if (!json.success) throw new Error(json.error?.message || 'Ошибка API');
-    const html = formatRunes(json.data, sub);
+    const runeData = json.data;
+    // Переводим интерпретации рун
+    if (runeData.runes && Array.isArray(runeData.runes)) {
+      const interps = runeData.runes.map(r => r.interpretation || '');
+      const combined = interps.map((t, i) => '<<<' + i + '>>>' + t).join('\n');
+      const translatedInterps = await translateText(combined);
+      runeData.runes = runeData.runes.map(function(r, i) {
+        const match = translatedInterps.match(new RegExp('<<<' + i + '>>>([\\s\\S]*?)(?=<<<' + (i+1) + '>>>|$)'));
+        return match ? Object.assign({}, r, { interpretation: match[1].trim() }) : r;
+      });
+    }
+    if (runeData.report) {
+      if (runeData.report.summary) runeData.report.summary = await translateText(runeData.report.summary);
+      if (runeData.report.advice) runeData.report.advice = await translateText(runeData.report.advice);
+    }
+    const html = formatRunes(runeData, sub);
     document.getElementById('rmt-text').innerHTML = html;
     const dt = nowStr();
     const key = 'runes_' + sub;
@@ -1461,7 +1530,7 @@ async function calcCompatibility() {
   closePartnerModal();
 
   const title = '💑 Анализ отношений';
-  openResultModal(title, '⏳ Анализирую совместимость…');
+  openResultModal(title, '⏳ Анализирую совместимость… (может занять ~20 сек)');
 
   try {
     const p = profile;
@@ -1481,14 +1550,37 @@ async function calcCompatibility() {
             { name: 'Я', birth_data: { year:y1, month:mo1, day:d1, hour:h1, minute:mi1, city:p.city||'Moscow', country_code:p.countryCode||'RU' } },
             { name: 'Партнёр', birth_data: { year:y2, month:mo2, day:d2, hour:h2, minute:mi2, city:city, country_code:coords.countryCode||'RU' } }
           ],
-          options: { language: 'ru' },
+          options: { language: 'en' },
           compatibility_options: { include_davison: false, include_timing: false }
         }
       })
     });
     const json = await resp.json();
     if (!json.success) throw new Error(json.error?.message || 'Ошибка API');
-    const html = formatCompatibility(json.data);
+    const compData = json.data;
+    // Переводим основные текстовые блоки
+    if (compData.compatibility?.interpretation) {
+      compData.compatibility.interpretation = await translateText(compData.compatibility.interpretation);
+    }
+    const dynFields = ['emotional_connection', 'communication_style', 'long_term_potential', 'power_dynamics', 'relationship_type'];
+    for (const f of dynFields) {
+      if (compData.dynamics?.[f]?.interpretation) {
+        compData.dynamics[f].interpretation = await translateText(compData.dynamics[f].interpretation);
+      }
+    }
+    // Советы по языкам любви
+    for (const person of ['person1', 'person2']) {
+      const ll = compData.love_languages?.[person];
+      if (ll?.compatibility_tips?.length) {
+        const combined = ll.compatibility_tips.map((t, i) => '<<<' + i + '>>>' + t).join('\n');
+        const translated = await translateText(combined);
+        ll.compatibility_tips = ll.compatibility_tips.map(function(_, i) {
+          const match = translated.match(new RegExp('<<<' + i + '>>>([\\s\\S]*?)(?=<<<' + (i+1) + '>>>|$)'));
+          return match ? match[1].trim() : ll.compatibility_tips[i];
+        });
+      }
+    }
+    const html = formatCompatibility(compData);
     document.getElementById('rmt-text').innerHTML = html;
   } catch(e) {
     document.getElementById('rmt-text').textContent = '❌ Ошибка: ' + e.message;
@@ -1721,6 +1813,36 @@ function openModal() {
 }
 function closeModal() { document.getElementById('edit-modal').classList.remove('open'); }
 function closeModalOutside(e) { if(e.target===document.getElementById('edit-modal')) closeModal(); }
+
+// ── ПЕРЕВОД ЧЕРЕЗ OPENROUTER ──────────────────
+async function translateText(text) {
+  if (!text || !text.trim()) return text;
+  try {
+    const resp = await fetch('/translate', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ text })
+    });
+    const json = await resp.json();
+    return json.success && json.text ? json.text : text;
+  } catch(e) {
+    return text; // при ошибке возвращаем оригинал
+  }
+}
+
+// Собирает все текстовые поля объекта в одну строку для перевода
+// и возвращает объект с переведёнными полями
+async function translateFields(obj, fields) {
+  const texts = fields.map(f => (obj[f] || ''));
+  const combined = texts.map((t, i) => '<<<' + i + '>>>' + t).join('\n');
+  const translated = await translateText(combined);
+  const result = Object.assign({}, obj);
+  fields.forEach((f, i) => {
+    const match = translated.match(new RegExp('<<<' + i + '>>>([\\s\\S]*?)(?=<<<' + (i+1) + '>>>|$)'));
+    if (match) result[f] = match[1].trim();
+  });
+  return result;
+}
 
 // ── ИНИТ ──────────────────────────────────────
 renderMechList('main-mech-list', false);
