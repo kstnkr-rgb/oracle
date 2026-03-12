@@ -45,11 +45,12 @@ const server = http.createServer((req, res) => {
       const opts = { hostname: ASTRO_HOST, path: apiPath, method: useMethod, headers };
       console.log(`→ ${useMethod} https://${ASTRO_HOST}${apiPath}`);
       const proxyReq = https.request(opts, proxyRes => {
-        let data = '';
-        proxyRes.on('data', c => data += c);
+        const chunks = [];
+        proxyRes.on('data', c => chunks.push(Buffer.isBuffer(c) ? c : Buffer.from(c)));
         proxyRes.on('end', () => {
-          console.log(`← ${proxyRes.statusCode}: ${data}`);
-          res.writeHead(proxyRes.statusCode, {'Content-Type':'application/json'});
+          const data = Buffer.concat(chunks).toString('utf8');
+          console.log(`← ${proxyRes.statusCode}: ${data.slice(0,200)}`);
+          res.writeHead(proxyRes.statusCode, {'Content-Type':'application/json; charset=utf-8'});
           res.end(data);
         });
       });
