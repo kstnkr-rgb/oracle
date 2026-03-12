@@ -3,7 +3,7 @@ const https = require('https');
 const fs = require('fs');
 const path = require('path');
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 3000;
 const ASTRO_KEY = process.env.ASTRO_KEY;
 const ASTRO_HOST = 'api.astrology-api.io';
 
