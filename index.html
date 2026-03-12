@@ -941,25 +941,33 @@ const ARCANA_RU = { minor: 'Младший аркан', major: 'Старший �
 const SUIT_RU = { cups: 'Кубки', wands: 'Жезлы', swords: 'Мечи', pentacles: 'Пентакли' };
 const ORIENTATION_RU = { upright: 'Прямое положение', reversed: 'Перевёрнутое положение' };
 const ELEMENT_RU = { Water:'Вода', Fire:'Огонь', Air:'Воздух', Earth:'Земля' };
+const POSITION_RU = { Past:'Прошлое', Present:'Настоящее', Future:'Будущее',
+  'Card 1':'Карта 1', 'Card 2':'Карта 2', 'Card 3':'Карта 3' };
 
-function taroCardBadge(card) {
+function cardName(card) {
   if (!card) return '';
+  if (typeof card.name === 'string') return card.name;
+  if (card.name && card.name.ru) return card.name.ru;
+  if (card.name && card.name.en) return card.name.en;
+  return '';
+}
+
+function taroCardBadge(card, orientation) {
+  if (!card) return '';
+  const name = cardName(card);
   const arcana = ARCANA_RU[card.arcana] || card.arcana || '';
   const suit = card.suit ? (SUIT_RU[card.suit] || card.suit) : '';
-  const orientation = ORIENTATION_RU[card.orientation] || '';
+  const orientStr = orientation || card.orientation || '';
+  const orientRu = ORIENTATION_RU[orientStr] || '';
   const element = card.element ? (ELEMENT_RU[card.element] || card.element) : '';
-  const keywords = Array.isArray(card.keywords) && card.keywords.length
-    ? card.keywords.slice(0,4).join(', ') : '';
-  let html = '<div style="background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.25);border-radius:10px;padding:13px 15px;margin-bottom:14px">';
-  html += '<div style="font-size:1.1rem;font-weight:800;color:#c084fc;margin-bottom:6px">' + (card.name || '') + '</div>';
-  html += '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px">';
+  let html = '<div style="background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.25);border-radius:10px;padding:13px 15px;margin-bottom:10px">';
+  if (name) html += '<div style="font-size:1.05rem;font-weight:800;color:#c084fc;margin-bottom:6px">' + name + '</div>';
+  html += '<div style="display:flex;flex-wrap:wrap;gap:6px">';
   if (arcana) html += '<span style="font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(167,139,250,.15);color:#c084fc">' + arcana + '</span>';
   if (suit) html += '<span style="font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(74,158,255,.12);color:#4a9eff">' + suit + '</span>';
   if (element) html += '<span style="font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(62,207,142,.1);color:#3ecf8e">' + element + '</span>';
-  if (orientation) html += '<span style="font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(245,200,66,.1);color:#f5c842">' + orientation + '</span>';
-  html += '</div>';
-  if (keywords) html += '<div style="font-size:.8rem;color:var(--text2)">Ключевые слова: ' + keywords + '</div>';
-  html += '</div>';
+  if (orientRu) html += '<span style="font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(245,200,66,.1);color:#f5c842">' + orientRu + '</span>';
+  html += '</div></div>';
   return html;
 }
 
@@ -969,7 +977,7 @@ function formatTaroSingle(card, data) {
   const origin = '<span style="font-size:.75rem;color:var(--text2)">Исходная информация: ' + (p.city||'—') + ', ' + dF + '</span>';
 
   let html = '<div style="font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#c084fc;margin-bottom:10px">🃏 Карта дня</div>';
-  html += taroCardBadge(card);
+  html += taroCardBadge(card, dailyJson?.card?.orientation || card?.orientation);
 
   // Интерпретация из daily
   if (data && (data.interpretation || data.report)) {
@@ -1022,13 +1030,17 @@ function formatTaroThree(data) {
   const cards = data.cards || [];
   cards.forEach((c, i) => {
     const card = c.card || c;
-    const posLabel = c.position_name || c.position || positionNames[i] || ('Карта ' + (i+1));
-    html += '<div style="margin-bottom:14px">';
+    const posRaw = c.position_name || c.position || '';
+    const posLabel = POSITION_RU[posRaw] || posRaw || ('Карта ' + (i+1));
+    const orientation = c.orientation || card.orientation || '';
+    html += '<div style="margin-bottom:16px">';
     html += '<div style="font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin-bottom:6px">' + posLabel + '</div>';
-    html += taroCardBadge(card);
+    html += taroCardBadge(card, orientation);
     const interp = c.interpretation || c.reading || card.interpretation || '';
     if (interp) {
-      html += '<div style="font-size:.87rem;line-height:1.65;color:var(--text2);margin-bottom:6px">' + interp + '</div>';
+      // убираем префикс "Past: " / "Present: " / "Future: " если есть
+      const cleaned = interp.replace(/^(Past|Present|Future|Прошлое|Настоящее|Будущее):\s*/i, '');
+      html += '<div style="font-size:.87rem;line-height:1.65;color:var(--text2);margin-bottom:6px">' + cleaned + '</div>';
     }
     html += '</div>';
   });
