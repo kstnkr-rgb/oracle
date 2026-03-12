@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 
 const PORT = process.env.PORT || 3000;
-const ASTRO_KEY = process.env.ASTRO_KEY || 'ask_58c5d3e0fd0d941fe8eaeb356fe4af9d782556914ea690203cb849e7f48da133';
+const ASTRO_KEY = process.env.ASTRO_KEY || 'ask_bf45faa53077f486c9de8b404b525e8a7fcf48f7fa71792376f3c5432605e045';
 const ASTRO_HOST = 'api.astrology-api.io';
 
 const server = http.createServer((req, res) => {
@@ -48,7 +48,7 @@ const server = http.createServer((req, res) => {
         let data = '';
         proxyRes.on('data', c => data += c);
         proxyRes.on('end', () => {
-          console.log(`← ${proxyRes.statusCode}`);
+          console.log(`← ${proxyRes.statusCode}: ${data}`);
           res.writeHead(proxyRes.statusCode, {'Content-Type':'application/json'});
           res.end(data);
         });
