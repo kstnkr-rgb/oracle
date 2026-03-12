@@ -1,445 +1,2374 @@
-{
-    "success":  true,
-    "data":  {
-                 "compatibility":  {
-                                       "overall_score":  60.86,
-                                       "breakdown":  {
-                                                         "aspects":  21.84,
-                                                         "sun_moon":  11.58,
-                                                         "elements":  5.23,
-                                                         "attraction":  7.66,
-                                                         "mercury":  4.8,
-                                                         "saturn":  4.0,
-                                                         "house_overlays":  3.5,
-                                                         "ascendant":  2.25
-                                                     },
-                                       "interpretation_key":  "interpretation.good",
-                                       "interpretation":  "ÐÐ°ÑÐ° ÑÐ¾Ð²Ð¼ÐµÑÑÐ¸Ð¼Ð¾ÑÑÑ Ð¿Ð¾ÐºÐ°Ð·ÑÐ²Ð°ÐµÑ Ð¿ÑÐ¾ÑÐ½ÑÐ¹ ÑÑÐ½Ð´Ð°Ð¼ÐµÐ½Ñ Ñ Ñ\u0085Ð¾ÑÐ¾ÑÐ¸Ð¼ Ð¿Ð¾ÑÐµÐ½ÑÐ¸Ð°Ð»Ð¾Ð¼ Ð´Ð»Ñ ÑÑÐ¿ÐµÑÐ½ÑÑ\u0085 Ð¾ÑÐ½Ð¾ÑÐµÐ½Ð¸Ð¹. ÐÑ Ñ\u0085Ð¾ÑÐ¾ÑÐ¾ ÑÐ¾ÐµÐ´Ð¸Ð½ÑÐµÑÐµÑÑ Ð² Ð½ÐµÑÐºÐ¾Ð»ÑÐºÐ¸Ñ\u0085 Ð²Ð°Ð¶Ð½ÑÑ\u0085 Ð¾Ð±Ð»Ð°ÑÑÑÑ\u0085 Ð¸ Ð¾Ð±Ð»Ð°Ð´Ð°ÐµÑÐµ Ð²Ð·Ð°Ð¸Ð¼Ð¾Ð´Ð¾Ð¿Ð¾Ð»Ð½ÑÑÑÐ¸Ð¼Ð¸ ÑÐ¸Ð»ÑÐ½ÑÐ¼Ð¸ ÑÑÐ¾ÑÐ¾Ð½Ð°Ð¼Ð¸. Ð¥Ð¾ÑÑ ÐµÑÑÑ Ð½ÐµÐºÐ¾ÑÐ¾ÑÑÐµ Ð¾Ð±Ð»Ð°ÑÑÐ¸ Ð½Ð°Ð¿ÑÑÐ¶ÐµÐ½Ð¸Ñ, Ð¾Ð½Ð¸ Ð¼Ð¾Ð³ÑÑ ÑÑÐ°ÑÑ Ð²Ð¾Ð·Ð¼Ð¾Ð¶Ð½Ð¾ÑÑÑÐ¼Ð¸ Ð´Ð»Ñ ÑÐ¾ÑÑÐ°. Ð¡ Ð²Ð·Ð°Ð¸Ð¼Ð½ÑÐ¼ ÑÐ²Ð°Ð¶ÐµÐ½Ð¸ÐµÐ¼ Ð¸ ÑÑÐ¸Ð»Ð¸ÑÐ¼Ð¸ Ð²Ñ Ð¼Ð¾Ð¶ÐµÑÐµ Ð¿Ð¾ÑÑÑÐ¾Ð¸ÑÑ ÑÑÐ¾-ÑÐ¾ Ð·Ð½Ð°ÑÐ¸Ð¼Ð¾Ðµ Ð²Ð¼ÐµÑÑÐµ."
-                                   },
-                 "synastry":  {
-                                  "subjects_summary":  {
-                                                           "subject1":  {
-                                                                            "name":  "Subject",
-                                                                            "sun_sign":  "Tau",
-                                                                            "moon_sign":  "Cap",
-                                                                            "ascendant_sign":  "Leo",
-                                                                            "venus_sign":  "Ari",
-                                                                            "mars_sign":  "Pis"
-                                                                        },
-                                                           "subject2":  {
-                                                                            "name":  "Subject",
-                                                                            "sun_sign":  "Leo",
-                                                                            "moon_sign":  "Sag",
-                                                                            "ascendant_sign":  "Sco",
-                                                                            "venus_sign":  "Can",
-                                                                            "mars_sign":  "Ari"
-                                                                        }
-                                                       },
-                                  "chart_data":  {
-                                                     "planetary_positions":  [
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+<title>Оракул</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Philosopher:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0a1628;
+  --card:#16294a;
+  --accent:#4a9eff;
+  --accent2:#2d7dd2;
+  --text:#e8eef8;
+  --text2:#8fa5c9;
+  --border:rgba(74,158,255,.18);
+  --radius:18px;
+  --radius-sm:13px;
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;overflow-x:hidden}
+body{max-width:480px;margin:0 auto;min-height:100vh}
+body::before{content:'';position:fixed;top:-20%;left:-20%;width:65%;height:65%;
+  background:radial-gradient(ellipse,rgba(45,125,210,.2) 0%,transparent 70%);pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55%;
+  background:radial-gradient(ellipse,rgba(62,207,142,.1) 0%,transparent 70%);pointer-events:none;z-index:0}
 
-                                                                             ],
-                                                     "house_cusps":  [
+/* ── SCREENS ── */
+.screen{position:fixed;inset:0;max-width:480px;margin:0 auto;
+  background:var(--bg);display:flex;flex-direction:column;
+  transition:transform .32s cubic-bezier(.4,0,.2,1),opacity .32s;
+  z-index:1;overflow-y:auto}
+.screen.hidden{transform:translateX(100%);opacity:0;pointer-events:none}
 
-                                                                     ],
-                                                     "aspects":  [
-                                                                     "@{point1=Sun; point2=Sun; aspect_type=square; orb=5.306889024463771; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Sun; point2=Mercury; aspect_type=trine; orb=-7.212629089346166; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Sun; point2=Jupiter; aspect_type=conjunction; orb=10.138157424315523; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Moon; point2=Mercury; aspect_type=trine; orb=8.083168565988245; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Mercury; point2=Mercury; aspect_type=trine; orb=8.989222003234033; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Mercury; point2=Venus; aspect_type=sextile; orb=5.744515434427058; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Mercury; point2=Neptune; aspect_type=trine; orb=0.41614370097207143; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Mercury; point2=Pluto; aspect_type=opposition; orb=-2.0390854366925737; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Mercury; point2=Chiron; aspect_type=sextile; orb=-2.8006185511474087; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Mercury; point2=Mean_Lilith; aspect_type=trine; orb=3.1154665720317496; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Mercury; point2=Mean_South_Node; aspect_type=trine; orb=6.720937327790779; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Venus; point2=Venus; aspect_type=square; orb=1.149841839915041; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Venus; point2=Mars; aspect_type=conjunction; orb=1.2857580386564393; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Venus; point2=Neptune; aspect_type=square; orb=5.010817295484117; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Mars; point2=Moon; aspect_type=square; orb=-3.03768755136781; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Mars; point2=Mercury; aspect_type=opposition; orb=-1.1872821554187851; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Mars; point2=Venus; aspect_type=trine; orb=-4.431988724225761; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Mars; point2=Pluto; aspect_type=trine; orb=8.137418721960245; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Mars; point2=Mean_Node; aspect_type=conjunction; orb=3.455566830861983; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Mars; point2=Mean_Lilith; aspect_type=opposition; orb=-7.061037586621069; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Mars; point2=Mean_South_Node; aspect_type=opposition; orb=-3.4555668308620398; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Jupiter; point2=Venus; aspect_type=conjunction; orb=4.267897161808207; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Jupiter; point2=Mars; aspect_type=square; orb=-1.832297283236727; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Jupiter; point2=Neptune; aspect_type=opposition; orb=-1.8927619735909218; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Jupiter; point2=Pluto; aspect_type=trine; orb=0.5624671640737233; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Jupiter; point2=Mean_Node; aspect_type=trine; orb=-5.244319055171985; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Jupiter; point2=Chiron; aspect_type=conjunction; orb=4.277236823766273; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Jupiter; point2=Mean_Lilith; aspect_type=sextile; orb=1.6388482994128708; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Jupiter; point2=Mean_South_Node; aspect_type=sextile; orb=5.2443190551719; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Saturn; point2=Mercury; aspect_type=trine; orb=8.229457938208299; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Uranus; point2=Mercury; aspect_type=trine; orb=-7.83477843604058; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Uranus; point2=Venus; aspect_type=opposition; orb=-4.590071867233604; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Uranus; point2=Mars; aspect_type=square; orb=2.1544719886621237; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Uranus; point2=Neptune; aspect_type=conjunction; orb=1.570587268165525; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Uranus; point2=Pluto; aspect_type=sextile; orb=-0.88464186949912; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Uranus; point2=Mean_Node; aspect_type=sextile; orb=5.566493760597382; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Uranus; point2=Chiron; aspect_type=opposition; orb=-3.9550621183408907; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Uranus; point2=Mean_Lilith; aspect_type=trine; orb=-1.961023004838296; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Uranus; point2=Mean_South_Node; aspect_type=trine; orb=-5.566493760597325; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Neptune; point2=Mercury; aspect_type=trine; orb=-2.66742714140409; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Neptune; point2=Venus; aspect_type=opposition; orb=-0.5772794274028854; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Neptune; point2=Mars; aspect_type=square; orb=-3.0128793059743657; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Neptune; point2=Neptune; aspect_type=conjunction; orb=6.7379385628020145; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Neptune; point2=Pluto; aspect_type=sextile; orb=4.282709425137369; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Neptune; point2=Mean_Node; aspect_type=sextile; orb=0.3991424659608924; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Neptune; point2=Chiron; aspect_type=opposition; orb=-9.12241341297738; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Neptune; point2=Medium_Coeli; aspect_type=trine; orb=-0.5136123342721248; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Neptune; point2=Mean_Lilith; aspect_type=trine; orb=3.2063282897981935; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Neptune; point2=Mean_South_Node; aspect_type=trine; orb=-0.3991424659608356; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Pluto; point2=Mercury; aspect_type=sextile; orb=-0.8507172221717951; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Pluto; point2=Venus; aspect_type=trine; orb=2.3939893466351805; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Pluto; point2=Pluto; aspect_type=conjunction; orb=6.0994193443696645; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Pluto; point2=Mean_Node; aspect_type=trine; orb=-1.4175674532714027; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Pluto; point2=Mean_Lilith; aspect_type=sextile; orb=5.023038209030489; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Pluto; point2=Mean_South_Node; aspect_type=sextile; orb=1.4175674532714595; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Mean_Node; point2=Mars; aspect_type=sextile; orb=-0.005495780355715851; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Mean_Node; point2=Jupiter; aspect_type=trine; orb=-6.974402819315571; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Mean_Node; point2=Pluto; aspect_type=square; orb=1.2753258995187196; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Chiron; point2=Mercury; aspect_type=sextile; orb=3.823664300234782; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Chiron; point2=Venus; aspect_type=conjunction; orb=0.5789577314278631; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Chiron; point2=Mars; aspect_type=square; orb=1.8566421471436456; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Chiron; point2=Neptune; aspect_type=opposition; orb=-5.581701403971294; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Chiron; point2=Pluto; aspect_type=trine; orb=-3.1264722663066493; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Chiron; point2=Mean_Node; aspect_type=trine; orb=-1.5553796247916125; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Chiron; point2=Chiron; aspect_type=conjunction; orb=7.966176254146646; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Chiron; point2=Mean_Lilith; aspect_type=sextile; orb=-2.0500911309674734; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Chiron; point2=Mean_South_Node; aspect_type=sextile; orb=1.5553796247915557; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Ascendant; point2=Moon; aspect_type=trine; orb=0.6801452379610851; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Ascendant; point2=Ascendant; aspect_type=square; orb=-0.2490302076739681; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Medium_Coeli; point2=Venus; aspect_type=quintile; orb=-0.8300396468093822; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Mean_Lilith; point2=Mercury; aspect_type=sextile; orb=4.437456895462958; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Mean_Lilith; point2=Venus; aspect_type=trine; orb=7.682163464269934; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Mean_Lilith; point2=Mean_Node; aspect_type=trine; orb=-6.705741570906156; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Mean_Lilith; point2=Mean_South_Node; aspect_type=sextile; orb=6.705741570906213; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Mean_South_Node; point2=Mars; aspect_type=trine; orb=0.005495780355715851; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Mean_South_Node; point2=Jupiter; aspect_type=sextile; orb=6.974402819315571; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                     "@{point1=Mean_South_Node; point2=Pluto; aspect_type=square; orb=-1.275325899518748; aspect_direction=; transiting_house=; peak_activations=}"
-                                                                 ],
-                                                     "fixed_stars":  null
-                                                 }
-                              },
-                 "composite":  {
-                                   "subject_data":  {
-                                                        "subject1":  {
-                                                                         "name":  "Subject",
-                                                                         "year":  1990,
-                                                                         "month":  5,
-                                                                         "day":  15,
-                                                                         "hour":  12,
-                                                                         "minute":  0,
-                                                                         "city":  "Moscow",
-                                                                         "nation":  "RU",
-                                                                         "lng":  37.61781,
-                                                                         "lat":  55.75204,
-                                                                         "tz_str":  "Europe/Moscow",
-                                                                         "zodiac_type":  "Tropic",
-                                                                         "sidereal_mode":  null,
-                                                                         "houses_system_identifier":  "P",
-                                                                         "houses_system_name":  "Placidus",
-                                                                         "perspective_type":  "Apparent Geocentric",
-                                                                         "iso_formatted_local_datetime":  "1990-05-15T12:00:00+04:00",
-                                                                         "iso_formatted_utc_datetime":  "1990-05-15T08:00:00+00:00",
-                                                                         "julian_day":  2448026.8333333335,
-                                                                         "utc_time":  8.0,
-                                                                         "local_time":  12.0,
-                                                                         "sun":  "@{name=Sun; quality=Fixed; element=Earth; sign=Tau; sign_num=1; position=24.235410150447258; abs_pos=54.23541015044726; emoji=âï¸; point_type=Planet; house=Tenth_House; retrograde=False}",
-                                                                         "moon":  "@{name=Moon; quality=Cardinal; element=Earth; sign=Cap; sign_num=9; position=25.10594962708933; abs_pos=295.10594962708933; emoji=âï¸; point_type=Planet; house=Sixth_House; retrograde=False}",
-                                                                         "mercury":  "@{name=Mercury; quality=Fixed; element=Earth; sign=Tau; sign_num=1; position=8.033559057867052; abs_pos=38.03355905786705; emoji=âï¸; point_type=Planet; house=Tenth_House; retrograde=True}",
-                                                                         "venus":  "@{name=Venus; quality=Cardinal; element=Fire; sign=Ari; sign_num=0; position=12.628232652379069; abs_pos=12.628232652379069; emoji=âï¸; point_type=Planet; house=Ninth_House; retrograde=False}",
-                                                                         "mars":  "@{name=Mars; quality=Mutable; element=Water; sign=Pis; sign_num=11; position=18.21006321651987; abs_pos=348.21006321651987; emoji=âï¸; point_type=Planet; house=Eighth_House; retrograde=False}",
-                                                                         "jupiter":  "@{name=Jupiter; quality=Cardinal; element=Water; sign=Can; sign_num=3; position=9.510177330485902; abs_pos=99.5101773304859; emoji=âï¸; point_type=Planet; house=Eleventh_House; retrograde=False}",
-                                                                         "saturn":  "@{name=Saturn; quality=Cardinal; element=Earth; sign=Cap; sign_num=9; position=25.252238999309384; abs_pos=295.2522389993094; emoji=âï¸; point_type=Planet; house=Sixth_House; retrograde=True}",
-                                                                         "uranus":  "@{name=Uranus; quality=Cardinal; element=Earth; sign=Cap; sign_num=9; position=9.188002625060506; abs_pos=279.1880026250605; emoji=âï¸; point_type=Planet; house=Fifth_House; retrograde=True}",
-                                                                         "neptune":  "@{name=Neptune; quality=Cardinal; element=Earth; sign=Cap; sign_num=9; position=14.355353919696995; abs_pos=284.355353919697; emoji=âï¸; point_type=Planet; house=Fifth_House; retrograde=True}",
-                                                                         "pluto":  "@{name=Pluto; quality=Fixed; element=Water; sign=Sco; sign_num=7; position=16.17206383892929; abs_pos=226.1720638389293; emoji=âï¸; point_type=Planet; house=Fourth_House; retrograde=True}",
-                                                                         "ascendant":  "@{name=Ascendant; quality=Fixed; element=Fire; sign=Leo; sign_num=4; position=20.567605529926595; abs_pos=140.5676055299266; emoji=âï¸; point_type=AxialCusps; house=First_House; retrograde=False}",
-                                                                         "descendant":  "@{name=Descendant; quality=Fixed; element=Air; sign=Aqu; sign_num=10; position=20.567605529926595; abs_pos=320.5676055299266; emoji=âï¸; point_type=AxialCusps; house=Seventh_House; retrograde=False}",
-                                                                         "medium_coeli":  "@{name=Medium_Coeli; quality=Fixed; element=Earth; sign=Tau; sign_num=1; position=2.6081141391034635; abs_pos=32.60811413910346; emoji=âï¸; point_type=AxialCusps; house=Tenth_House; retrograde=False}",
-                                                                         "imum_coeli":  "@{name=Imum_Coeli; quality=Fixed; element=Water; sign=Sco; sign_num=7; position=2.6081141391034635; abs_pos=212.60811413910346; emoji=âï¸; point_type=AxialCusps; house=Fourth_House; retrograde=False}",
-                                                                         "chiron":  "@{name=Chiron; quality=Cardinal; element=Water; sign=Can; sign_num=3; position=13.199116760866275; abs_pos=103.19911676086627; emoji=âï¸; point_type=Planet; house=Eleventh_House; retrograde=False}",
-                                                                         "mean_lilith":  "@{name=Mean_Lilith; quality=Fixed; element=Water; sign=Sco; sign_num=7; position=21.460237956564043; abs_pos=231.46023795656404; emoji=âï¸; point_type=Planet; house=Fourth_House; retrograde=False}",
-                                                                         "first_house":  "@{name=First_House; quality=Fixed; element=Fire; sign=Leo; sign_num=4; position=20.567605529926595; abs_pos=140.5676055299266; emoji=âï¸; point_type=House; house=; retrograde=}",
-                                                                         "second_house":  "@{name=Second_House; quality=Mutable; element=Earth; sign=Vir; sign_num=5; position=7.451089816633697; abs_pos=157.4510898166337; emoji=âï¸; point_type=House; house=; retrograde=}",
-                                                                         "third_house":  "@{name=Third_House; quality=Cardinal; element=Air; sign=Lib; sign_num=6; position=0.3683744495450867; abs_pos=180.3683744495451; emoji=âï¸; point_type=House; house=; retrograde=}",
-                                                                         "fourth_house":  "@{name=Fourth_House; quality=Fixed; element=Water; sign=Sco; sign_num=7; position=2.6081141391034635; abs_pos=212.60811413910346; emoji=âï¸; point_type=House; house=; retrograde=}",
-                                                                         "fifth_house":  "@{name=Fifth_House; quality=Mutable; element=Fire; sign=Sag; sign_num=8; position=14.247644229583926; abs_pos=254.24764422958393; emoji=âï¸; point_type=House; house=; retrograde=}",
-                                                                         "sixth_house":  "@{name=Sixth_House; quality=Cardinal; element=Earth; sign=Cap; sign_num=9; position=22.31957345339447; abs_pos=292.31957345339447; emoji=âï¸; point_type=House; house=; retrograde=}",
-                                                                         "seventh_house":  "@{name=Seventh_House; quality=Fixed; element=Air; sign=Aqu; sign_num=10; position=20.567605529926595; abs_pos=320.5676055299266; emoji=âï¸; point_type=House; house=; retrograde=}",
-                                                                         "eighth_house":  "@{name=Eighth_House; quality=Mutable; element=Water; sign=Pis; sign_num=11; position=7.451089816633726; abs_pos=337.4510898166337; emoji=âï¸; point_type=House; house=; retrograde=}",
-                                                                         "ninth_house":  "@{name=Ninth_House; quality=Cardinal; element=Fire; sign=Ari; sign_num=0; position=0.36837444954505827; abs_pos=0.36837444954505827; emoji=âï¸; point_type=House; house=; retrograde=}",
-                                                                         "tenth_house":  "@{name=Tenth_House; quality=Fixed; element=Earth; sign=Tau; sign_num=1; position=2.6081141391034635; abs_pos=32.60811413910346; emoji=âï¸; point_type=House; house=; retrograde=}",
-                                                                         "eleventh_house":  "@{name=Eleventh_House; quality=Mutable; element=Air; sign=Gem; sign_num=2; position=14.247644229583926; abs_pos=74.24764422958393; emoji=âï¸; point_type=House; house=; retrograde=}",
-                                                                         "twelfth_house":  "@{name=Twelfth_House; quality=Cardinal; element=Water; sign=Can; sign_num=3; position=22.319573453394455; abs_pos=112.31957345339445; emoji=âï¸; point_type=House; house=; retrograde=}",
-                                                                         "mean_node":  "@{name=Mean_Node; quality=Fixed; element=Air; sign=Aqu; sign_num=10; position=11.347970394078345; abs_pos=311.34797039407835; emoji=âï¸; point_type=Planet; house=Sixth_House; retrograde=True}",
-                                                                         "true_node":  "@{name=True_Node; quality=Fixed; element=Air; sign=Aqu; sign_num=10; position=10.256929959058027; abs_pos=310.256929959058; emoji=âï¸; point_type=Planet; house=Sixth_House; retrograde=True}",
-                                                                         "mean_south_node":  "@{name=Mean_South_Node; quality=Fixed; element=Fire; sign=Leo; sign_num=4; position=11.347970394078345; abs_pos=131.34797039407835; emoji=âï¸; point_type=Planet; house=Twelfth_House; retrograde=True}",
-                                                                         "true_south_node":  "@{name=True_South_Node; quality=Fixed; element=Fire; sign=Leo; sign_num=4; position=10.256929959058027; abs_pos=130.25692995905803; emoji=âï¸; point_type=Planet; house=Twelfth_House; retrograde=True}",
-                                                                         "planets_names_list":  "Sun Moon Mercury Venus Mars Jupiter Saturn Uranus Neptune Pluto Mean_Node True_Node Mean_South_Node True_South_Node Chiron Mean_Lilith",
-                                                                         "axial_cusps_names_list":  "Ascendant Descendant Medium_Coeli Imum_Coeli",
-                                                                         "houses_names_list":  "First_House Second_House Third_House Fourth_House Fifth_House Sixth_House Seventh_House Eighth_House Ninth_House Tenth_House Eleventh_House Twelfth_House",
-                                                                         "lunar_phase":  "@{degrees_between_s_m=240.87053947664208; moon_phase=19; sun_phase=19; moon_emoji=ð; moon_phase_name=Waning Gibbous}"
-                                                                     },
-                                                        "subject2":  {
-                                                                         "name":  "Subject",
-                                                                         "year":  1988,
-                                                                         "month":  8,
-                                                                         "day":  22,
-                                                                         "hour":  14,
-                                                                         "minute":  30,
-                                                                         "city":  "Moscow",
-                                                                         "nation":  "RU",
-                                                                         "lng":  37.61781,
-                                                                         "lat":  55.75204,
-                                                                         "tz_str":  "Europe/Moscow",
-                                                                         "zodiac_type":  "Tropic",
-                                                                         "sidereal_mode":  null,
-                                                                         "houses_system_identifier":  "P",
-                                                                         "houses_system_name":  "Placidus",
-                                                                         "perspective_type":  "Apparent Geocentric",
-                                                                         "iso_formatted_local_datetime":  "1988-08-22T14:30:00+04:00",
-                                                                         "iso_formatted_utc_datetime":  "1988-08-22T10:30:00+00:00",
-                                                                         "julian_day":  2447395.9375,
-                                                                         "utc_time":  10.5,
-                                                                         "local_time":  14.5,
-                                                                         "sun":  "@{name=Sun; quality=Fixed; element=Fire; sign=Leo; sign_num=4; position=29.542299174911022; abs_pos=149.54229917491102; emoji=âï¸; point_type=Planet; house=Ninth_House; retrograde=False}",
-                                                                         "moon":  "@{name=Moon; quality=Mutable; element=Fire; sign=Sag; sign_num=8; position=21.24775076788768; abs_pos=261.2477507678877; emoji=âï¸; point_type=Planet; house=Second_House; retrograde=False}",
-                                                                         "mercury":  "@{name=Mercury; quality=Mutable; element=Earth; sign=Vir; sign_num=5; position=17.022781061101085; abs_pos=167.02278106110109; emoji=âï¸; point_type=Planet; house=Tenth_House; retrograde=False}",
-                                                                         "venus":  "@{name=Venus; quality=Cardinal; element=Water; sign=Can; sign_num=3; position=13.77807449229411; abs_pos=103.77807449229411; emoji=âï¸; point_type=Planet; house=Eighth_House; retrograde=False}",
-                                                                         "mars":  "@{name=Mars; quality=Cardinal; element=Fire; sign=Ari; sign_num=0; position=11.34247461372263; abs_pos=11.34247461372263; emoji=âï¸; point_type=Planet; house=Fourth_House; retrograde=False}",
-                                                                         "jupiter":  "@{name=Jupiter; quality=Mutable; element=Air; sign=Gem; sign_num=2; position=4.373567574762774; abs_pos=64.37356757476277; emoji=âï¸; point_type=Planet; house=Seventh_House; retrograde=False}",
-                                                                         "saturn":  "@{name=Saturn; quality=Mutable; element=Fire; sign=Sag; sign_num=8; position=25.980135090272825; abs_pos=265.9801350902728; emoji=âï¸; point_type=Planet; house=Second_House; retrograde=True}",
-                                                                         "uranus":  "@{name=Uranus; quality=Mutable; element=Fire; sign=Sag; sign_num=8; position=27.12568731027784; abs_pos=267.12568731027784; emoji=âï¸; point_type=Planet; house=Second_House; retrograde=True}",
-                                                                         "neptune":  "@{name=Neptune; quality=Cardinal; element=Earth; sign=Cap; sign_num=9; position=7.6174153568949805; abs_pos=277.617415356895; emoji=âï¸; point_type=Planet; house=Second_House; retrograde=True}",
-                                                                         "pluto":  "@{name=Pluto; quality=Fixed; element=Water; sign=Sco; sign_num=7; position=10.072644494559626; abs_pos=220.07264449455963; emoji=âï¸; point_type=Planet; house=Twelfth_House; retrograde=False}",
-                                                                         "ascendant":  "@{name=Ascendant; quality=Fixed; element=Water; sign=Sco; sign_num=7; position=20.318575322252656; abs_pos=230.31857532225266; emoji=âï¸; point_type=AxialCusps; house=First_House; retrograde=False}",
-                                                                         "descendant":  "@{name=Descendant; quality=Fixed; element=Earth; sign=Tau; sign_num=1; position=20.318575322252627; abs_pos=50.31857532225263; emoji=âï¸; point_type=AxialCusps; house=Seventh_House; retrograde=False}",
-                                                                         "medium_coeli":  "@{name=Medium_Coeli; quality=Mutable; element=Earth; sign=Vir; sign_num=5; position=14.86896625396912; abs_pos=164.86896625396912; emoji=âï¸; point_type=AxialCusps; house=Tenth_House; retrograde=False}",
-                                                                         "imum_coeli":  "@{name=Imum_Coeli; quality=Mutable; element=Water; sign=Pis; sign_num=11; position=14.86896625396912; abs_pos=344.8689662539691; emoji=âï¸; point_type=AxialCusps; house=Fourth_House; retrograde=False}",
-                                                                         "chiron":  "@{name=Chiron; quality=Cardinal; element=Water; sign=Can; sign_num=3; position=5.232940506719629; abs_pos=95.23294050671963; emoji=âï¸; point_type=Planet; house=Eighth_House; retrograde=False}",
-                                                                         "mean_lilith":  "@{name=Mean_Lilith; quality=Mutable; element=Earth; sign=Vir; sign_num=5; position=11.149025629898802; abs_pos=161.1490256298988; emoji=âï¸; point_type=Planet; house=Ninth_House; retrograde=False}",
-                                                                         "first_house":  "@{name=First_House; quality=Fixed; element=Water; sign=Sco; sign_num=7; position=20.318575322252656; abs_pos=230.31857532225266; emoji=âï¸; point_type=House; house=; retrograde=}",
-                                                                         "second_house":  "@{name=Second_House; quality=Mutable; element=Fire; sign=Sag; sign_num=8; position=20.95305442209991; abs_pos=260.9530544220999; emoji=âï¸; point_type=House; house=; retrograde=}",
-                                                                         "third_house":  "@{name=Third_House; quality=Fixed; element=Air; sign=Aqu; sign_num=10; position=3.3780386134750415; abs_pos=303.37803861347504; emoji=âï¸; point_type=House; house=; retrograde=}",
-                                                                         "fourth_house":  "@{name=Fourth_House; quality=Mutable; element=Water; sign=Pis; sign_num=11; position=14.86896625396912; abs_pos=344.8689662539691; emoji=âï¸; point_type=House; house=; retrograde=}",
-                                                                         "fifth_house":  "@{name=Fifth_House; quality=Cardinal; element=Fire; sign=Ari; sign_num=0; position=14.411637825623416; abs_pos=14.411637825623416; emoji=âï¸; point_type=House; house=; retrograde=}",
-                                                                         "sixth_house":  "@{name=Sixth_House; quality=Fixed; element=Earth; sign=Tau; sign_num=1; position=4.944678184956956; abs_pos=34.944678184956956; emoji=âï¸; point_type=House; house=; retrograde=}",
-                                                                         "seventh_house":  "@{name=Seventh_House; quality=Fixed; element=Earth; sign=Tau; sign_num=1; position=20.318575322252627; abs_pos=50.31857532225263; emoji=âï¸; point_type=House; house=; retrograde=}",
-                                                                         "eighth_house":  "@{name=Eighth_House; quality=Mutable; element=Air; sign=Gem; sign_num=2; position=20.95305442209991; abs_pos=80.95305442209991; emoji=âï¸; point_type=House; house=; retrograde=}",
-                                                                         "ninth_house":  "@{name=Ninth_House; quality=Fixed; element=Fire; sign=Leo; sign_num=4; position=3.3780386134750415; abs_pos=123.37803861347504; emoji=âï¸; point_type=House; house=; retrograde=}",
-                                                                         "tenth_house":  "@{name=Tenth_House; quality=Mutable; element=Earth; sign=Vir; sign_num=5; position=14.86896625396912; abs_pos=164.86896625396912; emoji=âï¸; point_type=House; house=; retrograde=}",
-                                                                         "eleventh_house":  "@{name=Eleventh_House; quality=Cardinal; element=Air; sign=Lib; sign_num=6; position=14.411637825623444; abs_pos=194.41163782562344; emoji=âï¸; point_type=House; house=; retrograde=}",
-                                                                         "twelfth_house":  "@{name=Twelfth_House; quality=Fixed; element=Water; sign=Sco; sign_num=7; position=4.9446781849569845; abs_pos=214.94467818495698; emoji=âï¸; point_type=House; house=; retrograde=}",
-                                                                         "mean_node":  "@{name=Mean_Node; quality=Mutable; element=Water; sign=Pis; sign_num=11; position=14.754496385657887; abs_pos=344.7544963856579; emoji=âï¸; point_type=Planet; house=Third_House; retrograde=True}",
-                                                                         "true_node":  "@{name=True_Node; quality=Mutable; element=Water; sign=Pis; sign_num=11; position=14.161568915783164; abs_pos=344.16156891578316; emoji=âï¸; point_type=Planet; house=Third_House; retrograde=True}",
-                                                                         "mean_south_node":  "@{name=Mean_South_Node; quality=Mutable; element=Earth; sign=Vir; sign_num=5; position=14.75449638565783; abs_pos=164.75449638565783; emoji=âï¸; point_type=Planet; house=Ninth_House; retrograde=True}",
-                                                                         "true_south_node":  "@{name=True_South_Node; quality=Mutable; element=Earth; sign=Vir; sign_num=5; position=14.161568915783164; abs_pos=164.16156891578316; emoji=âï¸; point_type=Planet; house=Ninth_House; retrograde=True}",
-                                                                         "planets_names_list":  "Sun Moon Mercury Venus Mars Jupiter Saturn Uranus Neptune Pluto Mean_Node True_Node Mean_South_Node True_South_Node Chiron Mean_Lilith",
-                                                                         "axial_cusps_names_list":  "Ascendant Descendant Medium_Coeli Imum_Coeli",
-                                                                         "houses_names_list":  "First_House Second_House Third_House Fourth_House Fifth_House Sixth_House Seventh_House Eighth_House Ninth_House Tenth_House Eleventh_House Twelfth_House",
-                                                                         "lunar_phase":  "@{degrees_between_s_m=111.70545159297666; moon_phase=9; sun_phase=8; moon_emoji=ð; moon_phase_name=First Quarter}"
-                                                                     },
-                                                        "composite_subject":  {
-                                                                                  "name":  "Composite: Subject \u0026 Subject",
-                                                                                  "year":  1989,
-                                                                                  "month":  7,
-                                                                                  "day":  4,
-                                                                                  "hour":  1,
-                                                                                  "minute":  15,
-                                                                                  "city":  "Composite Location",
-                                                                                  "nation":  "--",
-                                                                                  "lng":  37.61781,
-                                                                                  "lat":  55.75204,
-                                                                                  "tz_str":  "UTC",
-                                                                                  "zodiac_type":  "Tropic",
-                                                                                  "sidereal_mode":  null,
-                                                                                  "houses_system_identifier":  "P",
-                                                                                  "houses_system_name":  "Placidus",
-                                                                                  "perspective_type":  "Apparent Geocentric",
-                                                                                  "iso_formatted_local_datetime":  "1989-07-04T01:15:00+00:00",
-                                                                                  "iso_formatted_utc_datetime":  "1989-07-04T01:15:00+00:00",
-                                                                                  "julian_day":  2447711.5520833335,
-                                                                                  "utc_time":  1.25,
-                                                                                  "local_time":  1.25,
-                                                                                  "sun":  "@{name=Sun; quality=Cardinal; element=Water; sign=Can; sign_num=3; position=12.056294272719668; abs_pos=102.05629427271967; emoji=âï¸; point_type=Planet; house=Twelfth_House; retrograde=False}",
-                                                                                  "moon":  "@{name=Moon; quality=Cardinal; element=Water; sign=Can; sign_num=3; position=22.625576839317546; abs_pos=112.62557683931755; emoji=âï¸; point_type=Planet; house=First_House; retrograde=False}",
-                                                                                  "mercury":  "@{name=Mercury; quality=Mutable; element=Air; sign=Gem; sign_num=2; position=26.272322220142925; abs_pos=86.27232222014293; emoji=âï¸; point_type=Planet; house=Twelfth_House; retrograde=False}",
-                                                                                  "venus":  "@{name=Venus; quality=Fixed; element=Fire; sign=Leo; sign_num=4; position=5.770348668450296; abs_pos=125.7703486684503; emoji=âï¸; point_type=Planet; house=Second_House; retrograde=False}",
-                                                                                  "mars":  "@{name=Mars; quality=Fixed; element=Fire; sign=Leo; sign_num=4; position=10.873706614905416; abs_pos=130.87370661490542; emoji=âï¸; point_type=Planet; house=Second_House; retrograde=False}",
-                                                                                  "jupiter":  "@{name=Jupiter; quality=Mutable; element=Air; sign=Gem; sign_num=2; position=24.175222578085396; abs_pos=84.1752225780854; emoji=âï¸; point_type=Planet; house=Twelfth_House; retrograde=False}",
-                                                                                  "saturn":  "@{name=Saturn; quality=Cardinal; element=Earth; sign=Cap; sign_num=9; position=10.509651209081653; abs_pos=280.50965120908165; emoji=âï¸; point_type=Planet; house=Sixth_House; retrograde=True}",
-                                                                                  "uranus":  "@{name=Uranus; quality=Cardinal; element=Earth; sign=Cap; sign_num=9; position=2.9736546882159587; abs_pos=272.97365468821596; emoji=âï¸; point_type=Planet; house=Sixth_House; retrograde=True}",
-                                                                                  "neptune":  "@{name=Neptune; quality=Cardinal; element=Earth; sign=Cap; sign_num=9; position=10.972023301456773; abs_pos=280.9720233014568; emoji=âï¸; point_type=Planet; house=Sixth_House; retrograde=True}",
-                                                                                  "pluto":  "@{name=Pluto; quality=Fixed; element=Water; sign=Sco; sign_num=7; position=12.466964353393337; abs_pos=222.46696435339334; emoji=âï¸; point_type=Planet; house=Fifth_House; retrograde=True}",
-                                                                                  "ascendant":  "@{name=Ascendant; quality=Cardinal; element=Water; sign=Can; sign_num=3; position=14.856509865238948; abs_pos=104.85650986523895; emoji=âï¸; point_type=AxialCusps; house=First_House; retrograde=False}",
-                                                                                  "descendant":  "@{name=Descendant; quality=Cardinal; element=Earth; sign=Cap; sign_num=9; position=14.856509865238934; abs_pos=284.85650986523893; emoji=âï¸; point_type=AxialCusps; house=Seventh_House; retrograde=False}",
-                                                                                  "medium_coeli":  "@{name=Medium_Coeli; quality=Mutable; element=Water; sign=Pis; sign_num=11; position=6.660726116891681; abs_pos=336.6607261168917; emoji=âï¸; point_type=AxialCusps; house=Tenth_House; retrograde=False}",
-                                                                                  "imum_coeli":  "@{name=Imum_Coeli; quality=Mutable; element=Earth; sign=Vir; sign_num=5; position=6.6607261168917375; abs_pos=156.66072611689174; emoji=âï¸; point_type=AxialCusps; house=Fourth_House; retrograde=False}",
-                                                                                  "chiron":  "@{name=Chiron; quality=Cardinal; element=Water; sign=Can; sign_num=3; position=9.121187612246558; abs_pos=99.12118761224656; emoji=âï¸; point_type=Planet; house=Twelfth_House; retrograde=False}",
-                                                                                  "mean_lilith":  "@{name=Mean_Lilith; quality=Cardinal; element=Air; sign=Lib; sign_num=6; position=16.18134921356139; abs_pos=196.1813492135614; emoji=âï¸; point_type=Planet; house=Fifth_House; retrograde=False}",
-                                                                                  "first_house":  "@{name=First_House; quality=Cardinal; element=Water; sign=Can; sign_num=3; position=14.856509865238948; abs_pos=104.85650986523895; emoji=âï¸; point_type=House; house=; retrograde=}",
-                                                                                  "second_house":  "@{name=Second_House; quality=Cardinal; element=Water; sign=Can; sign_num=3; position=28.457778328880593; abs_pos=118.4577783288806; emoji=âï¸; point_type=House; house=; retrograde=}",
-                                                                                  "third_house":  "@{name=Third_House; quality=Fixed; element=Fire; sign=Leo; sign_num=4; position=14.520727817431407; abs_pos=134.5207278174314; emoji=âï¸; point_type=House; house=; retrograde=}",
-                                                                                  "fourth_house":  "@{name=Fourth_House; quality=Mutable; element=Earth; sign=Vir; sign_num=5; position=6.6607261168917375; abs_pos=156.66072611689174; emoji=âï¸; point_type=House; house=; retrograde=}",
-                                                                                  "fifth_house":  "@{name=Fifth_House; quality=Cardinal; element=Air; sign=Lib; sign_num=6; position=11.591955929521504; abs_pos=191.5919559295215; emoji=âï¸; point_type=House; house=; retrograde=}",
-                                                                                  "sixth_house":  "@{name=Sixth_House; quality=Mutable; element=Fire; sign=Sag; sign_num=8; position=3.007661167779645; abs_pos=243.00766116777964; emoji=âï¸; point_type=House; house=; retrograde=}",
-                                                                                  "seventh_house":  "@{name=Seventh_House; quality=Cardinal; element=Earth; sign=Cap; sign_num=9; position=14.856509865238934; abs_pos=284.85650986523893; emoji=âï¸; point_type=House; house=; retrograde=}",
-                                                                                  "eighth_house":  "@{name=Eighth_House; quality=Cardinal; element=Earth; sign=Cap; sign_num=9; position=28.45777832888058; abs_pos=298.4577783288806; emoji=âï¸; point_type=House; house=; retrograde=}",
-                                                                                  "ninth_house":  "@{name=Ninth_House; quality=Fixed; element=Air; sign=Aqu; sign_num=10; position=14.520727817431407; abs_pos=314.5207278174314; emoji=âï¸; point_type=House; house=; retrograde=}",
-                                                                                  "tenth_house":  "@{name=Tenth_House; quality=Mutable; element=Water; sign=Pis; sign_num=11; position=6.660726116891681; abs_pos=336.6607261168917; emoji=âï¸; point_type=House; house=; retrograde=}",
-                                                                                  "eleventh_house":  "@{name=Eleventh_House; quality=Cardinal; element=Fire; sign=Ari; sign_num=0; position=11.591955929521495; abs_pos=11.591955929521495; emoji=âï¸; point_type=House; house=; retrograde=}",
-                                                                                  "twelfth_house":  "@{name=Twelfth_House; quality=Mutable; element=Air; sign=Gem; sign_num=2; position=3.007661167779652; abs_pos=63.00766116777965; emoji=âï¸; point_type=House; house=; retrograde=}",
-                                                                                  "mean_node":  "@{name=Mean_Node; quality=Fixed; element=Air; sign=Aqu; sign_num=10; position=28.042743998660285; abs_pos=328.0427439986603; emoji=âï¸; point_type=Planet; house=Ninth_House; retrograde=True}",
-                                                                                  "true_node":  "@{name=True_Node; quality=Fixed; element=Air; sign=Aqu; sign_num=10; position=26.490182279368355; abs_pos=326.49018227936836; emoji=âï¸; point_type=Planet; house=Ninth_House; retrograde=True}",
-                                                                                  "mean_south_node":  "@{name=Mean_South_Node; quality=Fixed; element=Fire; sign=Leo; sign_num=4; position=28.042743998660285; abs_pos=148.04274399866028; emoji=âï¸; point_type=Planet; house=Third_House; retrograde=True}",
-                                                                                  "true_south_node":  "@{name=True_South_Node; quality=Fixed; element=Fire; sign=Leo; sign_num=4; position=26.490182279368355; abs_pos=146.49018227936836; emoji=âï¸; point_type=Planet; house=Third_House; retrograde=True}",
-                                                                                  "planets_names_list":  "Sun Moon Mercury Venus Mars Jupiter Saturn Uranus Neptune Pluto Mean_Node True_Node Mean_South_Node True_South_Node Chiron Mean_Lilith",
-                                                                                  "axial_cusps_names_list":  "Ascendant Descendant Medium_Coeli Imum_Coeli",
-                                                                                  "houses_names_list":  "First_House Second_House Third_House Fourth_House Fifth_House Sixth_House Seventh_House Eighth_House Ninth_House Tenth_House Eleventh_House Twelfth_House",
-                                                                                  "lunar_phase":  "@{degrees_between_s_m=10.569282566597877; moon_phase=1; sun_phase=1; moon_emoji=ð; moon_phase_name=New Moon}"
-                                                                              }
-                                                    },
-                                   "chart_data":  {
-                                                      "planetary_positions":  [
-                                                                                  "@{name=Sun; sign=Can; degree=12.06; absolute_longitude=102.06; house=12; is_retrograde=False; speed=0.9538}",
-                                                                                  "@{name=Moon; sign=Can; degree=22.63; absolute_longitude=112.63; house=1; is_retrograde=False; speed=13.3318}",
-                                                                                  "@{name=Mercury; sign=Gem; degree=26.27; absolute_longitude=86.27; house=12; is_retrograde=False; speed=1.8301}",
-                                                                                  "@{name=Venus; sign=Leo; degree=5.77; absolute_longitude=125.77; house=2; is_retrograde=False; speed=1.2151}",
-                                                                                  "@{name=Mars; sign=Leo; degree=10.87; absolute_longitude=130.87; house=2; is_retrograde=False; speed=0.6241}",
-                                                                                  "@{name=Jupiter; sign=Gem; degree=24.18; absolute_longitude=84.18; house=12; is_retrograde=False; speed=0.2254}",
-                                                                                  "@{name=Saturn; sign=Cap; degree=10.51; absolute_longitude=280.51; house=6; is_retrograde=True; speed=-0.0739}",
-                                                                                  "@{name=Ascendant; sign=Can; degree=14.86; absolute_longitude=104.86; house=1; is_retrograde=False; speed=}",
-                                                                                  "@{name=Medium_Coeli; sign=Pis; degree=6.66; absolute_longitude=336.66; house=10; is_retrograde=False; speed=}"
-                                                                              ],
-                                                      "house_cusps":  [
-                                                                          "@{house=1; sign=Can; degree=14.86; absolute_longitude=104.86}",
-                                                                          "@{house=2; sign=Can; degree=28.46; absolute_longitude=118.46}",
-                                                                          "@{house=3; sign=Leo; degree=14.52; absolute_longitude=134.52}",
-                                                                          "@{house=4; sign=Vir; degree=6.66; absolute_longitude=156.66}",
-                                                                          "@{house=5; sign=Lib; degree=11.59; absolute_longitude=191.59}",
-                                                                          "@{house=6; sign=Sag; degree=3.01; absolute_longitude=243.01}",
-                                                                          "@{house=7; sign=Cap; degree=14.86; absolute_longitude=284.86}",
-                                                                          "@{house=8; sign=Cap; degree=28.46; absolute_longitude=298.46}",
-                                                                          "@{house=9; sign=Aqu; degree=14.52; absolute_longitude=314.52}",
-                                                                          "@{house=10; sign=Pis; degree=6.66; absolute_longitude=336.66}",
-                                                                          "@{house=11; sign=Ari; degree=11.59; absolute_longitude=11.59}",
-                                                                          "@{house=12; sign=Gem; degree=3.01; absolute_longitude=63.01}"
-                                                                      ],
-                                                      "aspects":  [
-                                                                      "@{point1=Sun; point2=Moon; aspect_type=conjunction; orb=10.569282566597849; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                      "@{point1=Sun; point2=Saturn; aspect_type=opposition; orb=-1.5466430636380153; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                      "@{point1=Sun; point2=Uranus; aspect_type=opposition; orb=-9.08263958450371; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                      "@{point1=Sun; point2=Neptune; aspect_type=opposition; orb=-1.084270971262896; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                      "@{point1=Sun; point2=Pluto; aspect_type=trine; orb=0.4106700806736683; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                      "@{point1=Sun; point2=Chiron; aspect_type=conjunction; orb=2.93510666047311; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                      "@{point1=Sun; point2=Mean_Lilith; aspect_type=square; orb=4.125054940841721; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                      "@{point1=Mercury; point2=Jupiter; aspect_type=conjunction; orb=2.097099642057529; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                      "@{point1=Mercury; point2=Uranus; aspect_type=opposition; orb=-6.701332468073019; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                      "@{point1=Mercury; point2=Mean_Node; aspect_type=trine; orb=-1.7704217785173455; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                      "@{point1=Mercury; point2=Mean_South_Node; aspect_type=sextile; orb=1.7704217785173455; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                      "@{point1=Venus; point2=Mars; aspect_type=conjunction; orb=5.103357946455105; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                      "@{point1=Mars; point2=Pluto; aspect_type=square; orb=1.593257738487921; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                      "@{point1=Mars; point2=Mean_Lilith; aspect_type=sextile; orb=5.3076425986560025; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                      "@{point1=Jupiter; point2=Uranus; aspect_type=opposition; orb=-8.798432110130562; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                      "@{point1=Jupiter; point2=Mean_Node; aspect_type=trine; orb=-3.8675214205748887; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                      "@{point1=Jupiter; point2=Mean_Lilith; aspect_type=trine; orb=-7.993873364524006; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                      "@{point1=Jupiter; point2=Mean_South_Node; aspect_type=sextile; orb=3.867521420574917; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                      "@{point1=Saturn; point2=Uranus; aspect_type=conjunction; orb=7.5359965208656945; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                      "@{point1=Saturn; point2=Neptune; aspect_type=conjunction; orb=0.46237209237511934; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                      "@{point1=Saturn; point2=Pluto; aspect_type=sextile; orb=-1.9573131443116836; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                      "@{point1=Saturn; point2=Chiron; aspect_type=opposition; orb=-1.388463596835095; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                      "@{point1=Uranus; point2=Neptune; aspect_type=conjunction; orb=7.998368613240814; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                      "@{point1=Uranus; point2=Mean_Node; aspect_type=sextile; orb=-4.930910689555674; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                      "@{point1=Uranus; point2=Chiron; aspect_type=opposition; orb=-6.1475329240306; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                      "@{point1=Uranus; point2=Mean_South_Node; aspect_type=trine; orb=4.930910689555674; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                      "@{point1=Neptune; point2=Pluto; aspect_type=sextile; orb=-1.4949410519365642; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                      "@{point1=Neptune; point2=Chiron; aspect_type=opposition; orb=-1.8508356892102142; aspect_direction=; transiting_house=; peak_activations=}",
-                                                                      "@{point1=Pluto; point2=Chiron; aspect_type=trine; orb=3.3457767411467785; aspect_direction=; transiting_house=; peak_activations=}"
-                                                                  ],
-                                                      "fixed_stars":  null
-                                                  }
-                               },
-                 "love_languages":  {
-                                        "person1":  {
-                                                        "primary_love_language":  "Ð¤Ð¸Ð·Ð¸ÑÐµÑÐºÐ¸Ð¹ ÐºÐ¾Ð½ÑÐ°ÐºÑ",
-                                                        "secondary_love_language":  "ÐÐ¾Ð»ÑÑÐµÐ½Ð¸Ðµ Ð¿Ð¾Ð´Ð°ÑÐºÐ¾Ð²",
-                                                        "receiving_style":  "ÐÐºÑÑ ÑÐ»ÑÐ¶ÐµÐ½Ð¸Ñ",
-                                                        "venus_influence":  {
-                                                                                "sign":  "Ari",
-                                                                                "house":  9,
-                                                                                "expression":  "ÐÐ°ÑÐ° ÐÐµÐ½ÐµÑÐ° Ð² ÐÐ²Ð½Ðµ Ð²ÑÑÐ°Ð¶Ð°ÐµÑ Ð»ÑÐ±Ð¾Ð²Ñ ÑÐ¼ÐµÐ»Ð¾ Ð¸ ÑÑÑÐ°ÑÑÐ½Ð¾. ÐÑ Ð¿ÑÑÐ¼Ð¾Ð»Ð¸Ð½ÐµÐ¹Ð½Ñ, Ð¿Ð¾Ð»Ð½Ñ ÑÐ½ÑÑÐ·Ð¸Ð°Ð·Ð¼Ð° Ð¸ Ð»ÑÐ±Ð¸ÑÐµ Ð°Ð·Ð°ÑÑ ÑÐ¾Ð¼Ð°Ð½ÑÐ¸ÐºÐ¸.",
-                                                                                "gift_giving_style":  "Spontaneous, bold gifts that show initiative"
-                                                                            },
-                                                        "moon_influence":  {
-                                                                               "sign":  "Cap",
-                                                                               "house":  6,
-                                                                               "emotional_needs":  "Structure, respect, emotional stability",
-                                                                               "comfort_style":  "Work, achievement, structured activities"
-                                                                           },
-                                                        "mars_influence":  {
-                                                                               "sign":  "Pis",
-                                                                               "house":  8,
-                                                                               "passion_style":  "Spiritual, compassionate, boundless devotion",
-                                                                               "conflict_approach":  "Emotional absorption, avoidance, compassionate resolution"
-                                                                           },
-                                                        "fifth_house_romance":  {
-                                                                                    "sign":  "Sag",
-                                                                                    "themes":  "Adventurous, philosophical, freedom in love",
-                                                                                    "creative_expression":  "Travel, learning, philosophical discussions"
-                                                                                },
-                                                        "romantic_tendencies":  [
-                                                                                    "Direct and bold in expressing love",
-                                                                                    "Needs emotional stability and respect",
-                                                                                    "Romantic and idealistic in pursuing love"
-                                                                                ],
-                                                        "compatibility_tips":  [
-                                                                                   "ÐÐµÑÐ¶Ð¸ÑÐµÑÑ Ð·Ð° ÑÑÐºÐ¸, Ð¾Ð±Ð½Ð¸Ð¼Ð°Ð¹ÑÐµÑÑ Ð¸ ÑÐµÐ»ÑÐ¹ÑÐµÑÑ ÑÐµÐ³ÑÐ»ÑÑÐ½Ð¾",
-                                                                                   "Ð¡Ð¸Ð´Ð¸ÑÐµ Ð±Ð»Ð¸Ð·ÐºÐ¾, ÐºÐ¾Ð³Ð´Ð° ÑÐ¼Ð¾ÑÑÐ¸ÑÐµ ÑÐµÐ»ÐµÐ²Ð¸Ð·Ð¾Ñ Ð¸Ð»Ð¸ ÑÐ°Ð·Ð³Ð¾Ð²Ð°ÑÐ¸Ð²Ð°ÐµÑÐµ",
-                                                                                   "ÐÐµÐ»Ð°Ð¹ÑÐµ Ð¼Ð°ÑÑÐ°Ð¶Ð¸ Ð¸Ð»Ð¸ ÑÐ°ÑÑÐ¸ÑÐ°Ð½Ð¸Ñ ÑÐ¿Ð¸Ð½Ñ",
-                                                                                   "ÐÐµ Ð¿ÑÐµÐ½ÐµÐ±ÑÐµÐ³Ð°Ð¹ÑÐµ ÑÐ¸Ð·Ð¸ÑÐµÑÐºÐ¾Ð¹ Ð¿ÑÐ¸Ð²ÑÐ·Ð°Ð½Ð½Ð¾ÑÑÑÑ, Ð½Ðµ ÑÐ²ÑÐ·Ð°Ð½Ð½Ð¾Ð¹ Ñ ÑÐµÐºÑÐ¾Ð¼"
-                                                                               ]
-                                                    },
-                                        "person2":  {
-                                                        "primary_love_language":  "ÐÐ°ÑÐµÑÑÐ²ÐµÐ½Ð½Ð¾Ðµ Ð²ÑÐµÐ¼Ñ",
-                                                        "secondary_love_language":  "Ð¤Ð¸Ð·Ð¸ÑÐµÑÐºÐ¸Ð¹ ÐºÐ¾Ð½ÑÐ°ÐºÑ",
-                                                        "receiving_style":  "ÐÐºÑÑ ÑÐ»ÑÐ¶ÐµÐ½Ð¸Ñ",
-                                                        "venus_influence":  {
-                                                                                "sign":  "Can",
-                                                                                "house":  8,
-                                                                                "expression":  "ÐÐ°ÑÐ° ÐÐµÐ½ÐµÑÐ° Ð² Ð Ð°ÐºÐµ Ð²ÑÑÐ°Ð¶Ð°ÐµÑ Ð»ÑÐ±Ð¾Ð²Ñ ÑÐµÑÐµÐ· Ð·Ð°Ð±Ð¾ÑÑ, ÑÐ¼Ð¾ÑÐ¸Ð¾Ð½Ð°Ð»ÑÐ½ÑÑ Ð±ÐµÐ·Ð¾Ð¿Ð°ÑÐ½Ð¾ÑÑÑ Ð¸ ÑÐ¾Ð·Ð´Ð°Ð½Ð¸Ðµ ÑÑÑÐ½Ð¾Ð³Ð¾ Ð´Ð¾Ð¼Ð° Ð²Ð¼ÐµÑÑÐµ.",
-                                                                                "gift_giving_style":  "Sentimental, family heirlooms, homemade items"
-                                                                            },
-                                                        "moon_influence":  {
-                                                                               "sign":  "Sag",
-                                                                               "house":  2,
-                                                                               "emotional_needs":  "Freedom, optimism, emotional adventure",
-                                                                               "comfort_style":  "Adventure, learning, outdoor activities"
-                                                                           },
-                                                        "mars_influence":  {
-                                                                               "sign":  "Ari",
-                                                                               "house":  4,
-                                                                               "passion_style":  "Direct, initiating, passionate and spontaneous",
-                                                                               "conflict_approach":  "Direct confrontation, quick to anger, quick to forgive"
-                                                                           },
-                                                        "fifth_house_romance":  {
-                                                                                    "sign":  "Ari",
-                                                                                    "themes":  "Exciting, competitive, spontaneous romance",
-                                                                                    "creative_expression":  "Spontaneous surprises, active dates, competitive fun"
-                                                                                },
-                                                        "romantic_tendencies":  [
-                                                                                    "Nurturing and protective of loved ones",
-                                                                                    "Values emotional freedom and optimism",
-                                                                                    "Pursues partners with confidence and directness"
-                                                                                ],
-                                                        "compatibility_tips":  [
-                                                                                   "Ð£Ð±ÐµÑÐ¸ÑÐµ ÑÑÑÑÐ¾Ð¹ÑÑÐ²Ð° Ð²Ð¾ Ð²ÑÐµÐ¼Ñ ÑÐ¾Ð²Ð¼ÐµÑÑÐ½Ð¾Ð³Ð¾ Ð²ÑÐµÐ¼ÐµÐ½Ð¸",
-                                                                                   "ÐÐ»Ð°Ð½Ð¸ÑÑÐ¹ÑÐµ ÑÐµÐ³ÑÐ»ÑÑÐ½ÑÐµ ÑÐ²Ð¸Ð´Ð°Ð½Ð¸Ñ Ð¸Ð»Ð¸ Ð¼ÐµÑÐ¾Ð¿ÑÐ¸ÑÑÐ¸Ñ",
-                                                                                   "Ð£ÑÑÐ°Ð½Ð¾Ð²Ð¸ÑÐµ Ð·ÑÐ¸ÑÐµÐ»ÑÐ½ÑÐ¹ ÐºÐ¾Ð½ÑÐ°ÐºÑ Ð¸ Ð°ÐºÑÐ¸Ð²Ð½Ð¾ ÑÐ»ÑÑÐ°Ð¹ÑÐµ",
-                                                                                   "Ð¡Ð¾Ð·Ð´Ð°Ð²Ð°Ð¹ÑÐµ ÑÐ¸ÑÑÐ°Ð»Ñ Ð´Ð»Ñ ÑÐ¾ÐµÐ´Ð¸Ð½ÐµÐ½Ð¸Ñ"
-                                                                               ]
-                                                    },
+/* ── NAV ── */
+.nav{display:flex;align-items:center;gap:14px;padding:52px 20px 16px;flex-shrink:0}
+.nav-back{width:38px;height:38px;border-radius:50%;background:var(--card);
+  border:1px solid var(--border);color:var(--text);font-size:1.3rem;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.nav-title{font-family:'Philosopher',serif;font-size:1.15rem;font-weight:700;letter-spacing:.05em}
+
+/* ── HOME ── */
+.home-header{padding:60px 24px 32px;flex-shrink:0}
+.home-logo{font-size:2.8rem;margin-bottom:12px}
+.home-title{font-family:'Philosopher',serif;font-size:1.9rem;font-weight:700;line-height:1.2;margin-bottom:8px}
+.home-sub{color:var(--text2);font-size:.95rem;line-height:1.5}
+
+.menu{padding:0 16px 40px;display:flex;flex-direction:column;gap:14px}
+.menu-btn{display:flex;align-items:center;gap:18px;padding:22px 22px;
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  cursor:pointer;transition:all .2s;text-align:left;width:100%}
+.menu-btn:active{transform:scale(.98);background:#1e3566}
+.menu-icon{width:56px;height:56px;border-radius:16px;display:flex;align-items:center;
+  justify-content:center;font-size:1.6rem;flex-shrink:0}
+.menu-icon.blue{background:linear-gradient(135deg,#1e5bbd,#4a9eff)}
+.menu-icon.green{background:linear-gradient(135deg,#166a4a,#3ecf8e)}
+.menu-text{}
+.menu-label{font-size:1.05rem;font-weight:800;color:var(--text);margin-bottom:3px}
+.menu-desc{font-size:.82rem;color:var(--text2);line-height:1.4}
+.menu-arrow{margin-left:auto;color:var(--text2);font-size:1.1rem;flex-shrink:0}
+
+/* ── FORM SCREEN ── */
+.form-body{padding:8px 20px 40px;display:flex;flex-direction:column;gap:14px;flex:1}
+
+.field{display:flex;flex-direction:column;gap:7px}
+.field label{font-size:.72rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--text2)}
+.field input,.field select{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);
+  padding:15px 16px;color:var(--text);font-family:'Nunito',sans-serif;
+  font-size:1rem;font-weight:600;outline:none;width:100%;
+  transition:border-color .2s;-webkit-appearance:none;appearance:none}
+.field input:focus,.field select:focus{border-color:var(--accent)}
+.field input::placeholder{color:var(--text2);font-weight:400}
+.field select option{background:#1a3058}
+
+.sbtn{padding:17px;border-radius:var(--radius);border:none;
+  background:linear-gradient(135deg,var(--accent2),var(--accent));
+  color:#fff;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:800;
+  cursor:pointer;box-shadow:0 6px 24px rgba(74,158,255,.35);
+  transition:all .2s;width:100%;margin-top:4px}
+.sbtn:active{transform:scale(.98)}
+.sbtn:disabled{opacity:.45;cursor:not-allowed}
+
+/* ── SPINNER ── */
+.spin{display:none;text-align:center;padding:28px 0}.spin.on{display:block}
+.orbit-ring{width:44px;height:44px;border:2px solid rgba(74,158,255,.2);border-top-color:var(--accent);
+  border-radius:50%;animation:sp 1s linear infinite;margin:0 auto 12px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.spin p{color:var(--text2);font-size:.9rem}
+
+.eb{display:none;padding:13px 16px;border-radius:var(--radius-sm);
+  background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);
+  color:#fca5a5;font-size:.86rem;line-height:1.5}
+.eb.on{display:block}
+
+/* ── RESULTS ── */
+.res{display:none}.res.on{display:block}
+.rtabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-bottom:14px}
+.rtabs::-webkit-scrollbar{display:none}
+.rtab{flex-shrink:0;padding:7px 14px;border-radius:20px;border:1px solid var(--border);
+  background:transparent;color:var(--text2);font-family:'Nunito',sans-serif;
+  font-size:.78rem;font-weight:700;cursor:pointer;transition:all .2s}
+.rtab.on{background:rgba(74,158,255,.15);border-color:var(--accent);color:var(--accent)}
+.rtc{display:none}.rtc.on{display:block}
+
+/* ── PLANET LIST ── */
+.plist{display:flex;flex-direction:column;gap:8px}
+.prow{display:flex;align-items:center;gap:12px;padding:13px 15px;
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm)}
+.psym{font-size:1.3rem;width:28px;text-align:center;flex-shrink:0}
+.pinfo{flex:1}
+.pname{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text2)}
+.psign{font-size:.97rem;font-weight:700}
+.pdeg{font-size:.8rem;color:var(--text2);font-weight:600}
+.retro{color:#f97316;font-size:.6rem;font-weight:800;margin-left:3px}
+
+/* ── HOUSES ── */
+.hgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.hcell{padding:12px 10px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);text-align:center}
+.hnum{font-size:.6rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--text2);margin-bottom:4px}
+.hsign{font-size:.9rem;font-weight:700}
+.hdeg{font-size:.7rem;color:var(--text2)}
+
+/* ── ASPECTS ── */
+.alist{display:flex;flex-direction:column;gap:7px}
+.arow{display:flex;align-items:center;gap:10px;padding:10px 13px;
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm)}
+.abadge{font-size:.58rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+  padding:3px 8px;border-radius:10px;flex-shrink:0;min-width:56px;text-align:center}
+.abadge.trine{background:rgba(62,207,142,.15);color:#3ecf8e;border:1px solid rgba(62,207,142,.25)}
+.abadge.sextile{background:rgba(74,158,255,.15);color:#4a9eff;border:1px solid rgba(74,158,255,.25)}
+.abadge.conjunction{background:rgba(245,200,66,.15);color:#f5c842;border:1px solid rgba(245,200,66,.25)}
+.abadge.opposition{background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.2)}
+.abadge.square{background:rgba(249,115,22,.12);color:#fb923c;border:1px solid rgba(249,115,22,.2)}
+.abadge.other{background:rgba(168,130,220,.12);color:#c084fc;border:1px solid rgba(168,130,220,.2)}
+.apair{flex:1;font-size:.87rem;font-weight:600}
+.aorb{font-size:.75rem;color:var(--text2)}
+
+/* ── HOROSCOPE ── */
+.horo-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:10px}
+.horo-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.horo-title{font-family:'Philosopher',serif;font-size:1.1rem;font-weight:700}
+.horo-stars{color:#f5c842;font-size:.95rem;letter-spacing:2px}
+.horo-theme{font-style:italic;color:var(--text2);font-size:.9rem;line-height:1.65;
+  padding:12px 14px;background:rgba(74,158,255,.07);border-left:3px solid var(--accent);
+  border-radius:0 var(--radius-sm) var(--radius-sm) 0;margin-bottom:14px}
+.horo-areas{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.horo-area{padding:13px 15px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:var(--radius-sm)}
+.horo-area-title{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:5px}
+.horo-area-text{font-size:.9rem;line-height:1.65}
+.horo-moon{display:flex;align-items:center;gap:14px;padding:13px 15px;
+  background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:10px}
+.horo-moon-emoji{font-size:2.1rem}
+.horo-moon-phase{font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--text2);margin-bottom:3px}
+.horo-moon-pred{font-size:.87rem;line-height:1.55}
+.horo-lucky{display:flex;gap:8px;flex-wrap:wrap}
+.horo-lucky-item{padding:6px 12px;background:rgba(245,200,66,.08);border:1px solid rgba(245,200,66,.18);
+  border-radius:20px;font-size:.78rem;font-weight:700;color:#f5c842}
+.horo-lucky-item span{color:var(--text)}
+
+.rjson{background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);
+  padding:14px;font-family:'Courier New',monospace;font-size:.68rem;color:#6ee7b7;
+  white-space:pre-wrap;word-break:break-all;max-height:380px;overflow-y:auto;line-height:1.6}
+.kvlist{display:flex;flex-direction:column;gap:6px}
+.kvrow{display:flex;justify-content:space-between;gap:10px;padding:8px 12px;
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm)}
+.kvk{font-size:.74rem;color:var(--text2);font-weight:600;flex-shrink:0}
+.kvv{font-size:.85rem;font-weight:600;text-align:right;word-break:break-word}
+
+/* ── ORACLE MODAL ── */
+.oracle-input{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:13px 15px;color:var(--text);
+  font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:600;outline:none;
+  resize:none;min-height:90px;transition:border-color .2s;margin-bottom:12px}
+.oracle-input:focus{border-color:var(--accent)}
+.oracle-input::placeholder{color:var(--text2);font-weight:400}
+.oracle-answer{background:rgba(74,158,255,.07);border:1px solid rgba(74,158,255,.2);
+  border-radius:var(--radius-sm);padding:14px 16px;font-size:.95rem;line-height:1.75;
+  color:var(--text);margin-bottom:14px;display:none;white-space:pre-line}
+.oracle-answer.on{display:block}
+
+/* ── BALL / COOKIE MODAL ── */
+.magic-emoji{font-size:5rem;text-align:center;margin:8px 0 16px;line-height:1}
+.ball-options{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+.ball-opt{padding:14px;border-radius:var(--radius-sm);border:1px solid var(--border);
+  background:rgba(255,255,255,.04);color:var(--text);font-family:'Nunito',sans-serif;
+  font-size:1rem;font-weight:700;cursor:pointer;text-align:center;transition:all .2s}
+.ball-opt:active{background:rgba(74,158,255,.18);border-color:var(--accent)}
+.ball-answer{font-size:1.3rem;font-weight:800;text-align:center;color:var(--accent);
+  padding:16px;display:none}
+.ball-answer.on{display:block}
+.cookie-text{font-size:1rem;line-height:1.75;text-align:center;color:var(--text);
+  padding:8px 0 16px;font-style:italic}
+
+/* ── CRYSTAL BALANCE ── */
+.crystal-icon{font-size:1.3rem;line-height:1}
+.crystal-count{font-size:1rem;font-weight:800;color:#a78bfa;
+  background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.25);
+  border-radius:20px;padding:4px 12px}
+.not-enough{animation:shake .4s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+
+/* ── SHOP / CONFIRM MODALS ── */
+.shop-opt{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;
+  background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.2);
+  border-radius:var(--radius-sm);cursor:pointer;transition:all .2s;width:100%}
+.shop-opt:active{background:rgba(167,139,250,.2)}
+.shop-opt-crystals{font-size:1rem;font-weight:800;color:#a78bfa}
+.shop-opt-bonus{font-size:.85rem;color:var(--text2);font-weight:600}
+.shop-opts{display:flex;flex-direction:column;gap:10px;margin-bottom:4px}
+.confirm-text{font-size:1rem;line-height:1.65;text-align:center;color:var(--text);padding:8px 0 20px}
+.confirm-btns{display:flex;gap:10px}
+.confirm-yes{flex:1;padding:14px;border-radius:var(--radius-sm);border:none;
+  background:linear-gradient(135deg,var(--accent2),var(--accent));
+  color:#fff;font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:800;cursor:pointer}
+.confirm-no{flex:1;padding:14px;border-radius:var(--radius-sm);border:1px solid var(--border);
+  background:transparent;color:var(--text);font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:800;cursor:pointer}
+.congrats-text{font-size:1.2rem;font-weight:800;text-align:center;color:#a78bfa;
+  padding:16px 0 24px;line-height:1.5}
+
+/* ── ORACLE KEYBOARD FIX ── */
+#oracle-modal .result-modal{ max-height:85vh; }
+
+/* ── CITY AUTOCOMPLETE ── */
+.city-wrap{position:relative}
+.city-suggestions{position:absolute;top:100%;left:0;right:0;z-index:50;
+  background:#162540;border:1px solid var(--border);border-radius:var(--radius-sm);
+  margin-top:4px;overflow:hidden;display:none;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.city-suggestions.open{display:block}
+.city-suggestion{padding:12px 16px;font-size:.9rem;font-weight:600;color:var(--text);
+  cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s}
+.city-suggestion:last-child{border-bottom:none}
+.city-suggestion:active{background:rgba(74,158,255,.15)}
+.city-sub{font-size:.75rem;color:var(--text2);margin-top:2px}
+</style>
+<style>
+/* ── RESULT MODAL ── */
+.result-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:200;
+  display:flex;align-items:center;justify-content:center;padding:24px;
+  opacity:0;pointer-events:none;transition:opacity .25s}
+.result-modal-overlay.open{opacity:1;pointer-events:all}
+.result-modal{background:#162540;border-radius:20px;padding:24px 20px 28px;
+  width:100%;max-height:80vh;overflow-y:auto;
+  transform:scale(.92);transition:transform .25s cubic-bezier(.4,0,.2,1)}
+.result-modal-overlay.open .result-modal{transform:scale(1)}
+.result-modal-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;gap:12px}
+.result-modal-title{font-family:'Philosopher',serif;font-size:1.05rem;font-weight:700;line-height:1.3;flex:1}
+.result-modal-close{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.08);
+  border:none;color:var(--text);font-size:1.1rem;cursor:pointer;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center}
+.result-modal-text{font-size:.95rem;line-height:1.8;color:var(--text);
+  background:rgba(255,255,255,.03);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:16px;margin-bottom:16px;white-space:pre-line}
+
+.profile-btn{position:absolute;right:20px;top:50%;transform:translateY(-50%);
+  width:38px;height:38px;border-radius:50%;background:var(--card);
+  border:1px solid var(--border);color:var(--text);font-size:1.1rem;
+  cursor:pointer;display:flex;align-items:center;justify-content:center}
+.nav{position:relative}
+.nav-right{margin-left:auto}
+.onboard-header{padding:56px 24px 28px;flex-shrink:0;text-align:center}
+.onboard-logo{font-size:3.2rem;margin-bottom:14px}
+.onboard-title{font-family:'Philosopher',serif;font-size:2rem;font-weight:700;margin-bottom:8px}
+.onboard-sub{color:var(--text2);font-size:.95rem;line-height:1.5}
+.mechanic-list{padding:8px 16px 40px;display:flex;flex-direction:column;gap:12px}
+.mech-btn{display:flex;align-items:center;gap:16px;padding:18px 20px;
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  cursor:pointer;transition:all .2s;text-align:left;width:100%;position:relative}
+.mech-btn:active{transform:scale(.98);background:#1e3566}
+.mech-icon{width:50px;height:50px;border-radius:14px;display:flex;align-items:center;
+  justify-content:center;font-size:1.5rem;flex-shrink:0}
+.mech-label{font-size:1rem;font-weight:800;color:var(--text)}
+.mech-arrow{margin-left:auto;color:var(--text2);font-size:1.2rem;flex-shrink:0;transition:transform .2s}
+.mech-arrow.open{transform:rotate(90deg)}
+.mech-badge{position:absolute;top:12px;right:44px;width:22px;height:22px;border-radius:50%;
+  background:var(--accent);color:#fff;font-size:.7rem;font-weight:800;
+  display:flex;align-items:center;justify-content:center}
+.icon-c1{background:linear-gradient(135deg,#1e5bbd,#4a9eff)}
+.icon-c2{background:linear-gradient(135deg,#5b1ebd,#9f4aff)}
+.icon-c3{background:linear-gradient(135deg,#bd6e1e,#ff9f4a)}
+.icon-c4{background:linear-gradient(135deg,#1e8fbd,#4adeff)}
+.icon-c5{background:linear-gradient(135deg,#bd1e5b,#ff4a9f)}
+.icon-c6{background:linear-gradient(135deg,#166a4a,#3ecf8e)}
+.icon-c7{background:linear-gradient(135deg,#7a4a1e,#d4924a)}
+
+/* dropdown subtypes */
+.dropdown{overflow:hidden;max-height:0;transition:max-height .35s ease;margin-top:0}
+.dropdown.open{max-height:2000px}
+.dropdown-inner{padding:8px 0 4px 0;display:flex;flex-direction:column;gap:8px;align-items:center}
+.sub-item{padding:12px 16px;background:rgba(255,255,255,.04);border:1px solid var(--border);
+  border-radius:var(--radius-sm);cursor:pointer;font-size:.93rem;font-weight:700;
+  color:var(--text);text-align:center;width:90%;margin:0 auto;display:block;transition:all .2s}
+.sub-item:active{background:#1e3566}
+.sub-item.open-sub{border-color:var(--accent);color:var(--accent)}
+
+/* history dropdown */
+.history-list{display:flex;flex-direction:column;gap:6px;padding:6px 0 4px 0}
+.hist-item{padding:11px 14px;background:rgba(74,158,255,.07);border:1px solid rgba(74,158,255,.15);
+  border-radius:var(--radius-sm);cursor:pointer;font-size:.86rem;font-weight:700;
+  color:var(--text);text-align:left;width:100%;display:flex;justify-content:space-between;
+  align-items:center;transition:all .2s}
+.hist-item:active{background:rgba(74,158,255,.18)}
+.hist-date{font-size:.75rem;color:var(--text2);font-weight:600}
+
+/* profile */
+.profile-info{padding:20px;background:var(--card);margin:0 16px 16px;
+  border-radius:var(--radius);border:1px solid var(--border)}
+.profile-row{display:flex;justify-content:space-between;align-items:center;
+  padding:10px 0;border-bottom:1px solid var(--border)}
+.profile-row:last-child{border-bottom:none;padding-bottom:0}
+.profile-key{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text2)}
+.profile-val{font-size:.92rem;font-weight:700}
+.edit-btn{width:100%;padding:13px;border-radius:var(--radius-sm);border:1px solid var(--border);
+  background:transparent;color:var(--text2);font-family:'Nunito',sans-serif;font-size:.88rem;
+  font-weight:700;cursor:pointer;margin:0 0 20px;display:block;transition:all .2s}
+.edit-btn:active{background:var(--card)}
+.profile-section{padding:0 16px;margin-bottom:10px}
+.profile-section-title{font-size:.72rem;font-weight:800;text-transform:uppercase;
+  letter-spacing:.12em;color:var(--text2);margin-bottom:12px}
+
+/* modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;
+  display:flex;align-items:center;justify-content:center;padding:24px;
+  opacity:0;pointer-events:none;transition:opacity .25s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:#162540;border-radius:20px;padding:24px 20px 28px;
+  width:100%;transform:scale(.92);transition:transform .25s cubic-bezier(.4,0,.2,1)}
+.modal-overlay.open .modal{transform:scale(1)}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.modal-title{font-family:'Philosopher',serif;font-size:1.1rem;font-weight:700}
+.modal-close{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.08);
+  border:none;color:var(--text);font-size:1.1rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center}
+.modal-fields{display:flex;flex-direction:column;gap:12px;margin-bottom:20px}
+
+/* result */
+.sub-list{padding:8px 16px 40px;display:flex;flex-direction:column;gap:12px}
+.sub-btn{padding:18px 20px;background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);cursor:pointer;transition:all .2s;text-align:center;
+  width:100%;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:800;color:var(--text)}
+.sub-btn:active{transform:scale(.98);background:#1e3566}
+.result-body{padding:20px 20px 40px;flex:1}
+.result-text{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:24px 20px;font-size:1rem;line-height:1.75;margin-bottom:16px}
+.share-btn{width:100%;padding:15px;border-radius:var(--radius);border:1px solid var(--border);
+  background:transparent;color:var(--text);font-family:'Nunito',sans-serif;
+  font-size:.95rem;font-weight:800;cursor:pointer;display:flex;align-items:center;
+  justify-content:center;gap:8px;transition:all .2s}
+.share-btn:active{background:var(--card)}
+</style>
+</head>
+<body>
+
+<!-- ══ ОНБОРДИНГ ══ -->
+<div class="screen" id="s-onboard">
+  <div class="onboard-header">
+    <div class="onboard-logo">🔮</div>
+    <div class="onboard-title">Оракул</div>
+    <div class="onboard-sub">Введите данные о рождении для персонального прогноза</div>
+  </div>
+  <div class="form-body">
+    <div class="field"><label>Дата рождения</label><input type="date" id="ob-date"/></div>
+    <div class="field"><label>Время рождения</label><input type="time" id="ob-time" value="12:00"/></div>
+    <div class="field">
+      <label>Город рождения</label>
+      <div class="city-wrap">
+        <input type="text" id="ob-city" placeholder="Начните вводить город…" autocomplete="off" oninput="cityAutocomplete(this,'ob-city-list')" onblur="hideCitySuggestions('ob-city-list')"/>
+        <div class="city-suggestions" id="ob-city-list"></div>
+      </div>
+    </div>
+    <button class="sbtn" onclick="saveProfile(false)">К прогнозам →</button>
+    <div class="eb" id="er-onboard"></div>
+  </div>
+</div>
+
+<!-- ══ МЕХАНИКИ ══ -->
+<div class="screen hidden" id="s-mechanics">
+  <div class="nav" style="padding:52px 20px 16px;display:flex;align-items:center;gap:12px">
+    <div class="nav-title">🔮 Оракул</div>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+      <span style="font-size:1rem;cursor:pointer" onclick="openRubleShop()">💎</span>
+      <span class="crystal-count" id="crystal-display" style="cursor:pointer" onclick="openRubleShop()">50</span>
+      <button class="profile-btn" style="position:static;transform:none" onclick="goTo('profile')">👤</button>
+    </div>
+  </div>
+  <div class="mechanic-list" id="main-mech-list"></div>
+</div>
+
+<!-- ══ ПРОФИЛЬ ══ -->
+<div class="screen hidden" id="s-profile">
+  <div class="nav">
+    <button class="nav-back" onclick="back()">‹</button>
+    <div class="nav-title">Профиль</div>
+  </div>
+  <div class="profile-info" id="profile-info"></div>
+  <button class="edit-btn" style="margin:0 16px 8px;width:calc(100% - 32px)" onclick="openModal()">✏️ Редактировать данные</button>
+  <button class="edit-btn" style="margin:0 16px 16px;width:calc(100% - 32px)" onclick="openLedgerModal()">💎 История покупок</button>
+  <div class="profile-section">
+    <div class="profile-section-title">Ваши данные</div>
+    <div style="display:flex;flex-direction:column;gap:12px" id="profile-mech-list"></div>
+  </div>
+  <div style="height:32px"></div>
+  <div style="text-align:center;padding:0 0 24px;font-size:.72rem;color:var(--text2);opacity:.5">v1.0</div>
+</div>
+
+<!-- ══ РЕЗУЛЬТАТ ══ -->
+<div class="screen hidden" id="s-result">
+  <div class="nav">
+    <button class="nav-back" onclick="back()">‹</button>
+    <div class="nav-title" id="result-title">Результат</div>
+  </div>
+  <div class="result-body">
+    <div class="result-text" id="result-text">Тестовый текст</div>
+    <button class="share-btn" onclick="doShare()">📤 Поделиться</button>
+  </div>
+</div>
+
+<!-- ══ МОДАЛЬНОЕ ОКНО РЕДАКТИРОВАНИЯ ══ -->
+<div class="modal-overlay" id="edit-modal" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Редактировать данные</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-fields">
+      <div class="field"><label>Дата рождения</label><input type="date" id="m-date"/></div>
+      <div class="field"><label>Время рождения</label><input type="time" id="m-time"/></div>
+      <div class="field">
+        <label>Город рождения</label>
+        <div class="city-wrap">
+          <input type="text" id="m-city" placeholder="Начните вводить город…" autocomplete="off" oninput="cityAutocomplete(this,'m-city-list')" onblur="hideCitySuggestions('m-city-list')"/>
+          <div class="city-suggestions" id="m-city-list"></div>
+        </div>
+      </div>
+    </div>
+    <button class="sbtn" onclick="saveProfile(true)">Сохранить</button>
+  </div>
+</div>
+
+<script>
+// ── НАВИГАЦИЯ ──────────────────────────────────
+const navStack = [];
+let current = 'onboard';
+function goTo(screen) { navStack.push(current); _show(screen); }
+function back() { if(!navStack.length) return; _show(navStack.pop()); }
+function _show(screen) {
+  document.getElementById('s-'+current).classList.add('hidden');
+  const next = document.getElementById('s-'+screen);
+  if (!next) return;
+  next.classList.remove('hidden');
+  next.scrollTop = 0;
+  current = screen;
+  if (screen === 'profile') { renderProfileInfo(); renderMechList('profile-mech-list', true); }
+  if (screen === 'mechanics') { renderMechList('main-mech-list', false); }
+}
+
+// ── МЕХАНИКИ ────────────────────────────────────
+const MECHANICS = [
+  { id:'horoscope', icon:'☉', cls:'icon-c1', label:'Гороскоп',
+    subs:['Сегодня','Завтра','Неделя','Месяц','Год'],
+    prices:{'Сегодня':1,'Завтра':2,'Неделя':5,'Месяц':10,'Год':30} },
+  { id:'taro',      icon:'🃏', cls:'icon-c2', label:'Таро',
+    subs:['Карта дня','Расклад на 3 карты'],
+    prices:{'Карта дня':1,'Расклад на 3 карты':5} },
+  { id:'oracle',    icon:'🔮', cls:'icon-c3', label:'Совет Оракула',
+    subs:['Отношения','Работа','Самопознание','Общение'],
+    prices:{'Отношения':20,'Работа':20,'Самопознание':20,'Общение':20} },
+  { id:'ball',      icon:'🌐', cls:'icon-c4', label:'Магический шар',
+    subs:[], direct:true, noHistory:true, price:1 },
+  { id:'cookie',    icon:'🥠', cls:'icon-c5', label:'Печенье с предсказанием',
+    subs:[], direct:true, noHistory:true, price:1 },
+  { id:'numerology',icon:'🔢', cls:'icon-c6', label:'Нумерология',
+    subs:[], price:5 },
+  { id:'runes',     icon:'ᚱ',  cls:'icon-c7', label:'Руны',
+    subs:['Одна руна','Три руны','Руна ситуации'],
+    prices:{'Одна руна':5,'Три руны':10,'Руна ситуации':5} },
+];
+
+let crystals = 50;
+let sparBonus = 150; // баланс бонусов Спар (тестовое значение)
+const crystalLedger = []; // {type:'spend'|'earn', amount, label, datetime}
+// бесплатные попытки: key = 'mechId_sub', value = кол-во оставшихся бесплатных
+const freeUses = { 'horoscope_Сегодня': 1, 'taro_Карта дня': 1 };
+function freeKey(mid, sub) { return sub ? mid + '_' + sub : mid; }
+function hasFree(mid, sub) { return (freeUses[freeKey(mid, sub)] || 0) > 0; }
+function ledgerAdd(type, amount, label) {
+  crystalLedger.push({ type, amount, label, datetime: nowStr() });
+}
+function getPrice(mid, sub) {
+  const m = MECHANICS.find(x=>x.id===mid);
+  if (!m) return 0;
+  if (sub && m.prices) return m.prices[sub] || 0;
+  return m.price || 0;
+}
+function updateCrystalDisplay() {
+  const el = document.getElementById('crystal-display');
+  if (el) el.textContent = crystals;
+}
+function spendCrystals(mid, sub) {
+  // бесплатная попытка
+  if (hasFree(mid, sub)) {
+    freeUses[freeKey(mid, sub)]--;
+    // перерисовать кнопки чтобы цена появилась
+    rerenderSubPrices();
+    return true;
+  }
+  const cost = getPrice(mid, sub);
+  if (cost > crystals) {
+    const el = document.getElementById('crystal-display');
+    if (el) { el.classList.remove('not-enough'); void el.offsetWidth; el.classList.add('not-enough'); }
+    document.getElementById('no-crystals-modal').classList.add('open');
+    return false;
+  }
+  crystals -= cost;
+  updateCrystalDisplay();
+  soundCoin();
+  const m = MECHANICS.find(x=>x.id===mid);
+  const label = (m ? m.label : mid) + (sub ? ' · ' + sub : '');
+  ledgerAdd('spend', cost, label);
+  return true;
+}
+function rerenderSubPrices() {
+  // обновить текст кнопок подтипов на экране механик
+  MECHANICS.forEach(m => {
+    (m.subs || []).forEach(sub => {
+      const btn = document.getElementById('sub-main-mech-list-' + m.id + '-' + sub);
+      if (!btn) return;
+      const price = (m.prices && m.prices[sub]) ? m.prices[sub] : 0;
+      const free = hasFree(m.id, sub);
+      const priceTag = price ? (free
+        ? ' <span style="font-size:.72rem;color:#3ecf8e;font-weight:700;margin-left:6px">Бесплатно</span>'
+        : ' <span style="font-size:.72rem;color:#a78bfa;font-weight:700;margin-left:6px">' + price + '💎</span>')
+        : '';
+      btn.innerHTML = sub + priceTag;
+    });
+  });
+}
+
+// история: mechId + (sub ? '_'+sub : '') → [{datetime, title, text}]
+const history = {};
+
+function nowStr() {
+  return new Date().toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+}
+function mechCount(mid) {
+  return MECHANICS.find(m=>m.id===mid).subs.length
+    ? MECHANICS.find(m=>m.id===mid).subs.reduce((s,sub)=>s+(history[mid+'_'+sub]||[]).length, 0)
+    : (history[mid]||[]).length;
+}
+function subCount(mid, sub) { return (history[mid+'_'+sub]||[]).length; }
+
+function makeText(mechLabel, sub, dt) {
+  const p = profile;
+  const dFormatted = p.date ? p.date.split('-').reverse().join('.') : '—';
+  const tFormatted = (p.time || '').replace(':', '-');
+  const origin = 'Исходная информация: ' + (p.city||'—') + ', ' + dFormatted + ', ' + tFormatted;
+  return 'Тестовый прогноз «' + mechLabel + (sub?' · '+sub:'') + '» от ' + dt + '\n\n' + origin;
+}
+
+// ── РЕНДЕР СПИСКА ────────────────────────────────
+function renderMechList(containerId, withDropdown) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = '';
+  MECHANICS.forEach(m => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column';
+
+    // ── КНОПКА механики
+    const btn = document.createElement('button');
+    btn.className = 'mech-btn';
+    const cnt = mechCount(m.id);
+    const showBadge = withDropdown && cnt > 0;
+    btn.innerHTML = `
+      <div class="mech-icon ${m.cls}">${m.icon}</div>
+      <div class="mech-label">${m.label}</div>
+      <div class="mech-badge" id="badge-${containerId}-${m.id}" style="${showBadge ? '' : 'display:none'}">${cnt}</div>
+      <div class="mech-arrow" id="arrow-${containerId}-${m.id}">›</div>
+    `;
+    btn.onclick = () => toggleDrop(containerId, m.id);
+    wrap.appendChild(btn);
+
+    // ── DROPDOWN
+    const drop = document.createElement('div');
+    drop.className = 'dropdown';
+    drop.id = `drop-${containerId}-${m.id}`;
+    const inner = document.createElement('div');
+    inner.className = 'dropdown-inner';
+    inner.style.padding = '8px 0 4px 0';
+
+    if (m.subs.length > 0) {
+      m.subs.forEach(sub => {
+        // кнопка подтипа
+        const sc = withDropdown ? subCount(m.id, sub) : 0;
+        const subPrice = (m.prices && m.prices[sub]) ? m.prices[sub] : 0;
+        const subBtn = document.createElement('button');
+        subBtn.className = 'sub-item';
+        subBtn.id = `sub-${containerId}-${m.id}-${sub}`;
+        const free = !withDropdown && hasFree(m.id, sub);
+        const priceTag = (!withDropdown && subPrice) ? (free
+          ? ` <span style="font-size:.72rem;color:#3ecf8e;font-weight:700;margin-left:6px">Бесплатно</span>`
+          : ` <span style="font-size:.72rem;color:#a78bfa;font-weight:700;margin-left:6px">${subPrice}💎</span>`)
+          : '';
+        const cntTag = (withDropdown && sc > 0) ? ` <span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:var(--accent);color:#fff;font-size:.62rem;font-weight:800;margin-left:6px">${sc}</span>` : '';
+        subBtn.innerHTML = sub + priceTag + cntTag;
+
+        if (withDropdown) {
+          // профиль: показываем историю
+          subBtn.onclick = (e) => { e.stopPropagation(); toggleHistDrop(containerId, m.id, sub); };
+        } else {
+          // главный экран: создаём прогноз
+          subBtn.onclick = (e) => { e.stopPropagation(); createAndShow(m.id, m.label, sub); };
+        }
+        inner.appendChild(subBtn);
+
+        if (withDropdown) {
+          const hd = document.createElement('div');
+          hd.className = 'dropdown';
+          hd.id = `hdrop-${containerId}-${m.id}-${sub}`;
+          const hl = document.createElement('div');
+          hl.className = 'history-list';
+          hl.id = `hlist-${containerId}-${m.id}-${sub}`;
+          hd.appendChild(hl);
+          inner.appendChild(hd);
+        }
+      });
+    } else {
+      // без подтипов
+      if (withDropdown) {
+        const hl = document.createElement('div');
+        hl.className = 'history-list';
+        hl.id = `hlist-${containerId}-${m.id}-_`;
+        hl.style.padding = '4px 12px 4px';
+        renderHistItems(hl, m.id, null);
+        inner.appendChild(hl);
+      } else if (!m.direct) {
+        // главный экран — кнопка «Получить»
+        const getBtn = document.createElement('button');
+        getBtn.className = 'sub-item';
+        const noSubPrice = m.price || 0;
+        const noSubFree = hasFree(m.id, null);
+        const noSubPriceTag = noSubPrice
+          ? (noSubFree
+            ? ' <span style="font-size:.72rem;color:#3ecf8e;font-weight:700;margin-left:6px">Бесплатно</span>'
+            : ' <span style="font-size:.72rem;color:#a78bfa;font-weight:700;margin-left:6px">' + noSubPrice + '💎</span>')
+          : '';
+        getBtn.innerHTML = 'Получить прогноз' + noSubPriceTag;
+        getBtn.onclick = (e) => { e.stopPropagation(); createAndShow(m.id, m.label, null); };
+        inner.appendChild(getBtn);
+      }
+      // direct: no dropdown content
+    }
+
+    drop.appendChild(inner);
+    if (!m.direct || withDropdown) wrap.appendChild(drop);
+    container.appendChild(wrap);
+  });
+}
+
+function toggleDrop(cid, mid) {
+  const mech = MECHANICS.find(m=>m.id===mid);
+  // direct modals — open immediately, no dropdown
+  if (mech && mech.direct && cid === 'main-mech-list') {
+    if (mid === 'ball') { openBallModal(); return; }
+    if (mid === 'cookie') { openCookieModal(); return; }
+  }
+  MECHANICS.forEach(m => {
+    if (m.id === mid) return;
+    const d = document.getElementById(`drop-${cid}-${m.id}`);
+    if (d && d.classList.contains('open')) { d.classList.remove('open'); }
+    const a = document.getElementById(`arrow-${cid}-${m.id}`);
+    if (a) a.classList.remove('open');
+  });
+  const drop = document.getElementById(`drop-${cid}-${mid}`);
+  const arrow = document.getElementById(`arrow-${cid}-${mid}`);
+  if (!drop) return;
+  const opening = !drop.classList.contains('open');
+  drop.classList.toggle('open');
+  if (arrow) arrow.classList.toggle('open', opening);
+  if (opening) {
+    if (mech && mech.subs.length === 0) {
+      const hl = document.getElementById(`hlist-${cid}-${mid}-_`);
+      if (hl) renderHistItems(hl, mid, null);
+    }
+  }
+}
+
+function toggleHistDrop(cid, mid, sub) {
+  const mech = MECHANICS.find(m=>m.id===mid);
+  if (mech) mech.subs.forEach(s => {
+    if (s === sub) return;
+    const h = document.getElementById(`hdrop-${cid}-${mid}-${s}`); if (h) h.classList.remove('open');
+    const b = document.getElementById(`sub-${cid}-${mid}-${s}`); if (b) b.classList.remove('open-sub');
+  });
+  const hd = document.getElementById(`hdrop-${cid}-${mid}-${sub}`);
+  const sb = document.getElementById(`sub-${cid}-${mid}-${sub}`);
+  if (!hd) return;
+  const opening = !hd.classList.contains('open');
+  hd.classList.toggle('open');
+  if (sb) sb.classList.toggle('open-sub', opening);
+  if (opening) {
+    const hl = document.getElementById(`hlist-${cid}-${mid}-${sub}`);
+    if (hl) renderHistItems(hl, mid, sub);
+  }
+}
+
+function renderHistItems(hlist, mid, sub) {
+  const key = mid + (sub ? '_'+sub : '');
+  const items = (history[key]||[]).slice().reverse(); // newest first
+  if (!items.length) {
+    hlist.innerHTML = '<div style="padding:8px 12px;font-size:.82rem;color:var(--text2)">Нет прогнозов</div>';
+    return;
+  }
+  hlist.innerHTML = items.map((item,i) => {
+    const realIdx = (history[key]||[]).length - 1 - i;
+    return `<button class="hist-item" onclick="openSaved('${key}',${realIdx})">
+      <span style="font-size:.85rem">${item.title}</span>
+      <span class="hist-date">${item.datetime}</span>
+    </button>`;
+  }).join('');
+}
+
+// ── СОЗДАТЬ ПРОГНОЗ ──────────────────────────────
+function createAndShow(mid, mechLabel, sub) {
+  if (mid === 'oracle' && sub === 'Отношения') { openPartnerModal(mechLabel, sub); return; }
+  if (mid === 'oracle') { openOracleModal(mechLabel, sub); return; }
+  if (mid === 'ball')   { if (!spendCrystals(mid, sub)) return; openBallModal(); return; }
+  if (mid === 'cookie') { openCookieModal(); return; }
+  if (mid === 'horoscope') { createHoroscope(mechLabel, sub); return; }
+  if (mid === 'taro') { createTaro(mechLabel, sub); return; }
+  if (mid === 'numerology') { createNumerology(mechLabel); return; }
+  if (mid === 'runes') { createRunes(mechLabel, sub); return; }
+  if (!spendCrystals(mid, sub)) return;
+  const dt = nowStr();
+  const key = mid + (sub ? '_'+sub : '');
+  const title = mechLabel + (sub ? ' · '+sub : '');
+  const text = makeText(mechLabel, sub, dt);
+  if (!history[key]) history[key] = [];
+  history[key].push({ datetime: dt, title, text });
+  openResultModal(title, text);
+}
+
+// ── ГОРОСКОП: API ─────────────────────────────
+async function createHoroscope(mechLabel, sub) {
+  if (!spendCrystals('horoscope', sub)) return;
+  const title = mechLabel + ' · ' + sub;
+  openResultModal(title, '⏳ Загружаю прогноз…');
+  try {
+    const p = profile;
+    const [y,mo,day] = (p.date||'1990-01-01').split('-').map(Number);
+    const [h,mi] = (p.time||'12:00').split(':').map(Number);
+    // target_date for Завтра
+    let targetDate = null;
+    if (sub === 'Завтра') {
+      const d = new Date(); d.setDate(d.getDate()+1);
+      targetDate = d.toISOString().slice(0,10);
+    }
+    const horoType = (sub === 'Неделя') ? 'weekly' : (sub === 'Месяц') ? 'monthly' : (sub === 'Год') ? 'yearly' : 'daily';
+    const apiEndpoint = `/api/v3/horoscope/personal/${horoType}`;
+    // Determine city and country for API
+    const cityName = p.city || 'Moscow';
+    // Try to get country code from stored coords; default to RU
+    const countryCode = p.countryCode || 'RU';
+    const body = {
+      subject: {
+        name: 'User',
+        birth_data: { year:y, month:mo, day:day, hour:h, minute:mi, second:0,
+          city: cityName, country_code: countryCode }
+      },
+      horoscope_type: horoType,
+      language: 'ru',
+      tradition: 'universal',
+      include_transits: true,
+      include_progressions: false
+    };
+    if (targetDate) body.target_date = targetDate;
+    const resp = await fetch('/proxy', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ apiPath: apiEndpoint, payload:body })
+    });
+    const json = await resp.json();
+    if (!json.success && !json.data) throw new Error(json.message || 'Ошибка API');
+    const data = json.data || json;
+    const text = formatHoroscope(data, sub);
+    document.getElementById('rmt-text').innerHTML = text;
+    const dt = nowStr();
+    const key = 'horoscope_' + sub;
+    if (!history[key]) history[key] = [];
+    history[key].push({ datetime: dt, title, text: data.overall_theme || text });
+  } catch(e) {
+    document.getElementById('rmt-text').textContent = '❌ Ошибка: ' + e.message;
+  }
+}
+
+function formatHoroscope(d, sub) {
+  const p = profile;
+  const dF = p.date ? p.date.split('-').reverse().join('.') : '—';
+  const tF = (p.time||'').replace(':','-');
+  const origin = '<span style="font-size:.75rem;color:var(--text2)">Исходная информация: ' + (p.city||'—') + ', ' + dF + ', ' + tF + '</span>';
+
+  let html = '';
+
+  // Общая тема
+  if (d.overall_theme) {
+    html += '<div style="font-size:1rem;font-weight:700;line-height:1.6;margin-bottom:14px;color:var(--text)">' + d.overall_theme + '</div>';
+  }
+
+  // Рейтинг дня
+  if (d.overall_rating) {
+    const stars = '★'.repeat(d.overall_rating) + '☆'.repeat(5 - d.overall_rating);
+    html += '<div style="font-size:1.1rem;color:#f5c842;margin-bottom:16px;letter-spacing:2px">' + stars + '</div>';
+  }
+
+  // Луна
+  if (d.moon && d.moon.phase) {
+    const moonSignRu = translateSign(d.moon.sign);
+    html += '<div style="background:rgba(74,158,255,.08);border:1px solid rgba(74,158,255,.2);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:.88rem">';
+    html += '🌙 <b>' + d.moon.phase + '</b> в ' + moonSignRu;
+    if (d.moon.prediction) html += '<br><span style="color:var(--text2)">' + d.moon.prediction + '</span>';
+    html += '</div>';
+  }
+
+  // Void of course moon
+  if (d.void_of_course_moon && d.void_of_course_moon.is_void && d.void_of_course_moon.advice) {
+    html += '<div style="background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:.85rem;color:#f87171">';
+    html += '⚠️ ' + d.void_of_course_moon.advice;
+    html += '</div>';
+  }
+
+  // Сферы жизни
+  if (d.life_areas && d.life_areas.length) {
+    html += '<div style="margin-bottom:14px">';
+    d.life_areas.forEach(area => {
+      const emoji = (area.extra && area.extra.emoji) ? area.extra.emoji : '▸';
+      const rating = area.rating || 0;
+      const bar = '●'.repeat(rating) + '○'.repeat(5-rating);
+      html += '<div style="margin-bottom:12px;padding:10px 12px;background:var(--card);border-radius:10px;border:1px solid var(--border)">';
+      html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">';
+      html += '<b style="font-size:.9rem">' + emoji + ' ' + area.title + '</b>';
+      html += '<span style="font-size:.75rem;color:#f5c842;letter-spacing:1px">' + bar + '</span>';
+      html += '</div>';
+      html += '<div style="font-size:.85rem;color:var(--text2);line-height:1.55">' + area.prediction + '</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+  }
+
+  // Советы
+  if (d.tips && d.tips.length) {
+    html += '<div style="margin-bottom:14px">';
+    html += '<div style="font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:8px">Советы дня</div>';
+    d.tips.forEach(tip => {
+      const txt = (typeof tip === 'string') ? tip : (tip.text || '');
+      html += '<div style="font-size:.85rem;color:var(--text2);line-height:1.55;margin-bottom:6px">• ' + txt + '</div>';
+    });
+    html += '</div>';
+  }
+
+  // Удачные элементы
+  if (d.lucky_elements) {
+    const le = d.lucky_elements;
+    html += '<div style="background:rgba(167,139,250,.07);border:1px solid rgba(167,139,250,.2);border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:.83rem">';
+    html += '<div style="font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#a78bfa;margin-bottom:8px">Удача сегодня</div>';
+    if (le.colors && le.colors.length) html += '<div style="margin-bottom:4px">🎨 Цвета: <span style="color:var(--text)">' + le.colors.join(', ') + '</span></div>';
+    if (le.numbers && le.numbers.length) html += '<div style="margin-bottom:4px">🔢 Числа: <span style="color:var(--text)">' + le.numbers.join(', ') + '</span></div>';
+    if (le.stones && le.stones.length) html += '<div style="margin-bottom:4px">💎 Камни: <span style="color:var(--text)">' + le.stones.join(', ') + '</span></div>';
+    if (le.times && le.times.length) html += '<div>⏰ Часы удачи: <span style="color:var(--text)">' + le.times.join(', ') + '</span></div>';
+    html += '</div>';
+  }
+
+  html += '<div style="margin-top:4px">' + origin + '</div>';
+  return html;
+}
+
+// ── ТАРО: API ─────────────────────────────────
+async function createTaro(mechLabel, sub) {
+  if (!spendCrystals('taro', sub)) return;
+  const title = mechLabel + ' · ' + sub;
+  openResultModal(title, '⏳ Загружаю расклад…');
+  try {
+    const p = profile;
+    const [y,mo,day] = (p.date||'1990-01-01').split('-').map(Number);
+    const [h,mi] = (p.time||'12:00').split(':').map(Number);
+    const cityName = p.city || 'Moscow';
+    const countryCode = p.countryCode || 'RU';
+    const subject = {
+      name: 'User',
+      birth_data: { year:y, month:mo, day:day, hour:h, minute:mi, second:0,
+        city: cityName, country_code: countryCode }
+    };
+
+    let html = '';
+
+    if (sub === 'Карта дня') {
+      // Шаг 1: получить карту дня
+      const dailyResp = await fetch('/proxy', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ apiPath: '/api/v3/tarot/cards/daily', method: 'GET' })
+      });
+      const dailyJson = await dailyResp.json();
+      if (!dailyJson.success) throw new Error(dailyJson.error?.message || 'Ошибка получения карты');
+      const cardId = dailyJson.card?.id;
+      if (!cardId) throw new Error('Карта не получена');
+
+      // Шаг 2: получить отчёт по карте
+      const reportResp = await fetch('/proxy', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          apiPath: '/api/v3/tarot/reports/single',
+          payload: { subject, card_id: cardId, language: 'ru', tradition: 'universal' }
+        })
+      });
+      const reportJson = await reportResp.json();
+      const data = reportJson.data || reportJson;
+      html = formatTaroSingle(dailyJson.card, data);
+
+    } else if (sub === 'Расклад на 3 карты') {
+      const resp = await fetch('/proxy', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          apiPath: '/api/v3/tarot/reports/three-card',
+          payload: { subject, language: 'ru', tradition: 'universal' }
+        })
+      });
+      const json = await resp.json();
+      if (!json.success) throw new Error(json.error?.message || 'Ошибка API');
+      html = formatTaroThree(json.data || json);
+    }
+
+    document.getElementById('rmt-text').innerHTML = html;
+    const dt = nowStr();
+    const key = 'taro_' + sub;
+    if (!history[key]) history[key] = [];
+    history[key].push({ datetime: dt, title, text: html });
+  } catch(e) {
+    document.getElementById('rmt-text').textContent = '❌ Ошибка: ' + e.message;
+  }
+}
+
+const ARCANA_RU = { minor: 'Младший аркан', major: 'Старший аркан' };
+const SUIT_RU = { cups: 'Кубки', wands: 'Жезлы', swords: 'Мечи', pentacles: 'Пентакли' };
+const ORIENTATION_RU = { upright: 'Прямое положение', reversed: 'Перевёрнутое положение' };
+const ELEMENT_RU = { Water:'Вода', Fire:'Огонь', Air:'Воздух', Earth:'Земля' };
+const POSITION_RU = { Past:'Прошлое', Present:'Настоящее', Future:'Будущее',
+  'Card 1':'Карта 1', 'Card 2':'Карта 2', 'Card 3':'Карта 3' };
+
+// Маппинг id карты → URL изображения (Rider-Waite, public domain)
+const MAJOR_ARCANA_NUM = {
+  the_fool:0, the_magician:1, the_high_priestess:2, the_empress:3, the_emperor:4,
+  the_hierophant:5, the_lovers:6, the_chariot:7, strength:8, the_hermit:9,
+  wheel_of_fortune:10, justice:11, the_hanged_man:12, death:13, temperance:14,
+  the_devil:15, the_tower:16, the_star:17, the_moon:18, the_sun:19,
+  judgement:20, the_world:21
+};
+function tarotImageUrl(cardId) {
+  if (!cardId) return null;
+  const id = cardId.toLowerCase().replace(/-/g,'_');
+  const base = 'https://ishtarcollective.blob.core.windows.net/rider-waite-tarot/';
+  // Старший аркан
+  if (id in MAJOR_ARCANA_NUM) {
+    return base + 'major-' + String(MAJOR_ARCANA_NUM[id]).padStart(2,'0') + '.jpg';
+  }
+  // Младший аркан: cups_10 → cups-10.jpg
+  const parts = id.split('_');
+  if (parts.length === 2) {
+    const suit = parts[0]; // cups, wands, swords, pentacles
+    const num = parseInt(parts[1], 10);
+    if (!isNaN(num)) return base + suit + '-' + String(num).padStart(2,'0') + '.jpg';
+  }
+  return null;
+}
+
+function cardName(card) {
+  if (!card) return '';
+  if (typeof card.name === 'string') return card.name;
+  if (card.name && card.name.ru) return card.name.ru;
+  if (card.name && card.name.en) return card.name.en;
+  return '';
+}
+
+function taroCardBadge(card, orientation) {
+  if (!card) return '';
+  const name = cardName(card);
+  const arcana = ARCANA_RU[card.arcana] || card.arcana || '';
+  const suit = card.suit ? (SUIT_RU[card.suit] || card.suit) : '';
+  const orientStr = orientation || card.orientation || '';
+  const orientRu = ORIENTATION_RU[orientStr] || '';
+  const element = card.element ? (ELEMENT_RU[card.element] || card.element) : '';
+  const imgUrl = tarotImageUrl(card.id);
+  const isReversed = orientStr === 'reversed';
+
+  let html = '<div style="background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.25);border-radius:10px;padding:13px 15px;margin-bottom:10px;display:flex;gap:14px;align-items:flex-start">';
+  // Картинка
+  if (imgUrl) {
+    html += '<div style="flex-shrink:0;width:60px">'
+      + '<img src="' + imgUrl + '" alt="' + name + '" '
+      + 'style="width:60px;height:103px;object-fit:cover;border-radius:6px;'
+      + (isReversed ? 'transform:rotate(180deg);' : '')
+      + 'box-shadow:0 2px 8px rgba(0,0,0,.4)" onerror="this.style.display=\'none\'">'
+      + '</div>';
+  }
+  // Текст
+  html += '<div style="flex:1;min-width:0">';
+  if (name) html += '<div style="font-size:1.05rem;font-weight:800;color:#c084fc;margin-bottom:6px">' + name + '</div>';
+  html += '<div style="display:flex;flex-wrap:wrap;gap:5px">';
+  if (arcana) html += '<span style="font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(167,139,250,.15);color:#c084fc">' + arcana + '</span>';
+  if (suit) html += '<span style="font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(74,158,255,.12);color:#4a9eff">' + suit + '</span>';
+  if (element) html += '<span style="font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(62,207,142,.1);color:#3ecf8e">' + element + '</span>';
+  if (orientRu) html += '<span style="font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(245,200,66,.1);color:#f5c842">' + orientRu + '</span>';
+  html += '</div></div></div>';
+  return html;
+}
+
+function formatTaroSingle(card, data) {
+  const p = profile;
+  const dF = p.date ? p.date.split('-').reverse().join('.') : '—';
+  const origin = '<span style="font-size:.75rem;color:var(--text2)">Исходная информация: ' + (p.city||'—') + ', ' + dF + '</span>';
+
+  let html = '<div style="font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#c084fc;margin-bottom:10px">🃏 Карта дня</div>';
+  html += taroCardBadge(card, card?.orientation);
+
+  // Интерпретация из daily
+  if (data && (data.interpretation || data.report)) {
+    const interp = data.interpretation || data.report?.interpretation || '';
+    if (interp) {
+      html += '<div style="font-size:.9rem;line-height:1.7;margin-bottom:14px;padding:13px 15px;background:rgba(74,158,255,.07);border-left:3px solid #4a9eff;border-radius:0 10px 10px 0">' + interp + '</div>';
+    }
+  }
+
+  // Сферы жизни из отчёта
+  const report = data?.report || data;
+  if (report?.life_areas && report.life_areas.length) {
+    html += '<div style="margin-bottom:14px">';
+    html += '<div style="font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:8px">Сферы жизни</div>';
+    report.life_areas.forEach(area => {
+      html += '<div style="margin-bottom:10px;padding:10px 12px;background:var(--card);border-radius:10px;border:1px solid var(--border)">';
+      html += '<b style="font-size:.88rem">' + (area.title || area.area || '') + '</b>';
+      html += '<div style="font-size:.84rem;color:var(--text2);line-height:1.55;margin-top:4px">' + (area.prediction || area.text || '') + '</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+  }
+
+  // Советы
+  if (report?.advice || report?.message) {
+    html += '<div style="background:rgba(245,200,66,.07);border:1px solid rgba(245,200,66,.18);border-radius:10px;padding:12px 14px;margin-bottom:14px">';
+    html += '<div style="font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#f5c842;margin-bottom:6px">Совет</div>';
+    html += '<div style="font-size:.87rem;line-height:1.6">' + (report.advice || report.message) + '</div>';
+    html += '</div>';
+  }
+
+  html += '<div style="margin-top:6px">' + origin + '</div>';
+  return html;
+}
+
+function formatTaroThree(data) {
+  const p = profile;
+  const dF = p.date ? p.date.split('-').reverse().join('.') : '—';
+  const origin = '<span style="font-size:.75rem;color:var(--text2)">Исходная информация: ' + (p.city||'—') + ', ' + dF + '</span>';
+
+  const positionNames = ['Прошлое', 'Настоящее', 'Будущее'];
+  let html = '<div style="font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#c084fc;margin-bottom:12px">🃏 Расклад на 3 карты</div>';
+
+  // Синтез
+  if (data.synthesis) {
+    html += '<div style="font-size:.95rem;font-weight:700;line-height:1.65;margin-bottom:16px;color:var(--text)">' + data.synthesis + '</div>';
+  }
+
+  // Карты
+  const cards = data.cards || [];
+  cards.forEach((c, i) => {
+    const card = c.card || c;
+    const posRaw = c.position_name || c.position || '';
+    const posLabel = POSITION_RU[posRaw] || posRaw || ('Карта ' + (i+1));
+    const orientation = c.orientation || card.orientation || '';
+    html += '<div style="margin-bottom:16px">';
+    html += '<div style="font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin-bottom:6px">' + posLabel + '</div>';
+    html += taroCardBadge(card, orientation);
+    const interp = c.interpretation || c.reading || card.interpretation || '';
+    if (interp) {
+      // убираем префикс "Past: " / "Present: " / "Future: " если есть
+      const cleaned = interp.replace(/^(Past|Present|Future|Прошлое|Настоящее|Будущее):\s*/i, '');
+      html += '<div style="font-size:.87rem;line-height:1.65;color:var(--text2);margin-bottom:6px">' + cleaned + '</div>';
+    }
+    html += '</div>';
+  });
+
+  // Советы
+  if (data.suggestions && data.suggestions.length) {
+    html += '<div style="background:rgba(245,200,66,.07);border:1px solid rgba(245,200,66,.18);border-radius:10px;padding:12px 14px;margin-bottom:14px">';
+    html += '<div style="font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#f5c842;margin-bottom:8px">Советы</div>';
+    data.suggestions.forEach(s => {
+      const txt = typeof s === 'string' ? s : (s.text || s.suggestion || '');
+      if (txt) html += '<div style="font-size:.85rem;color:var(--text2);line-height:1.55;margin-bottom:5px">• ' + txt + '</div>';
+    });
+    html += '</div>';
+  }
+
+  // Отчёт
+  if (data.report) {
+    const r = data.report;
+    if (r.overall || r.summary || r.interpretation) {
+      html += '<div style="font-size:.87rem;line-height:1.65;padding:12px 14px;background:rgba(74,158,255,.07);border-left:3px solid #4a9eff;border-radius:0 10px 10px 0;margin-bottom:14px">';
+      html += r.overall || r.summary || r.interpretation;
+      html += '</div>';
+    }
+  }
+
+  html += '<div style="margin-top:6px">' + origin + '</div>';
+  return html;
+}
+
+// ── НУМЕРОЛОГИЯ: API ──────────────────────────
+async function createNumerology(mechLabel) {
+  if (!spendCrystals('numerology', null)) return;
+  openResultModal(mechLabel, '⏳ Считаю числа…');
+  try {
+    const p = profile;
+    const [y,mo,day] = (p.date||'1990-01-01').split('-').map(Number);
+    const [h,mi] = (p.time||'12:00').split(':').map(Number);
+    const resp = await fetch('/proxy', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        apiPath: '/api/v3/numerology/core-numbers',
+        payload: {
+          subject: {
+            name: 'User',
+            birth_data: { year:y, month:mo, day:day, hour:h, minute:mi,
+              city: p.city||'Moscow', country_code: p.countryCode||'RU' }
+          },
+          options: { system: 'pythagorean', language: 'ru', target_year: new Date().getFullYear() }
+        }
+      })
+    });
+    const json = await resp.json();
+    if (!json.success) throw new Error(json.error?.message || 'Ошибка API');
+    const data = json.data?.pythagorean || json.data;
+    const html = formatNumerology(data);
+    document.getElementById('rmt-text').innerHTML = html;
+    const dt = nowStr();
+    if (!history['numerology']) history['numerology'] = [];
+    history['numerology'].push({ datetime: dt, title: mechLabel, text: html });
+  } catch(e) {
+    document.getElementById('rmt-text').textContent = '❌ Ошибка: ' + e.message;
+  }
+}
+
+function numSection(icon, title, content) {
+  return '<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 15px;margin-bottom:10px">'
+    + '<div style="font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#a78bfa;margin-bottom:10px">' + icon + ' ' + title + '</div>'
+    + content + '</div>';
+}
+
+function formatNumerology(d) {
+  const p = profile;
+  const dF = p.date ? p.date.split('-').reverse().join('.') : '—';
+  const origin = '<span style="font-size:.75rem;color:var(--text2)">Исходная информация: ' + (p.city||'—') + ', ' + dF + '</span>';
+
+  let html = '<div style="font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#a78bfa;margin-bottom:14px">🔢 Нумерология</div>';
+
+  // Ключевые числа — сетка
+  const keys = [
+    { key:'life_path',     label:'Жизненный путь' },
+    { key:'destiny',       label:'Число судьбы' },
+    { key:'soul_urge',     label:'Зов души' },
+    { key:'personality',   label:'Личность' },
+    { key:'birthday',      label:'День рождения' },
+    { key:'personal_year', label:'Личный год' },
+    { key:'maturity_number', label:'Зрелость' },
+  ];
+  let gridHtml = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">';
+  keys.forEach(function(item) {
+    const it = d[item.key];
+    if (!it) return;
+    const num = it.number != null ? it.number : '—';
+    const theme = it.theme || '';
+    gridHtml += '<div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 12px">'
+      + '<div style="font-size:1.6rem;font-weight:800;color:#a78bfa;line-height:1">' + num + '</div>'
+      + '<div style="font-size:.7rem;font-weight:700;color:var(--text);margin-top:3px">' + item.label + '</div>'
+      + (theme ? '<div style="font-size:.65rem;color:#7c3aed;margin-top:2px">' + theme + '</div>' : '')
+      + '</div>';
+  });
+  gridHtml += '</div>';
+  html += gridHtml;
+
+  // Детальные интерпретации
+  const sections = [
+    { key:'life_path',     icon:'☀️', label:'Жизненный путь' },
+    { key:'personal_year', icon:'📅', label:'Личный год' },
+    { key:'destiny',       icon:'🎯', label:'Число судьбы' },
+    { key:'soul_urge',     icon:'💫', label:'Зов души' },
+  ];
+  sections.forEach(function(s) {
+    const it = d[s.key];
+    if (!it || !it.interpretation) return;
+    const num = it.number != null ? it.number : '—';
+    const inner = '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">'
+      + '<div style="min-width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#4a2d8a,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:800;color:#fff;flex-shrink:0">' + num + '</div>'
+      + '<div><div style="font-size:.85rem;font-weight:800;color:var(--text)">' + s.label + '</div>'
+      + (it.theme ? '<div style="font-size:.75rem;color:#a78bfa">' + it.theme + '</div>' : '')
+      + '</div></div>'
+      + '<div style="font-size:.85rem;line-height:1.65;color:var(--text2)">' + it.interpretation + '</div>';
+    html += numSection(s.icon, s.label, inner);
+  });
+
+  // Пиковые периоды
+  const pinnacles = d.pinnacle_numbers && d.pinnacle_numbers.pinnacles;
+  if (pinnacles && pinnacles.length) {
+    let pHtml = '';
+    pinnacles.forEach(function(pin) {
+      const border = pin.is_active ? 'border-color:rgba(167,139,250,.5)' : '';
+      pHtml += '<div style="padding:10px 12px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;margin-bottom:8px;' + border + '">'
+        + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">'
+        + '<span style="font-size:.78rem;font-weight:700;color:var(--text)">' + (pin.period||'') + '</span>'
+        + '<span style="font-size:1.1rem;font-weight:800;color:#a78bfa">' + pin.number + '</span></div>'
+        + (pin.is_active ? '<div style="font-size:.65rem;color:#3ecf8e;font-weight:700;margin-bottom:4px">● ТЕКУЩИЙ ПЕРИОД</div>' : '')
+        + '<div style="font-size:.8rem;color:var(--text2);line-height:1.5">' + (pin.interpretation||'') + '</div>'
+        + '</div>';
+    });
+    html += numSection('🏔️', 'Пиковые периоды', pHtml);
+  }
+
+  // Активные вызовы
+  const challenges = d.challenge_numbers && d.challenge_numbers.challenges;
+  if (challenges && challenges.length) {
+    let cHtml = '';
+    challenges.filter(function(c){ return c.is_active || c.is_main_challenge; }).forEach(function(ch) {
+      const badge = ch.is_main_challenge ? '⚡ Главный вызов' : '● Активный вызов';
+      cHtml += '<div style="padding:10px 12px;background:rgba(248,113,113,.06);border:1px solid rgba(248,113,113,.2);border-radius:8px;margin-bottom:8px">'
+        + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">'
+        + '<span style="font-size:.72rem;font-weight:800;color:#f87171">' + badge + '</span>'
+        + '<span style="font-size:1.1rem;font-weight:800;color:#f87171">' + ch.number + '</span></div>'
+        + '<div style="font-size:.78rem;color:var(--text2);margin-bottom:3px">' + (ch.period||'') + '</div>'
+        + '<div style="font-size:.82rem;color:var(--text2);line-height:1.5">' + (ch.interpretation||'') + '</div>'
+        + '</div>';
+    });
+    if (cHtml) html += numSection('⚡', 'Вызовы жизни', cHtml);
+  }
+
+  html += '<div style="margin-top:6px">' + origin + '</div>';
+  return html;
+}
+
+// ── РУНЫ: API ─────────────────────────────────
+const RUNE_ENDPOINT = {
+  'Одна руна':       '/api/v3/runes/reports/single',
+  'Три руны':        '/api/v3/runes/reports/three-rune',
+  'Руна ситуации':   '/api/v3/runes/reports/situational',
+};
+const ORIENTATION_RUNE_RU = { upright: 'Прямое', reversed: 'Перевёрнутое' };
+const ELEMENT_RUNE_RU = { Fire:'Огонь', Water:'Вода', Air:'Воздух', Earth:'Земля', Ice:'Лёд' };
+
+async function createRunes(mechLabel, sub) {
+  if (!spendCrystals('runes', sub)) return;
+  const title = mechLabel + ' · ' + sub;
+  openResultModal(title, '⏳ Бросаю руны…');
+  try {
+    const p = profile;
+    const [y,mo,day] = (p.date||'1990-01-01').split('-').map(Number);
+    const [h,mi] = (p.time||'12:00').split(':').map(Number);
+    const endpoint = RUNE_ENDPOINT[sub] || '/api/v3/runes/reports/single';
+    const resp = await fetch('/proxy', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        apiPath: endpoint,
+        payload: {
+          subject: {
+            name: 'User',
+            birth_data: { year:y, month:mo, day:day, hour:h, minute:mi,
+              city: p.city||'Moscow', country_code: p.countryCode||'RU' }
+          },
+          language: 'ru',
+          tradition: 'universal'
+        }
+      })
+    });
+    const json = await resp.json();
+    if (!json.success) throw new Error(json.error?.message || 'Ошибка API');
+    const html = formatRunes(json.data, sub);
+    document.getElementById('rmt-text').innerHTML = html;
+    const dt = nowStr();
+    const key = 'runes_' + sub;
+    if (!history[key]) history[key] = [];
+    history[key].push({ datetime: dt, title, text: html });
+  } catch(e) {
+    document.getElementById('rmt-text').textContent = '❌ Ошибка: ' + e.message;
+  }
+}
+
+function runeCard(r, orientation) {
+  if (!r) return '';
+  const orient = orientation || r.orientation || '';
+  const orientRu = ORIENTATION_RUNE_RU[orient] || '';
+  const element = r.element ? (ELEMENT_RUNE_RU[r.element] || r.element) : '';
+  const keywords = r.keywords
+    ? (typeof r.keywords === 'string' ? r.keywords : (r.keywords.upright || ''))
+    : '';
+  const keyArr = typeof keywords === 'string' && keywords
+    ? keywords.split(/[\s,]+/).filter(Boolean).slice(0, 4) : [];
+
+  let html = '<div style="background:rgba(212,146,74,.08);border:1px solid rgba(212,146,74,.25);border-radius:10px;padding:12px 14px;margin-bottom:10px">';
+  // Символ + имя
+  html += '<div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">';
+  if (r.unicode) html += '<div style="font-size:2.2rem;color:#d4924a;line-height:1;min-width:36px;text-align:center">' + r.unicode + '</div>';
+  html += '<div>';
+  html += '<div style="font-size:1rem;font-weight:800;color:#d4924a">' + (r.name||'') + (r.norse_name && r.norse_name !== r.name ? ' <span style="font-size:.75rem;color:var(--text2)">(' + r.norse_name + ')</span>' : '') + '</div>';
+  if (r.meaning_word) html += '<div style="font-size:.78rem;color:var(--text2)">' + r.meaning_word + '</div>';
+  html += '</div></div>';
+  // Теги
+  html += '<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px">';
+  if (element) html += '<span style="font-size:.7rem;font-weight:700;padding:2px 9px;border-radius:20px;background:rgba(62,207,142,.1);color:#3ecf8e">' + element + '</span>';
+  if (orientRu) html += '<span style="font-size:.7rem;font-weight:700;padding:2px 9px;border-radius:20px;background:rgba(245,200,66,.1);color:#f5c842">' + orientRu + '</span>';
+  if (r.deity) html += '<span style="font-size:.7rem;font-weight:700;padding:2px 9px;border-radius:20px;background:rgba(167,139,250,.1);color:#a78bfa">' + r.deity + '</span>';
+  html += '</div>';
+  // Ключевые слова
+  if (keyArr.length) html += '<div style="font-size:.75rem;color:var(--text2)">• ' + keyArr.join(' • ') + '</div>';
+  html += '</div>';
+  return html;
+}
+
+function formatRunes(data, sub) {
+  const p = profile;
+  const dF = p.date ? p.date.split('-').reverse().join('.') : '—';
+  const origin = '<span style="font-size:.75rem;color:var(--text2)">Исходная информация: ' + (p.city||'—') + ', ' + dF + '</span>';
+
+  const titles = { 'Одна руна':'ᚱ Одна руна', 'Три руны':'ᚱ Три руны', 'Руна ситуации':'ᚱ Руна ситуации' };
+  let html = '<div style="font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#d4924a;margin-bottom:12px">' + (titles[sub]||'ᚱ Руны') + '</div>';
+
+  const runes = data.runes || [];
+
+  // Синтез / тема
+  if (data.report && data.report.theme) {
+    html += '<div style="font-size:.95rem;font-weight:700;line-height:1.6;margin-bottom:14px;color:var(--text)">' + data.report.theme + '</div>';
+  }
+
+  // Руны по позициям
+  runes.forEach(function(r) {
+    const posLabel = r.position_name || ('Позиция ' + r.position);
+    html += '<div style="margin-bottom:14px">';
+    html += '<div style="font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#d4924a;margin-bottom:6px">' + posLabel + '</div>';
+    html += runeCard(r.rune, r.orientation);
+    if (r.interpretation) {
+      html += '<div style="font-size:.87rem;line-height:1.65;color:var(--text2);margin-bottom:4px">' + r.interpretation + '</div>';
+    }
+    html += '</div>';
+  });
+
+  // Общий отчёт
+  const rep = data.report;
+  if (rep) {
+    if (rep.summary) {
+      html += '<div style="font-size:.87rem;line-height:1.65;padding:12px 14px;background:rgba(212,146,74,.07);border-left:3px solid #d4924a;border-radius:0 10px 10px 0;margin-bottom:12px">' + rep.summary + '</div>';
+    }
+    if (rep.advice) {
+      html += '<div style="background:rgba(245,200,66,.07);border:1px solid rgba(245,200,66,.18);border-radius:10px;padding:12px 14px;margin-bottom:12px">';
+      html += '<div style="font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#f5c842;margin-bottom:6px">Совет</div>';
+      html += '<div style="font-size:.87rem;line-height:1.6;color:var(--text2)">' + rep.advice + '</div>';
+      html += '</div>';
+    }
+  }
+
+  // Стихия
+  if (data.elemental_analysis && data.elemental_analysis.dominant_element) {
+    const el = ELEMENT_RUNE_RU[data.elemental_analysis.dominant_element] || data.elemental_analysis.dominant_element;
+    html += '<div style="font-size:.8rem;color:var(--text2);margin-bottom:10px">Доминирующая стихия: <b style="color:var(--text)">' + el + '</b></div>';
+  }
+
+  html += '<div style="margin-top:6px">' + origin + '</div>';
+  return html;
+}
+
+function translateSign(sign) {
+  const map = {Aries:'Овне',Taurus:'Тельце',Gemini:'Близнецах',Cancer:'Раке',
+    Leo:'Льве',Virgo:'Деве',Libra:'Весах',Scorpio:'Скорпионе',
+    Sagittarius:'Стрельце',Capricorn:'Козероге',Aquarius:'Водолее',Pisces:'Рыбах'};
+  return map[sign] || sign;
+}
+
+function openSaved(key, idx) {
+  const item = (history[key]||[])[idx];
+  if (!item) return;
+  openResultModal(item.title, item.text);
+}
+
+function openResultModal(title, text) {
+  document.getElementById('rmt-title').textContent = title;
+  const el = document.getElementById('rmt-text');
+  // if text contains HTML tags use innerHTML, else textContent
+  if (text && text.includes('<')) el.innerHTML = text;
+  else el.textContent = text;
+  document.getElementById('result-modal').classList.add('open');
+}
+
+function closeResultModal() {
+  document.getElementById('result-modal').classList.remove('open');
+}
+
+function closeResultModalOutside(e) {
+  if (e.target === document.getElementById('result-modal')) closeResultModal();
+}
+
+function doShareModal() {
+  const text = document.getElementById('rmt-text').innerText || document.getElementById('rmt-text').textContent;
+  if (navigator.share) { navigator.share({text}).catch(()=>{}); }
+  else { navigator.clipboard?.writeText(text).then(()=>alert('Скопировано!')).catch(()=>{}); }
+}
+
+function doShare() { doShareModal(); }
+
+// ── ОРАКУЛ ────────────────────────────────────
+let _oracleMid = 'oracle', _oracleSub = null;
+function openOracleModal(mechLabel, sub) {
+  _oracleSub = sub;
+  document.getElementById('oracle-modal-title').textContent = 'Совет Оракула' + (sub ? ' · ' + sub : '');
+  document.getElementById('oracle-question').value = '';
+  document.getElementById('oracle-answer').textContent = '';
+  document.getElementById('oracle-answer-wrap').style.display = 'none';
+  document.getElementById('oracle-share-btn').style.display = 'none';
+  document.getElementById('oracle-ask-btn').style.display = 'block';
+  document.getElementById('oracle-modal').classList.add('open');
+}
+function closeOracleModal() { document.getElementById('oracle-modal').classList.remove('open'); }
+function closeOracleOutside(e) { if(e.target===document.getElementById('oracle-modal')) closeOracleModal(); }
+
+// ── ОТНОШЕНИЯ: СОВМЕСТИМОСТЬ ──────────────────
+let _partnerMechLabel = '';
+function openPartnerModal(mechLabel, sub) {
+  _partnerMechLabel = mechLabel;
+  // Цена из механик
+  const mech = MECHANICS.find(m => m.id === 'oracle');
+  const price = mech && mech.price ? mech.price : 5;
+  document.getElementById('partner-price-label').textContent = price + ' 💎';
+  document.getElementById('p-date').value = '';
+  document.getElementById('p-time').value = '12:00';
+  document.getElementById('p-city').value = '';
+  document.getElementById('p-city-error').style.display = 'none';
+  delete _cityCoords['p'];
+  document.getElementById('partner-modal').classList.add('open');
+}
+function closePartnerModal() { document.getElementById('partner-modal').classList.remove('open'); }
+function closePartnerOutside(e) { if(e.target===document.getElementById('partner-modal')) closePartnerModal(); }
+
+async function calcCompatibility() {
+  const date = document.getElementById('p-date').value;
+  const time = document.getElementById('p-time').value || '12:00';
+  const city = document.getElementById('p-city').value.trim();
+  const errEl = document.getElementById('p-city-error');
+
+  if (!date) { document.getElementById('p-date').focus(); return; }
+  if (!city) { document.getElementById('p-city').focus(); return; }
+  if (!_cityCoords['p']) { errEl.style.display = 'block'; return; }
+  errEl.style.display = 'none';
+
+  if (!spendCrystals('oracle', 'Отношения')) return;
+  closePartnerModal();
+
+  const title = '💑 Анализ отношений';
+  openResultModal(title, '⏳ Анализирую совместимость…');
+
+  try {
+    const p = profile;
+    const [y1,mo1,d1] = (p.date||'1990-01-01').split('-').map(Number);
+    const [h1,mi1] = (p.time||'12:00').split(':').map(Number);
+    const [y2,mo2,d2] = date.split('-').map(Number);
+    const [h2,mi2] = time.split(':').map(Number);
+    const coords = _cityCoords['p'];
+
+    const resp = await fetch('/proxy', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        apiPath: '/api/v3/insights/relationship/compatibility',
+        payload: {
+          subjects: [
+            { name: 'Я', birth_data: { year:y1, month:mo1, day:d1, hour:h1, minute:mi1, city:p.city||'Moscow', country_code:p.countryCode||'RU' } },
+            { name: 'Партнёр', birth_data: { year:y2, month:mo2, day:d2, hour:h2, minute:mi2, city:city, country_code:coords.countryCode||'RU' } }
+          ],
+          options: { language: 'ru' },
+          compatibility_options: { include_davison: false, include_timing: false }
+        }
+      })
+    });
+    const json = await resp.json();
+    if (!json.success) throw new Error(json.error?.message || 'Ошибка API');
+    const html = formatCompatibility(json.data);
+    document.getElementById('rmt-text').innerHTML = html;
+  } catch(e) {
+    document.getElementById('rmt-text').textContent = '❌ Ошибка: ' + e.message;
+  }
+}
+
+const SIGN_RU = { Ari:'Овен', Tau:'Телец', Gem:'Близнецы', Can:'Рак', Leo:'Лев', Vir:'Дева',
+  Lib:'Весы', Sco:'Скорпион', Sag:'Стрелец', Cap:'Козерог', Aqu:'Водолей', Pis:'Рыбы' };
+const DYNAMICS_RU = {
+  equal:'равный', dominant:'ведущий/ведомый', complementary:'взаимодополняющий',
+  strong:'сильная', moderate:'умеренная', weak:'слабая',
+  harmonious:'гармоничное', tense:'напряжённое', mixed:'смешанное',
+  high:'высокий', medium:'средний', low:'низкий'
+};
+
+function formatCompatibility(data) {
+  const p = profile;
+  const dF = p.date ? p.date.split('-').reverse().join('.') : '—';
+  const origin = '<span style="font-size:.75rem;color:var(--text2)">Исходная информация: ' + (p.city||'—') + ', ' + dF + '</span>';
+
+  const compat = data.compatibility || {};
+  const score = Math.round(compat.overall_score || 0);
+  const dynamics = data.dynamics || {};
+  const ll = data.love_languages || {};
+  const syn = data.synastry?.subjects_summary || {};
+
+  // Цвет шкалы
+  const scoreColor = score >= 70 ? '#3ecf8e' : score >= 50 ? '#f5c842' : '#f87171';
+
+  let html = '<div style="font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#f472b6;margin-bottom:14px">💑 Анализ совместимости</div>';
+
+  // Большой счёт
+  html += '<div style="text-align:center;margin-bottom:18px">';
+  html += '<div style="font-size:3rem;font-weight:900;color:' + scoreColor + ';line-height:1">' + score + '</div>';
+  html += '<div style="font-size:.8rem;color:var(--text2);margin-top:4px">из 100</div>';
+  // Прогресс-бар
+  html += '<div style="background:rgba(255,255,255,.08);border-radius:99px;height:8px;margin:10px auto;max-width:220px">';
+  html += '<div style="background:' + scoreColor + ';width:' + score + '%;height:100%;border-radius:99px;transition:width .6s"></div></div>';
+  if (compat.interpretation) {
+    html += '<div style="font-size:.87rem;line-height:1.6;color:var(--text);margin-top:8px;padding:0 4px">' + compat.interpretation + '</div>';
+  }
+  html += '</div>';
+
+  // Знаки участников
+  if (syn.subject1 || syn.subject2) {
+    html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">';
+    [['Я', syn.subject1], ['Партнёр', syn.subject2]].forEach(function([label, s]) {
+      if (!s) return;
+      html += '<div style="background:rgba(244,114,182,.08);border:1px solid rgba(244,114,182,.2);border-radius:10px;padding:10px 12px">';
+      html += '<div style="font-size:.7rem;font-weight:800;text-transform:uppercase;color:#f472b6;margin-bottom:6px">' + label + '</div>';
+      if (s.sun_sign) html += '<div style="font-size:.78rem;color:var(--text2)">☀️ ' + (SIGN_RU[s.sun_sign]||s.sun_sign) + '</div>';
+      if (s.moon_sign) html += '<div style="font-size:.78rem;color:var(--text2)">🌙 ' + (SIGN_RU[s.moon_sign]||s.moon_sign) + '</div>';
+      if (s.ascendant_sign) html += '<div style="font-size:.78rem;color:var(--text2)">↑ ' + (SIGN_RU[s.ascendant_sign]||s.ascendant_sign) + '</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+  }
+
+  // Разбивка баллов
+  if (compat.breakdown) {
+    html += '<div style="background:var(--card);border-radius:10px;padding:12px 14px;margin-bottom:14px">';
+    html += '<div style="font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--text2);margin-bottom:10px">Разбивка</div>';
+    const breakdownLabels = { aspects:'Аспекты', sun_moon:'Солнце-Луна', elements:'Стихии', attraction:'Притяжение', mercury:'Меркурий', saturn:'Сатурн', house_overlays:'Дома', ascendant:'Асцендент' };
+    Object.entries(compat.breakdown).forEach(function([k, v]) {
+      const label = breakdownLabels[k] || k;
+      const pct = Math.min(100, Math.round((v / 25) * 100));
+      html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">';
+      html += '<div style="font-size:.75rem;color:var(--text2);width:90px;flex-shrink:0">' + label + '</div>';
+      html += '<div style="flex:1;background:rgba(255,255,255,.07);border-radius:99px;height:5px">';
+      html += '<div style="background:#f472b6;width:' + pct + '%;height:100%;border-radius:99px"></div></div>';
+      html += '<div style="font-size:.72rem;color:var(--text2);width:28px;text-align:right">' + v.toFixed(1) + '</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+  }
+
+  // Динамика
+  if (dynamics.emotional_connection || dynamics.communication_style || dynamics.long_term_potential) {
+    html += '<div style="background:var(--card);border-radius:10px;padding:12px 14px;margin-bottom:14px">';
+    html += '<div style="font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--text2);margin-bottom:10px">Динамика</div>';
+    const dynItems = [
+      ['❤️ Эмоц. связь', dynamics.emotional_connection],
+      ['💬 Общение', dynamics.communication_style],
+      ['🔮 Потенциал', dynamics.long_term_potential],
+    ];
+    dynItems.forEach(function([label, d]) {
+      if (!d || !d.interpretation) return;
+      html += '<div style="margin-bottom:10px">';
+      html += '<div style="font-size:.78rem;font-weight:700;color:var(--text);margin-bottom:3px">' + label + '</div>';
+      html += '<div style="font-size:.82rem;line-height:1.55;color:var(--text2)">' + d.interpretation + '</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+  }
+
+  // Языки любви
+  const ll1 = ll.person1; const ll2 = ll.person2;
+  if (ll1 || ll2) {
+    html += '<div style="background:var(--card);border-radius:10px;padding:12px 14px;margin-bottom:14px">';
+    html += '<div style="font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--text2);margin-bottom:10px">Языки любви</div>';
+    [[ll1,'Я'],[ll2,'Партнёр']].forEach(function([person, label]) {
+      if (!person) return;
+      html += '<div style="margin-bottom:10px">';
+      html += '<div style="font-size:.78rem;font-weight:700;color:#f472b6;margin-bottom:4px">' + label + '</div>';
+      if (person.primary_love_language) html += '<div style="font-size:.82rem;color:var(--text)">Основной: ' + person.primary_love_language + '</div>';
+      if (person.secondary_love_language) html += '<div style="font-size:.8rem;color:var(--text2)">Вторичный: ' + person.secondary_love_language + '</div>';
+      html += '</div>';
+    });
+    // Советы для первого партнёра
+    if (ll1 && ll1.compatibility_tips && ll1.compatibility_tips.length) {
+      html += '<div style="margin-top:6px">';
+      html += '<div style="font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--text2);margin-bottom:6px">Советы</div>';
+      ll1.compatibility_tips.forEach(function(tip) {
+        html += '<div style="font-size:.82rem;color:var(--text2);margin-bottom:4px;padding-left:10px;border-left:2px solid #f472b6">• ' + tip + '</div>';
+      });
+      html += '</div>';
+    }
+    html += '</div>';
+  }
+
+  html += '<div style="margin-top:6px">' + origin + '</div>';
+  return html;
+}
+function askOracle() {
+  const q = document.getElementById('oracle-question').value.trim();
+  if (!q) { document.getElementById('oracle-question').focus(); return; }
+  if (!spendCrystals('oracle', _oracleSub)) return;
+  const dt = nowStr();
+  const answer = 'Все будет хорошо, надо только стараться';
+  const sub = _oracleSub;
+  const key = 'oracle' + (sub ? '_'+sub : '');
+  const title = 'Совет Оракула' + (sub ? ' · '+sub : '');
+  const text = `Вопрос: ${q}\n\nОракул: ${answer}\n\n${dt}\n\nДата рождения: ${profile.date||'—'}\nГород: ${profile.city||'—'}`;
+  if (!history[key]) history[key] = [];
+  history[key].push({ datetime: dt, title, text });
+  soundDrum();
+  setTimeout(() => {   document.getElementById('oracle-answer').textContent = answer;
+  document.getElementById('oracle-answer-wrap').style.display = 'block';
+  document.getElementById('oracle-ask-btn').style.display = 'none';
+  document.getElementById('oracle-share-btn').style.display = 'flex';
+  }, 600);
+}
+function doShareOracle() {
+  const q = document.getElementById('oracle-question').value.trim();
+  const a = document.getElementById('oracle-answer').textContent;
+  const text = (q ? 'Вопрос: ' + q + '\n\nОтвет Оракула: ' + a : a);
+  shareText(text);
+}
+
+// ── МАГИЧЕСКИЙ ШАР ────────────────────────────
+function openBallModal() {
+  document.getElementById('ball-answer').textContent = '';
+  document.getElementById('ball-answer').classList.remove('on');
+  document.getElementById('ball-options').style.display = 'flex';
+  document.getElementById('ball-modal').classList.add('open');
+}
+function closeBallModal() { document.getElementById('ball-modal').classList.remove('open'); }
+function closeBallOutside(e) { if(e.target===document.getElementById('ball-modal')) closeBallModal(); }
+function ballReveal() {
+  if (!spendCrystals('ball', null)) return;
+  soundMystic();
+  const opts = ['Да', 'Нет', 'Не знаю', 'Спроси позже'];
+  const ans = opts[Math.floor(Math.random() * opts.length)];
+  document.getElementById('ball-options').style.display = 'none';
+  document.getElementById('ball-answer').textContent = ans;
+  document.getElementById('ball-answer').classList.add('on');
+}
+
+// ── ПЕЧЕНЬЕ ───────────────────────────────────
+function openCookieModal() {
+  document.getElementById('cookie-img-whole').style.display = 'block';
+  document.getElementById('cookie-img-broken').style.display = 'none';
+  document.getElementById('cookie-prediction').style.display = 'none';
+  document.getElementById('cookie-btn-wrap').style.display = 'block';
+  document.getElementById('cookie-modal').classList.add('open');
+}
+function closeCookieModal() { document.getElementById('cookie-modal').classList.remove('open'); }
+function closeCookieOutside(e) { if(e.target===document.getElementById('cookie-modal')) closeCookieModal(); }
+function cookieReveal() {
+  if (!spendCrystals('cookie', null)) return;
+  soundCrunch();
+  document.getElementById('cookie-img-whole').style.display = 'none';
+  document.getElementById('cookie-img-broken').style.display = 'block';
+  document.getElementById('cookie-btn-wrap').style.display = 'none';
+  document.getElementById('cookie-prediction').style.display = 'block';
+}
+
+// ── ПРОФИЛЬ ────────────────────────────────────
+let profile = {};
+function saveProfile(fromModal) {
+  const d = document.getElementById(fromModal?'m-date':'ob-date').value;
+  const t = document.getElementById(fromModal?'m-time':'ob-time').value;
+  const c = document.getElementById(fromModal?'m-city':'ob-city').value.trim();
+  const prefix = fromModal ? 'm' : 'ob';
+  if (!d || !c) {
+    if (!fromModal) { const e=document.getElementById('er-onboard'); e.textContent='Заполните дату и город'; e.classList.add('on'); }
+    else alert('Заполните дату и город');
+    return;
+  }
+  if (!_cityCoords[prefix]) {
+    if (!fromModal) { const e=document.getElementById('er-onboard'); e.textContent='Выберите город из списка подсказок'; e.classList.add('on'); }
+    else alert('Выберите город из списка подсказок');
+    return;
+  }
+  const coords = _cityCoords[prefix];
+  profile = {date:d, time:t, city:c, lat:coords.lat, lon:coords.lon, countryCode: coords.countryCode || 'RU'};
+  try { localStorage.setItem('oracul_profile', JSON.stringify(profile)); } catch(e) {}
+  renderProfileInfo();
+  if (fromModal) closeModal(); else goTo('mechanics');
+}
+
+function renderProfileInfo() {
+  const el = document.getElementById('profile-info');
+  if (!el) return;
+  const d = profile.date ? new Date(profile.date).toLocaleDateString('ru-RU',{day:'2-digit',month:'long',year:'numeric'}) : '—';
+  el.innerHTML = `
+    <div class="profile-row"><span class="profile-key">Дата рождения</span><span class="profile-val">${d}</span></div>
+    <div class="profile-row"><span class="profile-key">Время рождения</span><span class="profile-val">${profile.time||'—'}</span></div>
+    <div class="profile-row"><span class="profile-key">Город</span><span class="profile-val">${profile.city||'—'}</span></div>
+  `;
+}
+
+// ── МОДАЛКА ─────────────────────────────────────
+function openModal() {
+  document.getElementById('m-date').value = profile.date||'';
+  document.getElementById('m-time').value = profile.time||'';
+  document.getElementById('m-city').value = profile.city||'';
+  _cityCoords['m'] = {lat: profile.lat||55.75, lon: profile.lon||37.62};
+  document.getElementById('edit-modal').classList.add('open');
+}
+function closeModal() { document.getElementById('edit-modal').classList.remove('open'); }
+function closeModalOutside(e) { if(e.target===document.getElementById('edit-modal')) closeModal(); }
+
+// ── ИНИТ ──────────────────────────────────────
+renderMechList('main-mech-list', false);
+
+// Загружаем сохранённый профиль
+try {
+  const saved = localStorage.getItem('oracul_profile');
+  if (saved) {
+    profile = JSON.parse(saved);
+    _cityCoords['ob'] = {lat: profile.lat||55.75, lon: profile.lon||37.62, countryCode: profile.countryCode||'RU'};
+    renderProfileInfo();
+    _show('mechanics');
+  }
+} catch(e) {}
+
+// ── КРИСТАЛЛЫ: МОДАЛЫ ─────────────────────────
+let _pendingCrystals = 0, _pendingBonus = 0;
+
+function closeNoCrystalsModal() { document.getElementById('no-crystals-modal').classList.remove('open'); }
+function closeNoCrystalsOutside(e) { if(e.target===document.getElementById('no-crystals-modal')) closeNoCrystalsModal(); }
+
+function openShopModal() {
+  closeNoCrystalsModal();
+  closeChoiceModal();
+  const el = document.getElementById('spar-bonus-display');
+  if (el) el.textContent = sparBonus;
+  renderSparShopOpts();
+  document.getElementById('shop-modal').classList.add('open');
+}
+function closeShopModal() { document.getElementById('shop-modal').classList.remove('open'); }
+function closeShopOutside(e) { if(e.target===document.getElementById('shop-modal')) closeShopModal(); }
+
+let _pendingSource = 'bonus'; // 'bonus' or 'ruble'
+let _pendingRubles = 0;
+
+function confirmExchange(gems, bonus) {
+  _pendingCrystals = gems; _pendingBonus = bonus; _pendingSource = 'bonus'; _pendingRubles = 0;
+  closeShopModal();
+  document.getElementById('confirm-text').textContent =
+    'Вы точно хотите обменять ' + bonus + ' бонусов Спар на ' + gems + ' 💎?';
+  document.getElementById('confirm-modal').classList.add('open');
+}
+function confirmRubleExchange(gems, rubles) {
+  _pendingCrystals = gems; _pendingRubles = rubles; _pendingSource = 'ruble'; _pendingBonus = 0;
+  closeRubleShopModal();
+  document.getElementById('confirm-text').textContent =
+    'Вы точно хотите купить ' + gems + ' 💎 за ' + rubles + ' ₽?';
+  document.getElementById('confirm-modal').classList.add('open');
+}
+function closeConfirmModal() {
+  document.getElementById('confirm-modal').classList.remove('open');
+  closeShopModal();
+  closeRubleShopModal();
+}
+function doExchange() {
+  document.getElementById('confirm-modal').classList.remove('open');
+  closeShopModal();
+  closeRubleShopModal();
+  crystals += _pendingCrystals;
+  updateCrystalDisplay();
+  soundBell();
+  if (_pendingSource === 'bonus') {
+    sparBonus -= _pendingBonus;
+    if (sparBonus < 0) sparBonus = 0;
+  }
+  const label = _pendingSource === 'ruble'
+    ? 'Покупка за ' + _pendingRubles + ' ₽'
+    : 'Покупка за ' + _pendingBonus + ' бонусов Спар';
+  ledgerAdd('earn', _pendingCrystals, label);
+  document.getElementById('congrats-text').textContent =
+    'Поздравляем! Вам начислено ' + _pendingCrystals + ' 💎';
+  document.getElementById('congrats-modal').classList.add('open');
+}
+function closeCongratsModal() { document.getElementById('congrats-modal').classList.remove('open'); }
+
+// ── ИСТОРИЯ КРИСТАЛЛОВ ────────────────────────
+let _ledgerFilter = 'all';
+function openLedgerModal() {
+  _ledgerFilter = 'all';
+  ['all','spend','earn'].forEach(t => {
+    document.getElementById('ltab-'+t).classList.toggle('on', t === 'all');
+  });
+  renderLedger();
+  document.getElementById('ledger-modal').classList.add('open');
+}
+function closeLedgerModal() { document.getElementById('ledger-modal').classList.remove('open'); }
+function closeLedgerOutside(e) { if(e.target===document.getElementById('ledger-modal')) closeLedgerModal(); }
+function ledgerTab(filter) {
+  _ledgerFilter = filter;
+  ['all','spend','earn'].forEach(t => {
+    document.getElementById('ltab-'+t).classList.toggle('on', t === filter);
+  });
+  renderLedger();
+}
+function renderLedger() {
+  const list = document.getElementById('ledger-list');
+  const items = crystalLedger.filter(x => _ledgerFilter === 'all' || x.type === _ledgerFilter).slice().reverse();
+  if (!items.length) {
+    list.innerHTML = '<div style="padding:16px 0;text-align:center;font-size:.88rem;color:var(--text2)">Записей нет</div>';
+    return;
+  }
+  list.innerHTML = items.map(x => {
+    const isEarn = x.type === 'earn';
+    const sign = isEarn ? '+' : '−';
+    const color = isEarn ? '#3ecf8e' : '#f87171';
+    return `<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:11px 14px;
+      background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);gap:10px">
+      <div>
+        <div style="font-size:.88rem;font-weight:700;margin-bottom:3px">${x.label}</div>
+        <div style="font-size:.74rem;color:var(--text2)">${x.datetime}</div>
+      </div>
+      <div style="font-size:1rem;font-weight:800;color:${color};flex-shrink:0">${sign}${x.amount} 💎</div>
+    </div>`;
+  }).join('');
+}
+
+// ── МАГАЗИН ЗА РУБЛИ ──────────────────────────
+function openRubleShop() { document.getElementById('choice-modal').classList.add('open'); }
+function openRubleShopModal() { document.getElementById('ruble-shop-modal').classList.add('open'); }
+function closeChoiceModal() { document.getElementById('choice-modal').classList.remove('open'); }
+function closeChoiceOutside(e) { if(e.target===document.getElementById('choice-modal')) closeChoiceModal(); }
+function closeRubleShopModal() { document.getElementById('ruble-shop-modal').classList.remove('open'); }
+function closeRubleShopOutside(e) { if(e.target===document.getElementById('ruble-shop-modal')) closeRubleShopModal(); }
+
+// ── БОНУСЫ СПАР: ДИНАМИЧЕСКИЕ КНОПКИ ──────────
+const SPAR_PACKAGES = [{gems:20,bonus:50},{gems:50,bonus:100},{gems:100,bonus:180}];
+
+function renderSparShopOpts() {
+  const container = document.getElementById('spar-shop-opts');
+  if (!container) return;
+  container.innerHTML = SPAR_PACKAGES.map(p => {
+    const canAfford = sparBonus >= p.bonus;
+    const bonusColor = canAfford ? 'var(--text2)' : '#f87171';
+    const onclick = canAfford
+      ? `confirmExchange(${p.gems},${p.bonus})`
+      : `showNotEnoughSpar(${p.gems},${p.bonus})`;
+    return `<button class="shop-opt" onclick="${onclick}">
+      <span class="shop-opt-crystals">${p.gems} 💎</span>
+      <span class="shop-opt-bonus" style="color:${bonusColor}">за ${p.bonus} бонусов Спар</span>
+    </button>`;
+  }).join('');
+}
+
+function showNotEnoughSpar(gems, bonus) {
+  document.getElementById('not-enough-spar-modal').classList.add('open');
+}
+function closeNotEnoughSparModal() {
+  document.getElementById('not-enough-spar-modal').classList.remove('open');
+}
+function closeNotEnoughSparOutside(e) {
+  if (e.target === document.getElementById('not-enough-spar-modal')) closeNotEnoughSparModal();
+}
+
+// ── ЗВУКИ (Web Audio API) ──────────────────────
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let _actx = null;
+function getActx() {
+  if (!_actx) _actx = new AudioCtx();
+  if (_actx.state === 'suspended') _actx.resume();
+  return _actx;
+}
+
+// Звук монетки — при списании кристаллов
+function soundCoin() {
+  try {
+    const ctx = getActx();
+    const t = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(1200, t);
+    osc.frequency.exponentialRampToValueAtTime(900, t + 0.08);
+    osc.frequency.exponentialRampToValueAtTime(1400, t + 0.15);
+    gain.gain.setValueAtTime(0.3, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+    osc.start(t); osc.stop(t + 0.35);
+  } catch(e) {}
+}
+
+// Колокольчик — при начислении кристаллов
+function soundBell() {
+  try {
+    const ctx = getActx();
+    const t = ctx.currentTime;
+    [523, 659, 784, 1047].forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      const start = t + i * 0.12;
+      gain.gain.setValueAtTime(0, start);
+      gain.gain.linearRampToValueAtTime(0.25, start + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, start + 0.6);
+      osc.start(start); osc.stop(start + 0.6);
+    });
+  } catch(e) {}
+}
+
+// Мистический звон — магический шар
+function soundMystic() {
+  try {
+    const ctx = getActx();
+    const t = ctx.currentTime;
+    // низкий гул
+    const osc1 = ctx.createOscillator();
+    const g1 = ctx.createGain();
+    osc1.connect(g1); g1.connect(ctx.destination);
+    osc1.type = 'sine';
+    osc1.frequency.setValueAtTime(80, t);
+    osc1.frequency.linearRampToValueAtTime(120, t + 0.5);
+    g1.gain.setValueAtTime(0.15, t);
+    g1.gain.exponentialRampToValueAtTime(0.001, t + 1.2);
+    osc1.start(t); osc1.stop(t + 1.2);
+    // высокий мерцающий тон
+    const osc2 = ctx.createOscillator();
+    const g2 = ctx.createGain();
+    osc2.connect(g2); g2.connect(ctx.destination);
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(880, t + 0.1);
+    osc2.frequency.exponentialRampToValueAtTime(440, t + 0.8);
+    g2.gain.setValueAtTime(0.18, t + 0.1);
+    g2.gain.exponentialRampToValueAtTime(0.001, t + 1.0);
+    osc2.start(t + 0.1); osc2.stop(t + 1.0);
+  } catch(e) {}
+}
+
+// Хруст/треск — разлом печенья
+function soundCrunch() {
+  try {
+    const ctx = getActx();
+    const t = ctx.currentTime;
+    // белый шум
+    const bufSize = ctx.sampleRate * 0.18;
+    const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1);
+    const src = ctx.createBufferSource();
+    src.buffer = buf;
+    // фильтр для хруста
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = 3000;
+    filter.Q.value = 0.8;
+    const gain = ctx.createGain();
+    src.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+    gain.gain.setValueAtTime(0.6, t);
+    gain.gain.setValueAtTime(0.9, t + 0.03);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+    src.start(t); src.stop(t + 0.18);
+    // щелчок
+    const osc = ctx.createOscillator();
+    const og = ctx.createGain();
+    osc.connect(og); og.connect(ctx.destination);
+    osc.frequency.setValueAtTime(200, t);
+    osc.frequency.exponentialRampToValueAtTime(60, t + 0.06);
+    og.gain.setValueAtTime(0.4, t);
+    og.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+    osc.start(t); osc.stop(t + 0.08);
+  } catch(e) {}
+}
+
+// Барабанная дробь / нарастание — перед ответом оракула
+function soundDrum() {
+  try {
+    const ctx = getActx();
+    const t = ctx.currentTime;
+    const beats = 6;
+    for (let i = 0; i < beats; i++) {
+      const delay = i * (0.08 - i * 0.008);
+      const beat = t + delay;
+      const buf = ctx.createBuffer(1, ctx.sampleRate * 0.05, ctx.sampleRate);
+      const data = buf.getChannelData(0);
+      for (let j = 0; j < data.length; j++) data[j] = Math.random() * 2 - 1;
+      const src = ctx.createBufferSource();
+      src.buffer = buf;
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = 200;
+      const gain = ctx.createGain();
+      src.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+      const vol = 0.1 + (i / beats) * 0.3;
+      gain.gain.setValueAtTime(vol, beat);
+      gain.gain.exponentialRampToValueAtTime(0.001, beat + 0.05);
+      src.start(beat); src.stop(beat + 0.06);
+    }
+    // финальный удар
+    const finalT = t + 0.42;
+    const osc = ctx.createOscillator();
+    const og = ctx.createGain();
+    osc.connect(og); og.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(150, finalT);
+    osc.frequency.exponentialRampToValueAtTime(60, finalT + 0.15);
+    og.gain.setValueAtTime(0.5, finalT);
+    og.gain.exponentialRampToValueAtTime(0.001, finalT + 0.3);
+    osc.start(finalT); osc.stop(finalT + 0.3);
+  } catch(e) {}
+}
+
+// ── АВТОДОПОЛНЕНИЕ ГОРОДА ─────────────────────
+const _cityCoords = {}; // 'ob' или 'm' → {lat, lon}
+let _cityTimer = null;
+
+async function cityAutocomplete(input, listId) {
+  const prefix = listId.split('-')[0];
+  _cityCoords[prefix] = null; // сбрасываем при ручном вводе
+  const q = input.value.trim();
+  const list = document.getElementById(listId);
+  if (q.length < 2) { list.classList.remove('open'); return; }
+  clearTimeout(_cityTimer);
+  _cityTimer = setTimeout(async () => {
+    try {
+      const url = 'https://nominatim.openstreetmap.org/search?format=json&limit=5&addressdetails=1&accept-language=ru&q=' + encodeURIComponent(q);
+      const resp = await fetch(url, {headers:{'User-Agent':'OracleApp/1.0'}});
+      const results = await resp.json();
+      const cities = results.filter(r => r.addresstype === 'city' || r.addresstype === 'town' ||
+        r.addresstype === 'village' || r.class === 'place' || r.type === 'city' || r.type === 'town');
+      if (!cities.length) { list.classList.remove('open'); return; }
+      list.innerHTML = cities.slice(0,5).map(r => {
+        const name = r.address?.city || r.address?.town || r.address?.village || r.name;
+        const country = r.address?.country || '';
+        const countryCode = (r.address?.country_code || 'ru').toUpperCase();
+        const prefix = listId.split('-')[0]; // 'ob' or 'm'
+        return `<div class="city-suggestion" onmousedown="selectCity('${prefix}','${name}','${country}','${countryCode}',${r.lat},${r.lon},'${listId}')">
+          <div>${name}</div>
+          <div class="city-sub">${country}</div>
+        </div>`;
+      }).join('');
+      list.classList.add('open');
+    } catch(e) { list.classList.remove('open'); }
+  }, 350);
+}
+
+function selectCity(prefix, name, country, countryCode, lat, lon, listId) {
+  const inputId = prefix === 'ob' ? 'ob-city' : 'm-city';
+  document.getElementById(inputId).value = name + (country ? ', ' + country : '');
+  _cityCoords[prefix] = {lat: parseFloat(lat), lon: parseFloat(lon), countryCode: countryCode || 'RU'};
+  document.getElementById(listId).classList.remove('open');
+}
+
+function hideCitySuggestions(listId) {
+  setTimeout(() => {
+    const el = document.getElementById(listId);
+    if (el) el.classList.remove('open');
+  }, 200);
+}
+</script>
+
+<!-- ══ МОДАЛЬНОЕ ОКНО РЕЗУЛЬТАТА ══ -->
+<div class="result-modal-overlay" id="result-modal" onclick="closeResultModalOutside(event)">
+  <div class="result-modal">
+    <div class="result-modal-header">
+      <div class="result-modal-title" id="rmt-title"></div>
+      <button class="result-modal-close" onclick="closeResultModal()">✕</button>
+    </div>
+    <div class="result-modal-text" id="rmt-text"></div>
+    <button class="share-btn" onclick="doShareModal()">📤 Поделиться</button>
+  </div>
+</div>
+
+<!-- ══ МОДАЛ: ОРАКУЛ ══ -->
+<div class="result-modal-overlay" id="oracle-modal" style="align-items:center;padding:24px">
+  <div class="result-modal" style="border-radius:20px">
+    <div class="result-modal-header">
+      <div class="result-modal-title" id="oracle-modal-title">Совет Оракула</div>
+      <button class="result-modal-close" onclick="closeOracleModal()">✕</button>
+    </div>
+    <div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--text2);margin-bottom:6px">Вопрос</div>
+    <textarea class="oracle-input" id="oracle-question" placeholder="Задайте свой вопрос Оракулу…"></textarea>
+    <button class="sbtn" onclick="askOracle()" id="oracle-ask-btn">Спросить Оракула</button>
+    <div id="oracle-answer-wrap" style="display:none;margin-top:14px">
+      <div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:6px">Ответ Оракула</div>
+      <div class="oracle-answer on" id="oracle-answer"></div>
+    </div>
+    <button class="share-btn" id="oracle-share-btn" style="display:none;margin-top:10px" onclick="doShareOracle()">📤 Поделиться</button>
+  </div>
+</div>
+
+<!-- ══ МОДАЛ: МАГИЧЕСКИЙ ШАР ══ -->
+<div class="result-modal-overlay" id="ball-modal" onclick="closeBallOutside(event)">
+  <div class="result-modal">
+    <div class="result-modal-header">
+      <div class="result-modal-title">Магический шар</div>
+      <button class="result-modal-close" onclick="closeBallModal()">✕</button>
+    </div>
+    <div style="text-align:center;margin:8px 0 16px"><svg id="magic-ball-svg" width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="ballGrad" cx="38%" cy="32%" r="60%">
+      <stop offset="0%" stop-color="#4a4a6a"/>
+      <stop offset="40%" stop-color="#1a1a2e"/>
+      <stop offset="100%" stop-color="#0a0a14"/>
+    </radialGradient>
+    <radialGradient id="shineGrad" cx="35%" cy="30%" r="45%">
+      <stop offset="0%" stop-color="white" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="white" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="circleGrad" cx="50%" cy="40%" r="55%">
+      <stop offset="0%" stop-color="#6a8fff"/>
+      <stop offset="100%" stop-color="#1a2a6e"/>
+    </radialGradient>
+  </defs>
+  <!-- тень -->
+  <ellipse cx="60" cy="113" rx="30" ry="6" fill="rgba(0,0,0,0.35)"/>
+  <!-- шар -->
+  <circle cx="60" cy="60" r="52" fill="url(#ballGrad)"/>
+  <!-- внутренний круг с цифрой -->
+  <circle cx="60" cy="64" r="22" fill="url(#circleGrad)" opacity="0.9"/>
+  <text x="60" y="72" text-anchor="middle" font-family="Georgia,serif" font-size="22" font-weight="bold" fill="white">8</text>
+  <!-- блик -->
+  <circle cx="60" cy="60" r="52" fill="url(#shineGrad)"/>
+  <!-- маленький блик -->
+  <ellipse cx="44" cy="38" rx="10" ry="6" fill="white" opacity="0.12" transform="rotate(-20,44,38)"/>
+</svg></div>
+    <div class="ball-options" id="ball-options">
+      <div style="font-size:.82rem;color:var(--text2);text-align:center;margin-bottom:8px">Шар уже знает ответ — нажмите, чтобы узнать</div>
+      <button class="sbtn" onclick="ballReveal()">✨ Открыть ответ &nbsp;•&nbsp; 1 💎</button>
+    </div>
+    <div class="ball-answer" id="ball-answer"></div>
+  </div>
+</div>
+
+<!-- ══ МОДАЛ: ПЕЧЕНЬЕ ══ -->
+<div class="result-modal-overlay" id="cookie-modal" onclick="closeCookieOutside(event)">
+  <div class="result-modal">
+    <div class="result-modal-header">
+      <div class="result-modal-title">Печенье с предсказанием</div>
+      <button class="result-modal-close" onclick="closeCookieModal()">✕</button>
+    </div>
+    <div style="text-align:center;margin:8px 0 12px" id="cookie-img-whole"><svg width="120" height="100" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="cg1" cx="40%" cy="35%" r="60%">
+      <stop offset="0%" stop-color="#f5c842"/>
+      <stop offset="100%" stop-color="#c8851a"/>
+    </radialGradient>
+    <radialGradient id="cg2" cx="60%" cy="65%" r="55%">
+      <stop offset="0%" stop-color="#e8b830"/>
+      <stop offset="100%" stop-color="#a06010"/>
+    </radialGradient>
+  </defs>
+  <!-- тень -->
+  <ellipse cx="60" cy="94" rx="28" ry="5" fill="rgba(0,0,0,0.2)"/>
+  <!-- левая половина печенья (целое) -->
+  <path d="M60 50 Q30 10 15 35 Q5 55 20 68 Q35 80 60 70 Z" fill="url(#cg1)" stroke="#a06010" stroke-width="1.2"/>
+  <!-- правая половина печенья (целое) -->
+  <path d="M60 50 Q90 10 105 35 Q115 55 100 68 Q85 80 60 70 Z" fill="url(#cg2)" stroke="#a06010" stroke-width="1.2"/>
+  <!-- складка по центру -->
+  <path d="M60 50 Q58 60 60 70 Q62 60 60 50" fill="#a06010" opacity="0.5"/>
+  <!-- блик -->
+  <path d="M28 32 Q38 22 50 28" stroke="rgba(255,255,255,0.35)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+</svg></div>
+    <div style="text-align:center;margin:8px 0 12px;display:none" id="cookie-img-broken"><svg width="140" height="110" viewBox="0 0 140 110" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bg1" cx="40%" cy="35%" r="60%">
+      <stop offset="0%" stop-color="#f5c842"/>
+      <stop offset="100%" stop-color="#c8851a"/>
+    </radialGradient>
+    <radialGradient id="bg2" cx="60%" cy="65%" r="55%">
+      <stop offset="0%" stop-color="#e8b830"/>
+      <stop offset="100%" stop-color="#a06010"/>
+    </radialGradient>
+  </defs>
+  <!-- тень -->
+  <ellipse cx="70" cy="104" rx="38" ry="5" fill="rgba(0,0,0,0.2)"/>
+  <!-- бумажка с предсказанием -->
+  <rect x="44" y="52" width="52" height="14" rx="2" fill="#fffde7" stroke="#d4c070" stroke-width="1"/>
+  <line x1="50" y1="57" x2="88" y2="57" stroke="#bbb" stroke-width="1.2"/>
+  <line x1="50" y1="61" x2="80" y2="61" stroke="#bbb" stroke-width="1.2"/>
+  <!-- левая половина — отлетела влево-вверх -->
+  <g transform="translate(-8,-6) rotate(-18,35,55)">
+    <path d="M70 55 Q42 18 22 40 Q10 58 26 72 Q44 84 70 72 Z" fill="url(#bg1)" stroke="#a06010" stroke-width="1.2"/>
+    <path d="M70 55 Q68 63 70 72" fill="#a06010" opacity="0.4"/>
+    <path d="M30 34 Q40 24 52 30" stroke="rgba(255,255,255,0.35)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  </g>
+  <!-- правая половина — отлетела вправо-вверх -->
+  <g transform="translate(8,-6) rotate(18,105,55)">
+    <path d="M70 55 Q98 18 118 40 Q130 58 114 72 Q96 84 70 72 Z" fill="url(#bg2)" stroke="#a06010" stroke-width="1.2"/>
+    <path d="M70 55 Q72 63 70 72" fill="#a06010" opacity="0.4"/>
+    <path d="M110 34 Q100 24 88 30" stroke="rgba(255,255,255,0.35)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  </g>
+</svg></div>
+    <div class="cookie-text" id="cookie-prediction" style="display:none">«Всё будет хорошо, если сможешь не упустить свою удачу»</div>
+    <div id="cookie-btn-wrap">
+      <button class="sbtn" onclick="cookieReveal()">Разломить печенье &nbsp;•&nbsp; 1 💎</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ МОДАЛ: НЕТ КРИСТАЛЛОВ ══ -->
+<div class="result-modal-overlay" id="no-crystals-modal" onclick="closeNoCrystalsOutside(event)">
+  <div class="result-modal">
+    <div class="result-modal-header">
+      <div class="result-modal-title">Недостаточно кристаллов 💎</div>
+      <button class="result-modal-close" onclick="closeNoCrystalsModal()">✕</button>
+    </div>
+    <div style="font-size:.95rem;line-height:1.7;color:var(--text);margin-bottom:20px">
+      У вас недостаточно кристаллов. Чтобы их получить, вы можете совершать покупки в сети Спар, либо получить за бонусы Спар.
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <button class="sbtn" onclick="closeNoCrystalsModal();openShopModal()">Купить за бонусы Спар</button>
+      <button class="sbtn" style="background:linear-gradient(135deg,#7c3aed,#a855f7)" onclick="closeNoCrystalsModal();openRubleShopModal()">Купить с помощью KD Pay</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ МОДАЛ: МАГАЗИН ══ -->
+<div class="result-modal-overlay" id="shop-modal" onclick="closeShopOutside(event)">
+  <div class="result-modal">
+    <div class="result-modal-header">
+      <div class="result-modal-title">Обменять бонусы на 💎</div>
+      <button class="result-modal-close" onclick="closeShopModal()">✕</button>
+    </div>
+    <div style="font-size:.85rem;color:var(--text2);margin-bottom:14px">Вам доступно <span id="spar-bonus-display" style="color:var(--accent);font-weight:800">150</span> бонусов Спар</div>
+    <div class="shop-opts" id="spar-shop-opts"></div>
+  </div>
+</div>
+
+<!-- ══ МОДАЛ: ПОДТВЕРЖДЕНИЕ ══ -->
+<div class="result-modal-overlay" id="confirm-modal">
+  <div class="result-modal">
+    <div class="result-modal-header">
+      <div class="result-modal-title">Подтверждение обмена</div>
+    </div>
+    <div class="confirm-text" id="confirm-text"></div>
+    <div class="confirm-btns">
+      <button class="confirm-no" onclick="closeConfirmModal()">Нет</button>
+      <button class="confirm-yes" onclick="doExchange()">Да</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ МОДАЛ: ПОЗДРАВЛЕНИЕ ══ -->
+<div class="result-modal-overlay" id="congrats-modal" onclick="closeCongratsModal()">
+  <div class="result-modal" onclick="closeCongratsModal()">
+    <div class="congrats-text" id="congrats-text"></div>
+    <button class="sbtn" onclick="closeCongratsModal()">Отлично!</button>
+  </div>
+</div>
+
+<!-- ══ МОДАЛ: ИСТОРИЯ КРИСТАЛЛОВ ══ -->
+<div class="result-modal-overlay" id="ledger-modal" onclick="closeLedgerOutside(event)">
+  <div class="result-modal" style="max-height:85vh">
+    <div class="result-modal-header">
+      <div class="result-modal-title">История кристаллов 💎</div>
+      <button class="result-modal-close" onclick="closeLedgerModal()">✕</button>
+    </div>
+    <div style="display:flex;gap:6px;margin-bottom:14px">
+      <button class="rtab on" id="ltab-all"   onclick="ledgerTab('all')">Все</button>
+      <button class="rtab"    id="ltab-spend" onclick="ledgerTab('spend')">Траты</button>
+      <button class="rtab"    id="ltab-earn"  onclick="ledgerTab('earn')">Покупки</button>
+    </div>
+    <div id="ledger-list" style="display:flex;flex-direction:column;gap:8px;max-height:55vh;overflow-y:auto"></div>
+  </div>
+</div>
+
+<!-- ══ МОДАЛ: ВЫБОР СПОСОБА ПОКУПКИ (по клику на баланс) ══ -->
+<div class="result-modal-overlay" id="choice-modal" onclick="closeChoiceOutside(event)">
+  <div class="result-modal">
+    <div class="result-modal-header">
+      <div class="result-modal-title">Купить кристаллы 💎</div>
+      <button class="result-modal-close" onclick="closeChoiceModal()">✕</button>
+    </div>
+    <div style="font-size:.9rem;color:var(--text2);margin-bottom:16px">Выберите способ покупки:</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <button class="sbtn" onclick="closeChoiceModal();openShopModal()">Купить за бонусы Спар</button>
+      <button class="sbtn" style="background:linear-gradient(135deg,#7c3aed,#a855f7)" onclick="closeChoiceModal();openRubleShopModal()">Купить с помощью KD Pay</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ МОДАЛ: КУПИТЬ ЗА РУБЛИ ══ -->
+<div class="result-modal-overlay" id="ruble-shop-modal" onclick="closeRubleShopOutside(event)">
+  <div class="result-modal">
+    <div class="result-modal-header">
+      <div class="result-modal-title">KD Pay 💳</div>
+      <button class="result-modal-close" onclick="closeRubleShopModal()">✕</button>
+    </div>
+    <div style="font-size:.9rem;color:var(--text2);margin-bottom:14px">Выберите пакет кристаллов:</div>
+    <div class="shop-opts">
+      <button class="shop-opt" onclick="confirmRubleExchange(20,50)">
+        <span class="shop-opt-crystals">20 💎</span>
+        <span class="shop-opt-bonus">за 50 ₽</span>
+      </button>
+      <button class="shop-opt" onclick="confirmRubleExchange(50,100)">
+        <span class="shop-opt-crystals">50 💎</span>
+        <span class="shop-opt-bonus">за 100 ₽</span>
+      </button>
+      <button class="shop-opt" onclick="confirmRubleExchange(100,180)">
+        <span class="shop-opt-crystals">100 💎</span>
+        <span class="shop-opt-bonus">за 180 ₽</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ МОДАЛ: НЕ ХВАТАЕТ БОНУСОВ СПАР ══ -->
+<div class="result-modal-overlay" id="not-enough-spar-modal" onclick="closeNotEnoughSparOutside(event)">
+  <div class="result-modal">
+    <div class="result-modal-header">
+      <div class="result-modal-title">Недостаточно бонусов 🛒</div>
+      <button class="result-modal-close" onclick="closeNotEnoughSparModal()">✕</button>
+    </div>
+    <div style="font-size:.95rem;line-height:1.7;color:var(--text);margin-bottom:20px">
+      У вас не хватает бонусов Спар на эту покупку. Купить с помощью KD Pay?
+    </div>
+    <div class="confirm-btns">
+      <button class="confirm-no" onclick="closeNotEnoughSparModal()">Закрыть</button>
+      <button class="confirm-yes" onclick="closeNotEnoughSparModal();closeShopModal();openRubleShopModal()">Да</button>
+    </div>
+  </div>
+</div>
+<!-- ══ МОДАЛ: ПАРТНЁР (ОТНОШЕНИЯ) ══ -->
+<div class="result-modal-overlay" id="partner-modal" onclick="closePartnerOutside(event)" style="align-items:flex-end;padding:0">
+  <div class="result-modal" style="border-radius:20px 20px 0 0;max-height:92vh;overflow-y:auto">
+    <div class="result-modal-header">
+      <div class="result-modal-title">💑 Анализ отношений</div>
+      <button class="result-modal-close" onclick="closePartnerModal()">✕</button>
+    </div>
+    <div style="font-size:.8rem;color:var(--text2);margin-bottom:16px;line-height:1.5">Введите данные партнёра для астрологического анализа совместимости</div>
+
+    <!-- Дата -->
+    <div style="margin-bottom:12px">
+      <div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--text2);margin-bottom:5px">Дата рождения</div>
+      <input type="date" id="p-date" style="width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:10px 13px;color:var(--text);font-size:.95rem;box-sizing:border-box"/>
+    </div>
+    <!-- Время -->
+    <div style="margin-bottom:12px">
+      <div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--text2);margin-bottom:5px">Время рождения</div>
+      <input type="time" id="p-time" value="12:00" style="width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:10px 13px;color:var(--text);font-size:.95rem;box-sizing:border-box"/>
+    </div>
+    <!-- Город -->
+    <div style="margin-bottom:16px;position:relative">
+      <div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--text2);margin-bottom:5px">Город рождения</div>
+      <input type="text" id="p-city" placeholder="Начните вводить город…" autocomplete="off"
+        oninput="cityAutocomplete(this,'p-city-list')"
+        onblur="hideCitySuggestions('p-city-list')"
+        style="width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:10px 13px;color:var(--text);font-size:.95rem;box-sizing:border-box"/>
+      <ul class="city-suggestions" id="p-city-list"></ul>
+    </div>
+
+    <!-- Кнопка -->
+    <div id="p-city-error" style="display:none;color:#f87171;font-size:.8rem;margin-bottom:10px">Выберите город из списка подсказок</div>
+    <button class="sbtn" onclick="calcCompatibility()" id="partner-calc-btn">
+      💑 Рассчитать совместимость · <span id="partner-price-label">5 💎</span>
+    </button>
+  </div>
+</div>
+
+</body>
+</html>
