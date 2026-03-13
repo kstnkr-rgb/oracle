@@ -15,7 +15,13 @@ const GROQ_HOST = 'api.groq.com';
 function translateViaGroq(text, res) {
   const payload = JSON.stringify({
     model: 'llama-3.1-8b-instant',
-   
+    messages: [
+      {
+        role: 'system',
+        content: 'Your task is to transform incoming forecast text written in English into a natural and easy-to-read forecast in Russian. Do not translate the text word for word; instead, preserve the meaning while rewriting it so it sounds like it was originally written in Russian by a human. The wording should be simple, natural, and lively, similar to the style used in modern media or blogs. Avoid bureaucratic language, complex constructions, and typical "AI-style" phrasing. You may slightly rephrase sentences or adjust the structure if needed to improve readability, but the overall meaning of the forecast must remain the same. The tone must always stay positive and supportive: even if the forecast contains challenges, present them gently and constructively. Write smoothly, avoid repetition and cliché phrases, and keep sentences of moderate length. Use standard Russian without excessive formality, and light conversational elements are acceptable. Do not use phrases like "данный период", "следует ожидать", or "в рамках". Do not add explanations, comments, or analysis, and do not mention translation or rewriting. Output only the final forecast text in Russian.'
+      },
+      { role: 'user', content: text }
+    ],
     max_tokens: 4000,
     temperature: 0.3
   });
@@ -95,41 +101,30 @@ const server = http.createServer((req, res) => {
         res.writeHead(400); res.end(JSON.stringify({error:'Invalid JSON'})); return;
       }
       const d = parsed.data || {};
-      // Собираем весь текст гороскопа в читаемый английский текст
+      // Собираем только нужные поля
       const lines = [];
       if (d.overall_theme) lines.push('Theme: ' + d.overall_theme);
-      if (d.summary) lines.push('Summary: ' + d.summary);
-      if (d.advice) lines.push('Advice: ' + d.advice);
-      if (d.moon && d.moon.phase) lines.push('Moon: ' + d.moon.phase + (d.moon.sign ? ' in ' + d.moon.sign : '') + (d.moon.prediction ? '. ' + d.moon.prediction : ''));
-      if (d.void_of_course_moon && d.void_of_course_moon.advice) lines.push('Moon warning: ' + d.void_of_course_moon.advice);
       if (d.life_areas && Array.isArray(d.life_areas)) {
+        const needed = { finance: 'Finance', love: 'Love', health: 'Health' };
         d.life_areas.forEach(a => {
-          const txt = a.prediction || a.description || a.interpretation || '';
-          if (txt) lines.push((a.title||'Area') + ': ' + txt);
+          const key = (a.title || '').toLowerCase();
+          const label = needed[key];
+          if (label) {
+            const txt = a.prediction || a.description || a.interpretation || '';
+            if (txt) lines.push(label + ': ' + txt);
+          }
         });
-      }
-      const tips = d.tips || d.daily_tips || [];
-      if (tips.length) {
-        const tipTexts = tips.map(t => typeof t === 'string' ? t : (t.text||t.tip||'')).filter(Boolean);
-        if (tipTexts.length) lines.push('Tips: ' + tipTexts.join(' | '));
-      }
-      if (d.lucky_elements) {
-        const le = d.lucky_elements;
-        if (le.colors && le.colors.length) lines.push('Lucky colors: ' + le.colors.join(', '));
-        if (le.stones && le.stones.length) lines.push('Lucky stones: ' + le.stones.join(', '));
-        if (le.numbers && le.numbers.length) lines.push('Lucky numbers: ' + le.numbers.join(', '));
-        if (le.hours && le.hours.length) lines.push('Lucky hours: ' + le.hours.join(', '));
       }
 
       const englishText = lines.join('\n');
-      const prompt = englishText;
+      const prompt = `Translate the following forecast from English to Russian. Keep the structure exactly as is: translate each label before the colon and the text after it. One line per item. Each translated line (after the colon) must be no longer than 150 characters including spaces. Output only the translated text.\n\n` + englishText;
 
       // Переводим и возвращаем оба текста
       const origRes = { englishText };
       const payload2 = JSON.stringify({
         model: 'llama-3.1-8b-instant',
         messages: [
-          { role: 'system', content: 'Your task is to transform incoming forecast text written in English into a natural and easy-to-read forecast in Russian. Do not translate the text word for word; instead, preserve the meaning while rewriting it so it sounds like it was originally written in Russian by a human. The wording should be simple, natural, and lively, similar to the style used in modern media or blogs. Avoid bureaucratic language, complex constructions, and typical "AI-style" phrasing. You may slightly rephrase sentences or adjust the structure if needed to improve readability, but the overall meaning of the forecast must remain the same. The tone must always stay positive and supportive: even if the forecast contains challenges, present them gently and constructively. Write smoothly, avoid repetition and cliché phrases, and keep sentences of moderate length. Use standard Russian without excessive formality, and light conversational elements are acceptable. Do not use phrases like "данный период", "следует ожидать", or "в рамках". Do not add explanations, comments, or analysis, and do not mention translation or rewriting. Output only the final forecast text in Russian.' },
+          { role: 'system', content: 'You are a professional translator. Translate text from English to Russian accurately and naturally.' },
           { role: 'user', content: prompt }
         ],
         max_tokens: 4000,
