@@ -400,7 +400,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
     <div style="display:flex;flex-direction:column;gap:12px" id="profile-mech-list"></div>
   </div>
   <div style="height:32px"></div>
-  <div style="text-align:center;padding:0 0 24px;font-size:.72rem;color:var(--text2);opacity:.5">v1.7</div>
+  <div style="text-align:center;padding:0 0 24px;font-size:.72rem;color:var(--text2);opacity:.5">v1.8</div>
 </div>
 
 <!-- ══ РЕЗУЛЬТАТ ══ -->
@@ -790,6 +790,7 @@ async function createHoroscope(mechLabel, sub) {
     });
     const ruJson = await ruResp.json();
     const ruText = ruJson.text || '';
+    const enText = ruJson.original || '';
 
     // Рейтинг из оригинала
     const data = json.data || json;
@@ -800,8 +801,10 @@ async function createHoroscope(mechLabel, sub) {
     const tF = (p.time||'').replace(':','-');
     const origin = '<div style="font-size:.75rem;color:var(--text2);margin-top:16px">Исходная информация: ' + (p.city||'—') + ', ' + dF + ', ' + tF + '</div>';
 
-    const html = stars +
-      '<div style="font-size:.92rem;line-height:1.75;color:var(--text);white-space:pre-wrap">' + ruText + '</div>' +
+    const toggleBtn = enText ? '<button onclick="toggleHoroscopeOriginal(this)" data-ru="' + encodeURIComponent(ruText) + '" data-en="' + encodeURIComponent(enText) + '" data-mode="ru" style="margin-bottom:14px;padding:6px 14px;border-radius:20px;border:1px solid var(--accent);background:transparent;color:var(--accent);font-size:.78rem;cursor:pointer">🌐 Показать оригинал</button>' : '';
+
+    const html = stars + toggleBtn +
+      '<div id="horo-text-body" style="font-size:.92rem;line-height:1.75;color:var(--text);white-space:pre-wrap">' + ruText + '</div>' +
       origin;
 
     document.getElementById('rmt-text').innerHTML = html;
@@ -1806,7 +1809,22 @@ function openModal() {
 function closeModal() { document.getElementById('edit-modal').classList.remove('open'); }
 function closeModalOutside(e) { if(e.target===document.getElementById('edit-modal')) closeModal(); }
 
-// ── ПЕРЕВОД ЧЕРЕЗ OPENROUTER ──────────────────
+function toggleHoroscopeOriginal(btn) {
+  const mode = btn.dataset.mode;
+  const body = document.getElementById('horo-text-body');
+  if (!body) return;
+  if (mode === 'ru') {
+    body.textContent = decodeURIComponent(btn.dataset.en);
+    btn.dataset.mode = 'en';
+    btn.textContent = '🌐 Показать перевод';
+  } else {
+    body.textContent = decodeURIComponent(btn.dataset.ru);
+    btn.dataset.mode = 'ru';
+    btn.textContent = '🌐 Показать оригинал';
+  }
+}
+
+// ── ПЕРЕВОД ЧЕРЕЗ GROQ ──────────────────
 async function translateText(text) {
   if (!text || !text.trim()) return text;
   try {
