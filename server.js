@@ -15,13 +15,7 @@ const GROQ_HOST = 'api.groq.com';
 function translateViaGroq(text, res) {
   const payload = JSON.stringify({
     model: 'llama-3.1-8b-instant',
-    messages: [
-      {
-        role: 'system',
-        content: 'Your task is to transform incoming forecast text written in English into a natural and easy-to-read forecast in Russian. Do not translate the text word for word; instead, preserve the meaning while rewriting it so it sounds like it was originally written in Russian by a human. The wording should be simple, natural, and lively, similar to the style used in modern media or blogs. Avoid bureaucratic language, complex constructions, and typical "AI-style" phrasing. You may slightly rephrase sentences or adjust the structure if needed to improve readability, but the overall meaning of the forecast must remain the same. The tone must always stay positive and supportive: even if the forecast contains challenges, present them gently and constructively. Write smoothly, avoid repetition and cliché phrases, and keep sentences of moderate length. Use standard Russian without excessive formality, and light conversational elements are acceptable. Do not use phrases like "данный период", "следует ожидать", or "в рамках". Do not add explanations, comments, or analysis, and do not mention translation or rewriting. Output only the final forecast text in Russian.'
-      },
-      { role: 'user', content: text }
-    ],
+   
     max_tokens: 4000,
     temperature: 0.3
   });
@@ -128,7 +122,7 @@ const server = http.createServer((req, res) => {
       }
 
       const englishText = lines.join('\n');
-      const prompt = `Преобразуй этот гороскоп в живой русский текст. Пиши абзацами, без заголовков разделов. В самом конце — отдельными строками укажи элементы удачи если они есть: цвета, камни, числа, часы.\n\n` + englishText;
+      const prompt = englishText;
 
       // Переводим и возвращаем оба текста
       const origRes = { englishText };
