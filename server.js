@@ -22,7 +22,7 @@ function translateViaGroq(text, res) {
       },
       { role: 'user', content: text }
     ],
-    max_tokens: 2000,
+    max_tokens: 4000,
     temperature: 0.3
   });
 
@@ -92,7 +92,49 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  if (req.method === 'POST' && urlPath === '/proxy') {
+  if (req.method === 'POST' && urlPath === '/horoscope-ru') {
+    let body = '';
+    req.on('data', c => body += c);
+    req.on('end', () => {
+      let parsed;
+      try { parsed = JSON.parse(body); } catch(e) {
+        res.writeHead(400); res.end(JSON.stringify({error:'Invalid JSON'})); return;
+      }
+      const d = parsed.data || {};
+      // Собираем весь текст гороскопа в читаемый английский текст
+      const lines = [];
+      if (d.overall_theme) lines.push('Theme: ' + d.overall_theme);
+      if (d.summary) lines.push('Summary: ' + d.summary);
+      if (d.advice) lines.push('Advice: ' + d.advice);
+      if (d.moon && d.moon.phase) lines.push('Moon: ' + d.moon.phase + (d.moon.sign ? ' in ' + d.moon.sign : '') + (d.moon.prediction ? '. ' + d.moon.prediction : ''));
+      if (d.void_of_course_moon && d.void_of_course_moon.advice) lines.push('Moon warning: ' + d.void_of_course_moon.advice);
+      if (d.life_areas && Array.isArray(d.life_areas)) {
+        d.life_areas.forEach(a => {
+          const txt = a.prediction || a.description || a.interpretation || '';
+          if (txt) lines.push((a.title||'Area') + ': ' + txt);
+        });
+      }
+      const tips = d.tips || d.daily_tips || [];
+      if (tips.length) {
+        const tipTexts = tips.map(t => typeof t === 'string' ? t : (t.text||t.tip||'')).filter(Boolean);
+        if (tipTexts.length) lines.push('Tips: ' + tipTexts.join(' | '));
+      }
+      if (d.lucky_elements) {
+        const le = d.lucky_elements;
+        if (le.colors && le.colors.length) lines.push('Lucky colors: ' + le.colors.join(', '));
+        if (le.stones && le.stones.length) lines.push('Lucky stones: ' + le.stones.join(', '));
+        if (le.numbers && le.numbers.length) lines.push('Lucky numbers: ' + le.numbers.join(', '));
+        if (le.hours && le.hours.length) lines.push('Lucky hours: ' + le.hours.join(', '));
+      }
+
+      const prompt = 'Перепиши этот гороскоп на русском языке. Сохрани всю информацию. Пиши тёплым астрологическим языком, абзацами без заголовков. В конце отдельной строкой напиши: "🎨 Цвета удачи: ..." и "💎 Камни: ..." и "🔢 Числа: ..." и "⏰ Часы: ..." если эти данные есть.\n\n' + lines.join('\n');
+
+      translateViaGroq(prompt, res);
+    });
+    return;
+  }
+
+
     let body = '';
     req.on('data', c => body += c);
     req.on('end', () => {
