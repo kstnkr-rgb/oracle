@@ -796,7 +796,6 @@ async function createHoroscope(mechLabel, sub) {
     const rating = data.overall_rating || 0;
     const stars = rating ? '<div style="font-size:1.1rem;color:#f5c842;margin-bottom:16px;letter-spacing:2px">' + '★'.repeat(rating) + '☆'.repeat(5-rating) + '</div>' : '';
 
-    const p = profile;
     const dF = p.date ? p.date.split('-').reverse().join('.') : '—';
     const tF = (p.time||'').replace(':','-');
     const origin = '<div style="font-size:.75rem;color:var(--text2);margin-top:16px">Исходная информация: ' + (p.city||'—') + ', ' + dF + ', ' + tF + '</div>';
@@ -2145,38 +2144,36 @@ const _cityCoords = {}; // 'ob' или 'm' → {lat, lon}
 let _cityTimer = null;
 
 async function cityAutocomplete(input, listId) {
-  const prefix = listId.split('-')[0];
-  _cityCoords[prefix] = null; // сбрасываем при ручном вводе
+  const pfx = listId.split('-')[0];
+  _cityCoords[pfx] = null;
   const q = input.value.trim();
   const list = document.getElementById(listId);
   if (q.length < 2) { list.classList.remove('open'); return; }
   clearTimeout(_cityTimer);
   _cityTimer = setTimeout(async () => {
     try {
-      const url = 'https://nominatim.openstreetmap.org/search?format=json&limit=5&addressdetails=1&accept-language=ru&q=' + encodeURIComponent(q);
-      const resp = await fetch(url, {headers:{'User-Agent':'OracleApp/1.0'}});
+      const url = 'https://nominatim.openstreetmap.org/search?format=json&limit=7&addressdetails=1&accept-language=ru&q=' + encodeURIComponent(q);
+      const resp = await fetch(url);
       const results = await resp.json();
-      const cities = results.filter(r => r.addresstype === 'city' || r.addresstype === 'town' ||
-        r.addresstype === 'village' || r.class === 'place' || r.type === 'city' || r.type === 'town');
-      if (!cities.length) { list.classList.remove('open'); return; }
-      list.innerHTML = cities.slice(0,5).map(r => {
-        const name = r.address?.city || r.address?.town || r.address?.village || r.name;
-        const country = r.address?.country || '';
-        const countryCode = (r.address?.country_code || 'ru').toUpperCase();
-        const prefix = listId.split('-')[0]; // 'ob' or 'm'
-        return `<div class="city-suggestion" onmousedown="selectCity('${prefix}','${name}','${country}','${countryCode}',${r.lat},${r.lon},'${listId}')">
-          <div>${name}</div>
-          <div class="city-sub">${country}</div>
-        </div>`;
+      if (!results.length) { list.classList.remove('open'); return; }
+      list.innerHTML = results.slice(0,6).map(r => {
+        const name = (r.address && (r.address.city || r.address.town || r.address.village || r.address.municipality)) || r.name;
+        const country = (r.address && r.address.country) || '';
+        const cc = ((r.address && r.address.country_code) || 'ru').toUpperCase();
+        const safeName = encodeURIComponent(name);
+        const safeCountry = encodeURIComponent(country);
+        return '<div class="city-suggestion" onmousedown="selectCity(\'' + pfx + '\',\'' + safeName + '\',\'' + safeCountry + '\',\'' + cc + '\',' + r.lat + ',' + r.lon + ',\'' + listId + '\')"><div>' + name + '</div><div class="city-sub">' + country + '</div></div>';
       }).join('');
       list.classList.add('open');
-    } catch(e) { list.classList.remove('open'); }
+    } catch(e) { console.error('city error', e); list.classList.remove('open'); }
   }, 350);
 }
 
 function selectCity(prefix, name, country, countryCode, lat, lon, listId) {
-  const inputId = prefix === 'ob' ? 'ob-city' : 'm-city';
-  document.getElementById(inputId).value = name + (country ? ', ' + country : '');
+  const decodedName = decodeURIComponent(name);
+  const decodedCountry = decodeURIComponent(country);
+  const inputId = prefix === 'ob' ? 'ob-city' : (prefix === 'p' ? 'p-city' : 'm-city');
+  document.getElementById(inputId).value = decodedName + (decodedCountry ? ', ' + decodedCountry : '');
   _cityCoords[prefix] = {lat: parseFloat(lat), lon: parseFloat(lon), countryCode: countryCode || 'RU'};
   document.getElementById(listId).classList.remove('open');
 }
