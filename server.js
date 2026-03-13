@@ -9,9 +9,12 @@ const OPENROUTER_KEY = process.env.OPENROUTER_KEY;
 const ASTRO_HOST = 'api.astrology-api.io';
 const OR_HOST = 'openrouter.ai';
 
-function translateViaOpenRouter(text, res) {
+const GROQ_KEY = process.env.GROQ_KEY;
+const GROQ_HOST = 'api.groq.com';
+
+function translateViaGroq(text, res) {
   const payload = JSON.stringify({
-    model: 'qwen/qwen3-4b:free',
+    model: 'llama-3.1-8b-instant',
     messages: [
       {
         role: 'system',
@@ -19,19 +22,18 @@ function translateViaOpenRouter(text, res) {
       },
       { role: 'user', content: text }
     ],
-    max_tokens: 2000
+    max_tokens: 2000,
+    temperature: 0.3
   });
 
   const headers = {
-    'Authorization': 'Bearer ' + OPENROUTER_KEY,
+    'Authorization': 'Bearer ' + GROQ_KEY,
     'Content-Type': 'application/json',
-    'Content-Length': Buffer.byteLength(payload),
-    'HTTP-Referer': 'https://oracul.app',
-    'X-Title': 'Oracul'
+    'Content-Length': Buffer.byteLength(payload)
   };
 
   const req = https.request(
-    { hostname: OR_HOST, path: '/api/v1/chat/completions', method: 'POST', headers },
+    { hostname: GROQ_HOST, path: '/openai/v1/chat/completions', method: 'POST', headers },
     proxyRes => {
       const chunks = [];
       proxyRes.on('data', c => chunks.push(Buffer.isBuffer(c) ? c : Buffer.from(c)));
@@ -39,8 +41,8 @@ function translateViaOpenRouter(text, res) {
         try {
           const raw = Buffer.concat(chunks).toString('utf8');
           const data = JSON.parse(raw);
-          console.log('[translate] status:', proxyRes.statusCode);
-          console.log('[translate] OpenRouter response:', JSON.stringify(data).slice(0, 500));
+          console.log('[translate] Groq status:', proxyRes.statusCode);
+          console.log('[translate] Groq response:', JSON.stringify(data).slice(0, 300));
           const translated = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content || '';
           console.log('[translate] result length:', translated.length, '| preview:', translated.slice(0, 100));
           res.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
@@ -85,7 +87,7 @@ const server = http.createServer((req, res) => {
       catch(e) { res.writeHead(400, {'Content-Type': 'application/json'}); res.end(JSON.stringify({error: 'Invalid JSON'})); return; }
       const text = parsed.text;
       if (!text) { res.writeHead(400, {'Content-Type': 'application/json'}); res.end(JSON.stringify({error: 'No text'})); return; }
-      translateViaOpenRouter(text, res);
+      translateViaGroq(text, res);
     });
     return;
   }
