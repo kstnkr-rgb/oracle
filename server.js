@@ -11,7 +11,7 @@ const OR_HOST = 'openrouter.ai';
 
 function translateViaOpenRouter(text, res) {
   const payload = JSON.stringify({
-    model: 'meta-llama/llama-3.3-70b-instruct:free',
+    model: 'qwen/qwen3-4b:free',
     messages: [
       {
         role: 'system',
