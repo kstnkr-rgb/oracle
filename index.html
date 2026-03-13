@@ -783,17 +783,61 @@ async function createHoroscope(mechLabel, sub) {
     if (!json.success && !json.data) throw new Error(json.message || 'Ошибка API');
     const data = json.data || json;
     console.log('[horoscope] got data, overall_theme:', data.overall_theme ? data.overall_theme.slice(0,50) : 'none');
-    // Переводим текстовые поля по одному
-    if (data.overall_theme) data.overall_theme = await translateText(data.overall_theme);
-    if (data.summary) data.summary = await translateText(data.summary);
-    if (data.advice) data.advice = await translateText(data.advice);
-    // Переводим life_areas
+
+    // Собираем все тексты для перевода в один батч
+    const toTranslate = [];
+    const keys = [];
+
+    // Простые поля
+    ['overall_theme','summary','advice'].forEach(f => {
+      if (data[f]) { toTranslate.push(data[f]); keys.push({type:'field', f}); }
+    });
+
+    // Луна
+    if (data.moon && data.moon.influence) { toTranslate.push(data.moon.influence); keys.push({type:'moon_influence'}); }
+
+    // Сферы жизни
     if (data.life_areas && Array.isArray(data.life_areas)) {
-      for (let i = 0; i < data.life_areas.length; i++) {
-        const a = data.life_areas[i];
-        if (a.description) data.life_areas[i] = Object.assign({}, a, { description: await translateText(a.description) });
-        else if (a.interpretation) data.life_areas[i] = Object.assign({}, a, { interpretation: await translateText(a.interpretation) });
-      }
+      data.life_areas.forEach((a, i) => {
+        const txt = a.description || a.interpretation || '';
+        if (txt) { toTranslate.push(txt); keys.push({type:'area', i, field: a.description ? 'description' : 'interpretation'}); }
+      });
+    }
+
+    // Советы
+    if (data.daily_tips && Array.isArray(data.daily_tips)) {
+      data.daily_tips.forEach((t, i) => {
+        if (typeof t === 'string' && t) { toTranslate.push(t); keys.push({type:'tip', i}); }
+        else if (t && t.tip) { toTranslate.push(t.tip); keys.push({type:'tip_obj', i}); }
+      });
+    }
+
+    // Удача — цвета, камни
+    if (data.lucky_elements) {
+      const le = data.lucky_elements;
+      if (le.colors && Array.isArray(le.colors)) { toTranslate.push(le.colors.join(', ')); keys.push({type:'colors'}); }
+      if (le.stones && Array.isArray(le.stones)) { toTranslate.push(le.stones.join(', ')); keys.push({type:'stones'}); }
+    }
+
+    // Переводим одним запросом
+    if (toTranslate.length) {
+      const combined = toTranslate.map((t, i) => '<<<' + i + '>>>' + t).join('\n');
+      const translatedRaw = await translateText(combined);
+
+      // Парсим и применяем
+      toTranslate.forEach((_, i) => {
+        const match = translatedRaw.match(new RegExp('<<<' + i + '>>>([\\s\\S]*?)(?=<<<' + (i+1) + '>>>|$)'));
+        if (!match) return;
+        const val = match[1].trim();
+        const k = keys[i];
+        if (k.type === 'field') data[k.f] = val;
+        else if (k.type === 'moon_influence') data.moon.influence = val;
+        else if (k.type === 'area') data.life_areas[k.i] = Object.assign({}, data.life_areas[k.i], {[k.field]: val});
+        else if (k.type === 'tip') data.daily_tips[k.i] = val;
+        else if (k.type === 'tip_obj') data.daily_tips[k.i] = Object.assign({}, data.daily_tips[k.i], {tip: val});
+        else if (k.type === 'colors') { if (data.lucky_elements) data.lucky_elements.colors = val.split(',').map(s => s.trim()); }
+        else if (k.type === 'stones') { if (data.lucky_elements) data.lucky_elements.stones = val.split(',').map(s => s.trim()); }
+      });
     }
     const text = formatHoroscope(data, sub);
     document.getElementById('rmt-text').innerHTML = text;
