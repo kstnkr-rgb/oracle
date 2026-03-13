@@ -782,31 +782,17 @@ async function createHoroscope(mechLabel, sub) {
     const json = await resp.json();
     if (!json.success && !json.data) throw new Error(json.message || 'Ошибка API');
     const data = json.data || json;
-    // Переводим текстовые поля через OpenRouter
-    const fieldsToTranslate = [];
-    if (data.overall_theme) fieldsToTranslate.push('overall_theme');
-    if (data.summary) fieldsToTranslate.push('summary');
-    if (data.advice) fieldsToTranslate.push('advice');
-    if (fieldsToTranslate.length) {
-      const translated = await translateFields(data, fieldsToTranslate);
-      Object.assign(data, translated);
-    }
+    console.log('[horoscope] got data, overall_theme:', data.overall_theme ? data.overall_theme.slice(0,50) : 'none');
+    // Переводим текстовые поля по одному
+    if (data.overall_theme) data.overall_theme = await translateText(data.overall_theme);
+    if (data.summary) data.summary = await translateText(data.summary);
+    if (data.advice) data.advice = await translateText(data.advice);
     // Переводим life_areas
     if (data.life_areas && Array.isArray(data.life_areas)) {
-      const areaTexts = data.life_areas.map(a => (a.description || a.interpretation || '')).filter(Boolean);
-      if (areaTexts.length) {
-        const combined = areaTexts.map((t, i) => '<<<' + i + '>>>' + t).join('\n');
-        const translatedAreas = await translateText(combined);
-        data.life_areas = data.life_areas.map(function(a, i) {
-          const match = translatedAreas.match(new RegExp('<<<' + i + '>>>([\\s\\S]*?)(?=<<<' + (i+1) + '>>>|$)'));
-          if (match) {
-            const copy = Object.assign({}, a);
-            if (a.description) copy.description = match[1].trim();
-            else if (a.interpretation) copy.interpretation = match[1].trim();
-            return copy;
-          }
-          return a;
-        });
+      for (let i = 0; i < data.life_areas.length; i++) {
+        const a = data.life_areas[i];
+        if (a.description) data.life_areas[i] = Object.assign({}, a, { description: await translateText(a.description) });
+        else if (a.interpretation) data.life_areas[i] = Object.assign({}, a, { interpretation: await translateText(a.interpretation) });
       }
     }
     const text = formatHoroscope(data, sub);
@@ -941,7 +927,9 @@ async function createTaro(mechLabel, sub) {
         })
       });
       const reportJson = await reportResp.json();
+      console.log('tarot reportJson keys:', Object.keys(reportJson));
       const data = reportJson.data || reportJson;
+      console.log('tarot data keys:', Object.keys(data));
       // Переводим интерпретацию карты
       if (data.interpretation) data.interpretation = await translateText(data.interpretation);
       if (data.report && data.report.summary) data.report.summary = await translateText(data.report.summary);
@@ -962,13 +950,11 @@ async function createTaro(mechLabel, sub) {
       const threeData = json.data || json;
       // Переводим интерпретации позиций
       if (threeData.cards && Array.isArray(threeData.cards)) {
-        const interps = threeData.cards.map(c => c.interpretation || '');
-        const combined = interps.map((t, i) => '<<<' + i + '>>>' + t).join('\n');
-        const translatedInterps = await translateText(combined);
-        threeData.cards = threeData.cards.map(function(c, i) {
-          const match = translatedInterps.match(new RegExp('<<<' + i + '>>>([\\s\\S]*?)(?=<<<' + (i+1) + '>>>|$)'));
-          return match ? Object.assign({}, c, { interpretation: match[1].trim() }) : c;
-        });
+        for (let i = 0; i < threeData.cards.length; i++) {
+          if (threeData.cards[i].interpretation) {
+            threeData.cards[i] = Object.assign({}, threeData.cards[i], { interpretation: await translateText(threeData.cards[i].interpretation) });
+          }
+        }
       }
       if (threeData.report && threeData.report.synthesis) threeData.report.synthesis = await translateText(threeData.report.synthesis);
       if (threeData.report && threeData.report.advice) threeData.report.advice = await translateText(threeData.report.advice);
@@ -1339,13 +1325,11 @@ async function createRunes(mechLabel, sub) {
     const runeData = json.data;
     // Переводим интерпретации рун
     if (runeData.runes && Array.isArray(runeData.runes)) {
-      const interps = runeData.runes.map(r => r.interpretation || '');
-      const combined = interps.map((t, i) => '<<<' + i + '>>>' + t).join('\n');
-      const translatedInterps = await translateText(combined);
-      runeData.runes = runeData.runes.map(function(r, i) {
-        const match = translatedInterps.match(new RegExp('<<<' + i + '>>>([\\s\\S]*?)(?=<<<' + (i+1) + '>>>|$)'));
-        return match ? Object.assign({}, r, { interpretation: match[1].trim() }) : r;
-      });
+      for (let i = 0; i < runeData.runes.length; i++) {
+        if (runeData.runes[i].interpretation) {
+          runeData.runes[i] = Object.assign({}, runeData.runes[i], { interpretation: await translateText(runeData.runes[i].interpretation) });
+        }
+      }
     }
     if (runeData.report) {
       if (runeData.report.summary) runeData.report.summary = await translateText(runeData.report.summary);
@@ -1818,15 +1802,18 @@ function closeModalOutside(e) { if(e.target===document.getElementById('edit-moda
 async function translateText(text) {
   if (!text || !text.trim()) return text;
   try {
+    console.log('[translate] sending:', text.slice(0, 80) + (text.length > 80 ? '...' : ''));
     const resp = await fetch('/translate', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({ text })
     });
     const json = await resp.json();
+    console.log('[translate] received:', json.success, '|', (json.text || '').slice(0, 80));
     return json.success && json.text ? json.text : text;
   } catch(e) {
-    return text; // при ошибке возвращаем оригинал
+    console.error('[translate] error:', e.message);
+    return text;
   }
 }
 
