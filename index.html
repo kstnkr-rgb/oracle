@@ -781,50 +781,35 @@ async function createHoroscope(mechLabel, sub) {
     });
     const json = await resp.json();
     if (!json.success && !json.data) throw new Error(json.message || 'Ошибка API');
+
+    // Отправляем весь JSON в Groq — получаем готовый русский текст
+    const ruResp = await fetch('/horoscope-ru', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ data: json.data || json })
+    });
+    const ruJson = await ruResp.json();
+    const ruText = ruJson.text || '';
+
+    // Рейтинг из оригинала
     const data = json.data || json;
+    const rating = data.overall_rating || 0;
+    const stars = rating ? '<div style="font-size:1.1rem;color:#f5c842;margin-bottom:16px;letter-spacing:2px">' + '★'.repeat(rating) + '☆'.repeat(5-rating) + '</div>' : '';
 
-    // Переводим поля по одному (батч ненадёжен — LLM теряет теги)
-    if (data.overall_theme) data.overall_theme = await translateText(data.overall_theme);
-    if (data.summary) data.summary = await translateText(data.summary);
-    if (data.advice) data.advice = await translateText(data.advice);
-    if (data.moon && data.moon.influence) data.moon.influence = await translateText(data.moon.influence);
+    const p = profile;
+    const dF = p.date ? p.date.split('-').reverse().join('.') : '—';
+    const tF = (p.time||'').replace(':','-');
+    const origin = '<div style="font-size:.75rem;color:var(--text2);margin-top:16px">Исходная информация: ' + (p.city||'—') + ', ' + dF + ', ' + tF + '</div>';
 
-    // Сферы жизни
-    if (data.life_areas && Array.isArray(data.life_areas)) {
-      for (let i = 0; i < data.life_areas.length; i++) {
-        const a = data.life_areas[i];
-        if (a.description) data.life_areas[i] = Object.assign({}, a, {description: await translateText(a.description)});
-        else if (a.interpretation) data.life_areas[i] = Object.assign({}, a, {interpretation: await translateText(a.interpretation)});
-      }
-    }
+    const html = stars +
+      '<div style="font-size:.92rem;line-height:1.75;color:var(--text);white-space:pre-wrap">' + ruText + '</div>' +
+      origin;
 
-    // Советы
-    if (data.daily_tips && Array.isArray(data.daily_tips)) {
-      for (let i = 0; i < data.daily_tips.length; i++) {
-        const t = data.daily_tips[i];
-        if (typeof t === 'string') data.daily_tips[i] = await translateText(t);
-        else if (t && t.tip) data.daily_tips[i] = Object.assign({}, t, {tip: await translateText(t.tip)});
-      }
-    }
-
-    // Удача
-    if (data.lucky_elements) {
-      const le = data.lucky_elements;
-      if (le.colors && le.colors.length) {
-        const tr = await translateText(le.colors.join(', '));
-        le.colors = tr.split(',').map(s => s.trim());
-      }
-      if (le.stones && le.stones.length) {
-        const tr = await translateText(le.stones.join(', '));
-        le.stones = tr.split(',').map(s => s.trim());
-      }
-    }
-    const text = formatHoroscope(data, sub);
-    document.getElementById('rmt-text').innerHTML = text;
+    document.getElementById('rmt-text').innerHTML = html;
     const dt = nowStr();
     const key = 'horoscope_' + sub;
     if (!history[key]) history[key] = [];
-    history[key].push({ datetime: dt, title, text: data.overall_theme || text });
+    history[key].push({ datetime: dt, title, text: ruText.slice(0, 200) });
   } catch(e) {
     document.getElementById('rmt-text').textContent = '❌ Ошибка: ' + e.message;
   }
