@@ -155,6 +155,7 @@ const server = http.createServer((req, res) => {
   }
 
 
+  if (req.method === 'POST' && urlPath === '/proxy') {
     let body = '';
     req.on('data', c => body += c);
     req.on('end', () => {
