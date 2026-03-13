@@ -101,7 +101,6 @@ const server = http.createServer((req, res) => {
         res.writeHead(400); res.end(JSON.stringify({error:'Invalid JSON'})); return;
       }
       const d = parsed.data || {};
-      // Собираем весь текст гороскопа в читаемый английский текст
       const lines = [];
       if (d.overall_theme) lines.push('Theme: ' + d.overall_theme);
       if (d.summary) lines.push('Summary: ' + d.summary);
@@ -134,7 +133,8 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-
+  // Proxy to Astrology API
+  if (req.method === 'POST') {
     let body = '';
     req.on('data', c => body += c);
     req.on('end', () => {
