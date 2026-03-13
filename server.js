@@ -18,27 +18,7 @@ function translateViaGroq(text, res) {
     messages: [
       {
         role: 'system',
-        content: `Твоя задача — преобразовывать входящий текст прогноза на английском языке в понятный и живой текст прогноза на русском.
-
-Правила работы:
-1. Не переводить текст дословно. Смысл нужно сохранить, но формулировки должны звучать естественно для русского языка.
-2. Текст должен читаться как прогноз, написанный человеком, а не машиной.
-3. Избегай канцелярита, сложных конструкций и «ИИ-стиля».
-4. Используй простые и естественные формулировки, как в современных медиа или блогах.
-5. Сохраняй структуру прогноза, но при необходимости можешь слегка перефразировать предложения для лучшей читаемости.
-6. Тон текста всегда должен быть позитивным и поддерживающим. Даже если прогноз сложный, подавай его мягко и конструктивно.
-7. Не добавляй объяснений, комментариев или анализа — выводи только готовый текст прогноза.
-8. Не упоминай, что текст был переведен или переписан.
-9. Пиши плавно, избегая повторов и шаблонных фраз.
-10. Используй литературный русский, но без излишней формальности.
-
-Дополнительные требования:
-- текст должен звучать живо
-- предложения средней длины
-- допускаются лёгкие разговорные элементы
-- избегать штампов вроде «данный период», «следует ожидать», «в рамках»
-
-Формат ответа: выводи только итоговый текст прогноза на русском языке.`
+        content: 'Your task is to transform incoming forecast text written in English into a natural and easy-to-read forecast in Russian. Do not translate the text word for word; instead, preserve the meaning while rewriting it so it sounds like it was originally written in Russian by a human. The wording should be simple, natural, and lively, similar to the style used in modern media or blogs. Avoid bureaucratic language, complex constructions, and typical "AI-style" phrasing. You may slightly rephrase sentences or adjust the structure if needed to improve readability, but the overall meaning of the forecast must remain the same. The tone must always stay positive and supportive: even if the forecast contains challenges, present them gently and constructively. Write smoothly, avoid repetition and cliché phrases, and keep sentences of moderate length. Use standard Russian without excessive formality, and light conversational elements are acceptable. Do not use phrases like "данный период", "следует ожидать", or "в рамках". Do not add explanations, comments, or analysis, and do not mention translation or rewriting. Output only the final forecast text in Russian.'
       },
       { role: 'user', content: text }
     ],
@@ -147,9 +127,45 @@ const server = http.createServer((req, res) => {
         if (le.hours && le.hours.length) lines.push('Lucky hours: ' + le.hours.join(', '));
       }
 
-      const prompt = `Преобразуй этот гороскоп в живой русский текст. Пиши абзацами, без заголовков разделов. В самом конце — отдельными строками укажи элементы удачи если они есть: цвета, камни, числа, часы.\n\n` + lines.join('\n');
+      const englishText = lines.join('\n');
+      const prompt = `Преобразуй этот гороскоп в живой русский текст. Пиши абзацами, без заголовков разделов. В самом конце — отдельными строками укажи элементы удачи если они есть: цвета, камни, числа, часы.\n\n` + englishText;
 
-      translateViaGroq(prompt, res);
+      // Переводим и возвращаем оба текста
+      const origRes = { englishText };
+      const payload2 = JSON.stringify({
+        model: 'llama-3.1-8b-instant',
+        messages: [
+          { role: 'system', content: 'Your task is to transform incoming forecast text written in English into a natural and easy-to-read forecast in Russian. Do not translate the text word for word; instead, preserve the meaning while rewriting it so it sounds like it was originally written in Russian by a human. The wording should be simple, natural, and lively, similar to the style used in modern media or blogs. Avoid bureaucratic language, complex constructions, and typical "AI-style" phrasing. You may slightly rephrase sentences or adjust the structure if needed to improve readability, but the overall meaning of the forecast must remain the same. The tone must always stay positive and supportive: even if the forecast contains challenges, present them gently and constructively. Write smoothly, avoid repetition and cliché phrases, and keep sentences of moderate length. Use standard Russian without excessive formality, and light conversational elements are acceptable. Do not use phrases like "данный период", "следует ожидать", or "в рамках". Do not add explanations, comments, or analysis, and do not mention translation or rewriting. Output only the final forecast text in Russian.' },
+          { role: 'user', content: prompt }
+        ],
+        max_tokens: 4000,
+        temperature: 0.3
+      });
+      const headers2 = {
+        'Authorization': 'Bearer ' + GROQ_KEY,
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(payload2)
+      };
+      const req2 = https.request(
+        { hostname: GROQ_HOST, path: '/openai/v1/chat/completions', method: 'POST', headers: headers2 },
+        proxyRes2 => {
+          const chunks2 = [];
+          proxyRes2.on('data', c => chunks2.push(Buffer.isBuffer(c) ? c : Buffer.from(c)));
+          proxyRes2.on('end', () => {
+            try {
+              const data2 = JSON.parse(Buffer.concat(chunks2).toString('utf8'));
+              const translated = (data2.choices && data2.choices[0] && data2.choices[0].message && data2.choices[0].message.content) || '';
+              res.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
+              res.end(JSON.stringify({ success: true, text: translated, original: englishText }));
+            } catch(e) {
+              res.writeHead(500); res.end(JSON.stringify({error: e.message}));
+            }
+          });
+        }
+      );
+      req2.on('error', e => { res.writeHead(500); res.end(JSON.stringify({error: e.message})); });
+      req2.write(payload2);
+      req2.end();
     });
     return;
   }
