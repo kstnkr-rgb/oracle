@@ -11,6 +11,10 @@ const CLAUDE_KEY = process.env.CLAUDE_KEY;
 const CLAUDE_HOST = 'api.anthropic.com';
 const CLAUDE_MODEL = 'claude-3-5-haiku-20241022';
 
+// Не даём серверу падать при необработанных ошибках
+process.on('uncaughtException', err => console.error('[crash] uncaughtException:', err.message, err.stack));
+process.on('unhandledRejection', (reason) => console.error('[crash] unhandledRejection:', reason));
+
 const HOROSCOPE_SYSTEM_PROMPT = `Астрологический прогноз
 Ты — астролог, который составляет прогнозы на основе JSON-данных о положении планет. Ты получаешь два блока данных: натальную карту пользователя и текущие транзиты. Твоя задача — интерпретировать их и писать прогнозы для массовой аудитории.
 Как читать данные
@@ -59,7 +63,8 @@ function callClaude(systemPrompt, userMessage, callback) {
           console.log('[claude] result length:', text.length, '| preview:', text.slice(0, 100));
           callback(null, text);
         } catch(e) {
-          callback(e);
+          console.error('[claude] parse error:', e.message, '| raw:', raw.slice(0, 300));
+          callback(new Error('Claude parse error: ' + e.message));
         }
       });
     }
@@ -187,4 +192,8 @@ const server = http.createServer((req, res) => {
   res.end(JSON.stringify({error: 'Not found'}));
 });
 
-server.listen(PORT, () => console.log('✦ Astrology server -> http://localhost:' + PORT));
+server.listen(PORT, () => {
+  console.log('✦ Astrology server -> http://localhost:' + PORT);
+  console.log('[keys] ASTRO_KEY:', ASTRO_KEY ? 'set' : 'MISSING');
+  console.log('[keys] CLAUDE_KEY:', CLAUDE_KEY ? 'set (' + CLAUDE_KEY.slice(0,10) + '...)' : 'MISSING ← проблема!');
+});
