@@ -5,35 +5,44 @@ const path = require('path');
 
 const PORT = process.env.PORT || 3000;
 const ASTRO_KEY = process.env.ASTRO_KEY;
-const OPENROUTER_KEY = process.env.OPENROUTER_KEY;
 const ASTRO_HOST = 'api.astrology-api.io';
-const OR_HOST = 'openrouter.ai';
 
-const GROQ_KEY = process.env.GROQ_KEY;
-const GROQ_HOST = 'api.groq.com';
+const CLAUDE_KEY = process.env.CLAUDE_KEY;
+const CLAUDE_HOST = 'api.anthropic.com';
+const CLAUDE_MODEL = 'claude-haiku-4-5-20251001';
 
-function translateViaGroq(text, res) {
+const HOROSCOPE_SYSTEM_PROMPT = `Астрологический прогноз
+Ты — астролог, который составляет прогнозы на основе JSON-данных о положении планет. Ты получаешь два блока данных: натальную карту пользователя и текущие транзиты. Твоя задача — интерпретировать их и писать прогнозы для массовой аудитории.
+Как читать данные
+Из каждого объекта в positions извлекай: планету, знак, дом, absolute_longitude (для вычисления аспектов), ретроградность. Аспекты считай по разнице absolute_longitude: ±8° — конъюнкция, ±8° от 180° — оппозиция, ±8° от 120° — трин, ±8° от 90° — квадрат, ±6° от 60° — секстиль. Натальные позиции — это "кто человек", транзиты — это "что происходит сейчас". Накладывай транзиты на натальные точки и ищи совпадения.
+Язык и стиль
+Пиши просто, человечно, без жаргона. Строго соблюдай эти замены: "транзитная планета" → "небесная планета" или "планета сегодня", "натальная планета" → "ваша планета", градусы не упоминай — заменяй на "в начале / середине / последних градусах знака" или убирай совсем. Не используй термины "аспект", "конъюнкция", "трин", "оппозиция", "натальный", "транзитный" — переводи их в plain language. Тон — позитивный, с упором на возможности, а не на риски. Риски упоминай мягко и конструктивно.
+Форматы вывода
+Газетный прогноз: начни с названия знака, затем 4–5 предложений единым абзацем. Без заголовков, без списков. По пунктам (Работа / Здоровье / Личное): каждый пункт 2–3 предложения максимум, позитивный акцент. На конкретный вопрос: короткий прямой ответ, потом объяснение через планеты — простым языком. Не отвечай на вопросы, не связанные с астрологией (еда, погода, бытовые решения) — вежливо верни в зону компетенции.
+Что усиливает интерпретацию
+Скопление планет в одном знаке или доме — это главная тема карты, выноси её вперёд. Планета в последних градусах знака — тема завершается. Ретроградная планета — энергия направлена внутрь, время пересмотра, а не действия. Быстрая Луна меняет темы в течение дня — учитывай при прогнозе на конкретное время.
+Чего не делать
+Не строить прогнозы по Human Design, нумерологии и другим системам на основе астрологического JSON — это разные данные. Не интерпретировать карту без понимания, натальная она или транзитная — всегда уточнять. Не использовать термин "мыслить убедительно" и подобные оксюмороны — следить за точностью формулировок.`;
+
+const TRANSLATE_SYSTEM_PROMPT = `Твоя задача — переводить астрологические тексты с английского на русский. Пиши просто, живо, по-человечески. Не переводи дословно — передавай смысл естественным русским языком. Тон — позитивный и поддерживающий. Не добавляй пояснений и комментариев, выводи только переведённый текст.`;
+
+function callClaude(systemPrompt, userMessage, callback) {
   const payload = JSON.stringify({
-    model: 'llama-3.1-8b-instant',
-    messages: [
-      {
-        role: 'system',
-        content: 'Your task is to transform incoming forecast text written in English into a natural and easy-to-read forecast in Russian. Do not translate the text word for word; instead, preserve the meaning while rewriting it so it sounds like it was originally written in Russian by a human. The wording should be simple, natural, and lively, similar to the style used in modern media or blogs. Avoid bureaucratic language, complex constructions, and typical "AI-style" phrasing. You may slightly rephrase sentences or adjust the structure if needed to improve readability, but the overall meaning of the forecast must remain the same. The tone must always stay positive and supportive: even if the forecast contains challenges, present them gently and constructively. Write smoothly, avoid repetition and cliché phrases, and keep sentences of moderate length. Use standard Russian without excessive formality, and light conversational elements are acceptable. Do not use phrases like "данный период", "следует ожидать", or "в рамках". Do not add explanations, comments, or analysis, and do not mention translation or rewriting. Output only the final forecast text in Russian.'
-      },
-      { role: 'user', content: text }
-    ],
+    model: CLAUDE_MODEL,
     max_tokens: 4000,
-    temperature: 0.3
+    system: systemPrompt,
+    messages: [{ role: 'user', content: userMessage }]
   });
 
   const headers = {
-    'Authorization': 'Bearer ' + GROQ_KEY,
+    'x-api-key': CLAUDE_KEY,
+    'anthropic-version': '2023-06-01',
     'Content-Type': 'application/json',
     'Content-Length': Buffer.byteLength(payload)
   };
 
   const req = https.request(
-    { hostname: GROQ_HOST, path: '/openai/v1/chat/completions', method: 'POST', headers },
+    { hostname: CLAUDE_HOST, path: '/v1/messages', method: 'POST', headers },
     proxyRes => {
       const chunks = [];
       proxyRes.on('data', c => chunks.push(Buffer.isBuffer(c) ? c : Buffer.from(c)));
@@ -41,23 +50,17 @@ function translateViaGroq(text, res) {
         try {
           const raw = Buffer.concat(chunks).toString('utf8');
           const data = JSON.parse(raw);
-          console.log('[translate] Groq status:', proxyRes.statusCode);
-          console.log('[translate] Groq response:', JSON.stringify(data).slice(0, 300));
-          const translated = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content || '';
-          console.log('[translate] result length:', translated.length, '| preview:', translated.slice(0, 100));
-          res.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
-          res.end(JSON.stringify({ success: true, text: translated }));
+          console.log('[claude] status:', proxyRes.statusCode);
+          const text = (data.content && data.content[0] && data.content[0].text) || '';
+          console.log('[claude] result length:', text.length, '| preview:', text.slice(0, 100));
+          callback(null, text);
         } catch(e) {
-          res.writeHead(500, {'Content-Type': 'application/json'});
-          res.end(JSON.stringify({ success: false, error: e.message }));
+          callback(e);
         }
       });
     }
   );
-  req.on('error', e => {
-    res.writeHead(500, {'Content-Type': 'application/json'});
-    res.end(JSON.stringify({ success: false, error: e.message }));
-  });
+  req.on('error', e => callback(e));
   req.write(payload);
   req.end();
 }
@@ -87,7 +90,15 @@ const server = http.createServer((req, res) => {
       catch(e) { res.writeHead(400, {'Content-Type': 'application/json'}); res.end(JSON.stringify({error: 'Invalid JSON'})); return; }
       const text = parsed.text;
       if (!text) { res.writeHead(400, {'Content-Type': 'application/json'}); res.end(JSON.stringify({error: 'No text'})); return; }
-      translateViaGroq(text, res);
+      callClaude(TRANSLATE_SYSTEM_PROMPT, text, (err, translated) => {
+        if (err) {
+          res.writeHead(500, {'Content-Type': 'application/json'});
+          res.end(JSON.stringify({ success: false, error: err.message }));
+          return;
+        }
+        res.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
+        res.end(JSON.stringify({ success: true, text: translated }));
+      });
     });
     return;
   }
@@ -101,7 +112,8 @@ const server = http.createServer((req, res) => {
         res.writeHead(400); res.end(JSON.stringify({error:'Invalid JSON'})); return;
       }
       const d = parsed.data || {};
-      // Собираем только нужные поля
+
+      // Собираем английский оригинал для кнопки переключения
       const lines = [];
       if (d.overall_theme) lines.push('Theme: ' + d.overall_theme);
       if (d.life_areas && Array.isArray(d.life_areas)) {
@@ -115,50 +127,21 @@ const server = http.createServer((req, res) => {
           }
         });
       }
-
       const englishText = lines.join('\n');
-      const prompt = `Translate the following forecast from English to Russian. Keep the structure exactly as is: translate each label before the colon and the text after it. One line per item. Each translated line (after the colon) must be no longer than 150 characters including spaces. Output only the translated text.\n\n` + englishText;
 
-      // Переводим и возвращаем оба текста
-      const origRes = { englishText };
-      const payload2 = JSON.stringify({
-        model: 'llama-3.1-8b-instant',
-        messages: [
-          { role: 'system', content: 'You are a professional translator. Translate text from English to Russian accurately and naturally.' },
-          { role: 'user', content: prompt }
-        ],
-        max_tokens: 4000,
-        temperature: 0.3
-      });
-      const headers2 = {
-        'Authorization': 'Bearer ' + GROQ_KEY,
-        'Content-Type': 'application/json',
-        'Content-Length': Buffer.byteLength(payload2)
-      };
-      const req2 = https.request(
-        { hostname: GROQ_HOST, path: '/openai/v1/chat/completions', method: 'POST', headers: headers2 },
-        proxyRes2 => {
-          const chunks2 = [];
-          proxyRes2.on('data', c => chunks2.push(Buffer.isBuffer(c) ? c : Buffer.from(c)));
-          proxyRes2.on('end', () => {
-            try {
-              const data2 = JSON.parse(Buffer.concat(chunks2).toString('utf8'));
-              const translated = (data2.choices && data2.choices[0] && data2.choices[0].message && data2.choices[0].message.content) || '';
-              res.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
-              res.end(JSON.stringify({ success: true, text: translated, original: englishText }));
-            } catch(e) {
-              res.writeHead(500); res.end(JSON.stringify({error: e.message}));
-            }
-          });
+      // Передаём полные данные Claude для глубокой интерпретации
+      const userMessage = 'Составь астрологический прогноз на основе следующих данных:\n\n' + JSON.stringify(d, null, 2);
+
+      callClaude(HOROSCOPE_SYSTEM_PROMPT, userMessage, (err, interpreted) => {
+        if (err) {
+          res.writeHead(500); res.end(JSON.stringify({error: err.message})); return;
         }
-      );
-      req2.on('error', e => { res.writeHead(500); res.end(JSON.stringify({error: e.message})); });
-      req2.write(payload2);
-      req2.end();
+        res.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
+        res.end(JSON.stringify({ success: true, text: interpreted, original: englishText }));
+      });
     });
     return;
   }
-
 
   if (req.method === 'POST' && urlPath === '/proxy') {
     let body = '';
