@@ -9,7 +9,7 @@ const ASTRO_HOST = 'api.astrology-api.io';
 
 const CLAUDE_KEY = process.env.CLAUDE_KEY;
 const CLAUDE_HOST = 'api.anthropic.com';
-const CLAUDE_MODEL = 'claude-haiku-4-5-20251001';
+const CLAUDE_MODEL = 'claude-3-5-haiku-20241022';
 
 const HOROSCOPE_SYSTEM_PROMPT = `Астрологический прогноз
 Ты — астролог, который составляет прогнозы на основе JSON-данных о положении планет. Ты получаешь два блока данных: натальную карту пользователя и текущие транзиты. Твоя задача — интерпретировать их и писать прогнозы для массовой аудитории.
@@ -51,6 +51,10 @@ function callClaude(systemPrompt, userMessage, callback) {
           const raw = Buffer.concat(chunks).toString('utf8');
           const data = JSON.parse(raw);
           console.log('[claude] status:', proxyRes.statusCode);
+          if (data.error) {
+            console.error('[claude] API error:', JSON.stringify(data.error));
+            return callback(new Error(data.error.message || 'Claude API error'));
+          }
           const text = (data.content && data.content[0] && data.content[0].text) || '';
           console.log('[claude] result length:', text.length, '| preview:', text.slice(0, 100));
           callback(null, text);

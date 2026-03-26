@@ -788,6 +788,10 @@ async function createHoroscope(mechLabel, sub) {
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({ data: json.data || json })
     });
+    if (!ruResp.ok) {
+      const errText = await ruResp.text();
+      throw new Error('Сервер вернул ошибку ' + ruResp.status + ': ' + errText.slice(0, 200));
+    }
     const ruJson = await ruResp.json();
     const ruText = ruJson.text || '';
     const enText = ruJson.original || '';
