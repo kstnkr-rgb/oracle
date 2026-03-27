@@ -364,7 +364,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
     <div class="field">
       <label>Город рождения</label>
       <div class="city-wrap">
-        <input type="text" id="ob-city" placeholder="Начните вводить город…" autocomplete="off" oninput="cityAutocomplete(this,'ob-city-list')" onblur="hideCitySuggestions('ob-city-list')"/>
+        <input type="text" id="ob-city" placeholder="Начните вводить город…" autocomplete="off" value="Североморск" oninput="cityAutocomplete(this,'ob-city-list')" onblur="hideCitySuggestions('ob-city-list')"/>
         <div class="city-suggestions" id="ob-city-list"></div>
       </div>
     </div>
@@ -376,7 +376,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
 <!-- ══ МЕХАНИКИ ══ -->
 <div class="screen hidden" id="s-mechanics">
   <div class="nav" style="padding:52px 20px 16px;display:flex;align-items:center;gap:12px">
-    <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.1.2</span></div>
+    <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.1.3</span></div>
     <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
       <span style="font-size:1rem;cursor:pointer" onclick="openRubleShop()">💎</span>
       <span class="crystal-count" id="crystal-display" style="cursor:pointer" onclick="openRubleShop()">50</span>
