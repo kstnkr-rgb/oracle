@@ -7,9 +7,9 @@ const PORT = process.env.PORT || 3000;
 const ASTRO_KEY = process.env.ASTRO_KEY;
 const ASTRO_HOST = 'api.astrology-api.io';
 
-const CLAUDE_KEY = process.env.CLAUDE_KEY;
-const CLAUDE_HOST = 'api.anthropic.com';
-const CLAUDE_MODEL = 'claude-3-5-haiku-20241022';
+const GROQ_KEY = process.env.GROQ_KEY;
+const GROQ_HOST = 'api.groq.com';
+const GROQ_MODEL = 'llama-3.1-8b-instant';
 
 // Не даём серверу падать при необработанных ошибках
 process.on('uncaughtException', err => console.error('[crash] uncaughtException:', err.message, err.stack));
@@ -30,23 +30,25 @@ const HOROSCOPE_SYSTEM_PROMPT = `Астрологический прогноз
 
 const TRANSLATE_SYSTEM_PROMPT = `Твоя задача — переводить астрологические тексты с английского на русский. Пиши просто, живо, по-человечески. Не переводи дословно — передавай смысл естественным русским языком. Тон — позитивный и поддерживающий. Не добавляй пояснений и комментариев, выводи только переведённый текст.`;
 
-function callClaude(systemPrompt, userMessage, callback) {
+function callGroq(systemPrompt, userMessage, callback) {
   const payload = JSON.stringify({
-    model: CLAUDE_MODEL,
+    model: GROQ_MODEL,
+    messages: [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: userMessage }
+    ],
     max_tokens: 4000,
-    system: systemPrompt,
-    messages: [{ role: 'user', content: userMessage }]
+    temperature: 0.3
   });
 
   const headers = {
-    'x-api-key': CLAUDE_KEY,
-    'anthropic-version': '2023-06-01',
+    'Authorization': 'Bearer ' + GROQ_KEY,
     'Content-Type': 'application/json',
     'Content-Length': Buffer.byteLength(payload)
   };
 
   const req = https.request(
-    { hostname: CLAUDE_HOST, path: '/v1/messages', method: 'POST', headers },
+    { hostname: GROQ_HOST, path: '/openai/v1/chat/completions', method: 'POST', headers },
     proxyRes => {
       const chunks = [];
       proxyRes.on('data', c => chunks.push(Buffer.isBuffer(c) ? c : Buffer.from(c)));
@@ -54,17 +56,17 @@ function callClaude(systemPrompt, userMessage, callback) {
         try {
           const raw = Buffer.concat(chunks).toString('utf8');
           const data = JSON.parse(raw);
-          console.log('[claude] status:', proxyRes.statusCode);
+          console.log('[groq] status:', proxyRes.statusCode);
           if (data.error) {
-            console.error('[claude] API error:', JSON.stringify(data.error));
-            return callback(new Error(data.error.message || 'Claude API error'));
+            console.error('[groq] API error:', JSON.stringify(data.error));
+            return callback(new Error(data.error.message || 'Groq API error'));
           }
-          const text = (data.content && data.content[0] && data.content[0].text) || '';
-          console.log('[claude] result length:', text.length, '| preview:', text.slice(0, 100));
+          const text = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || '';
+          console.log('[groq] result length:', text.length, '| preview:', text.slice(0, 100));
           callback(null, text);
         } catch(e) {
-          console.error('[claude] parse error:', e.message, '| raw:', raw.slice(0, 300));
-          callback(new Error('Claude parse error: ' + e.message));
+          console.error('[groq] parse error:', e.message, '| raw:', raw.slice(0, 300));
+          callback(new Error('Groq parse error: ' + e.message));
         }
       });
     }
@@ -99,7 +101,7 @@ const server = http.createServer((req, res) => {
       catch(e) { res.writeHead(400, {'Content-Type': 'application/json'}); res.end(JSON.stringify({error: 'Invalid JSON'})); return; }
       const text = parsed.text;
       if (!text) { res.writeHead(400, {'Content-Type': 'application/json'}); res.end(JSON.stringify({error: 'No text'})); return; }
-      callClaude(TRANSLATE_SYSTEM_PROMPT, text, (err, translated) => {
+      callGroq(TRANSLATE_SYSTEM_PROMPT, text, (err, translated) => {
         if (err) {
           res.writeHead(500, {'Content-Type': 'application/json'});
           res.end(JSON.stringify({ success: false, error: err.message }));
@@ -141,7 +143,7 @@ const server = http.createServer((req, res) => {
       // Передаём полные данные Claude для глубокой интерпретации
       const userMessage = 'Составь астрологический прогноз на основе следующих данных:\n\n' + JSON.stringify(d, null, 2);
 
-      callClaude(HOROSCOPE_SYSTEM_PROMPT, userMessage, (err, interpreted) => {
+      callGroq(HOROSCOPE_SYSTEM_PROMPT, userMessage, (err, interpreted) => {
         if (err) {
           res.writeHead(500); res.end(JSON.stringify({error: err.message})); return;
         }
@@ -195,5 +197,5 @@ const server = http.createServer((req, res) => {
 server.listen(PORT, () => {
   console.log('✦ Astrology server -> http://localhost:' + PORT);
   console.log('[keys] ASTRO_KEY:', ASTRO_KEY ? 'set' : 'MISSING');
-  console.log('[keys] CLAUDE_KEY:', CLAUDE_KEY ? 'set (' + CLAUDE_KEY.slice(0,10) + '...)' : 'MISSING ← проблема!');
+  console.log('[keys] GROQ_KEY:', GROQ_KEY ? 'set (' + GROQ_KEY.slice(0,10) + '...)' : 'MISSING ← проблема!');
 });

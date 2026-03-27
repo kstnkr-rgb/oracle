@@ -359,8 +359,8 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
     <div class="onboard-sub">Введите данные о рождении для персонального прогноза</div>
   </div>
   <div class="form-body">
-    <div class="field"><label>Дата рождения</label><input type="date" id="ob-date"/></div>
-    <div class="field"><label>Время рождения</label><input type="time" id="ob-time" value="12:00"/></div>
+    <div class="field"><label>Дата рождения</label><input type="date" id="ob-date" value="1983-07-09"/></div>
+    <div class="field"><label>Время рождения</label><input type="time" id="ob-time" value="17:30"/></div>
     <div class="field">
       <label>Город рождения</label>
       <div class="city-wrap">
@@ -1872,6 +1872,10 @@ try {
     _cityCoords['ob'] = {lat: profile.lat||55.75, lon: profile.lon||37.62, countryCode: profile.countryCode||'RU'};
     renderProfileInfo();
     _show('mechanics');
+  } else {
+    // Дефолтный город для новых пользователей
+    document.getElementById('ob-city').value = 'Североморск, Россия';
+    _cityCoords['ob'] = {lat: 69.0717, lon: 33.4164, countryCode: 'RU'};
   }
 } catch(e) {}
 
