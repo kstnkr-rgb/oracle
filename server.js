@@ -132,33 +132,19 @@ const server = http.createServer((req, res) => {
       try { parsed = JSON.parse(body); } catch(e) {
         res.writeHead(400); res.end(JSON.stringify({error:'Invalid JSON'})); return;
       }
-      const d = parsed.data || {};
+      const natal = parsed.natal || {};
+      const transits = parsed.transits || {};
+      const period = parsed.period || 'daily';
+      const periodLabel = { daily: 'на сегодня', weekly: 'на неделю', monthly: 'на месяц', yearly: 'на год' }[period] || 'на сегодня';
 
-      // Собираем английский оригинал для кнопки переключения
-      const lines = [];
-      if (d.overall_theme) lines.push('Theme: ' + d.overall_theme);
-      if (d.life_areas && Array.isArray(d.life_areas)) {
-        const needed = { finance: 'Finance', love: 'Love', health: 'Health' };
-        d.life_areas.forEach(a => {
-          const key = (a.title || '').toLowerCase();
-          const label = needed[key];
-          if (label) {
-            const txt = a.prediction || a.description || a.interpretation || '';
-            if (txt) lines.push(label + ': ' + txt);
-          }
-        });
-      }
-      const englishText = lines.join('\n');
-
-      // Передаём полные данные Claude для глубокой интерпретации
-      const userMessage = 'Составь астрологический прогноз на основе следующих данных:\n\n' + JSON.stringify(d, null, 2);
+      const userMessage = `Составь астрологический прогноз ${periodLabel}.\n\nНАТАЛЬНАЯ КАРТА (планеты на момент рождения):\n${JSON.stringify(natal.positions, null, 2)}\n\nТЕКУЩИЕ ТРАНЗИТЫ (планеты сейчас):\n${JSON.stringify(transits.positions, null, 2)}`;
 
       callClaude(HOROSCOPE_SYSTEM_PROMPT, userMessage, (err, interpreted) => {
         if (err) {
           res.writeHead(500); res.end(JSON.stringify({error: err.message})); return;
         }
         res.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
-        res.end(JSON.stringify({ success: true, text: interpreted, original: englishText }));
+        res.end(JSON.stringify({ success: true, text: interpreted }));
       });
     });
     return;

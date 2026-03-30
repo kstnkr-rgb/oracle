@@ -376,7 +376,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
 <!-- ══ МЕХАНИКИ ══ -->
 <div class="screen hidden" id="s-mechanics">
   <div class="nav" style="padding:52px 20px 16px;display:flex;align-items:center;gap:12px">
-    <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.1.3</span></div>
+    <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.1.4</span></div>
     <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
       <span style="font-size:1rem;cursor:pointer" onclick="openRubleShop()">💎</span>
       <span class="crystal-count" id="crystal-display" style="cursor:pointer" onclick="openRubleShop()">50</span>
@@ -756,37 +756,32 @@ async function createHoroscope(mechLabel, sub) {
       targetDate = d.toISOString().slice(0,10);
     }
     const horoType = (sub === 'Неделя') ? 'weekly' : (sub === 'Месяц') ? 'monthly' : (sub === 'Год') ? 'yearly' : 'daily';
-    const apiEndpoint = `/api/v3/horoscope/personal/${horoType}`;
-    // Determine city and country for API
     const cityName = p.city || 'Moscow';
-    // Try to get country code from stored coords; default to RU
     const countryCode = p.countryCode || 'RU';
-    const body = {
-      subject: {
-        name: 'User',
-        birth_data: { year:y, month:mo, day:day, hour:h, minute:mi, second:0,
-          city: cityName, country_code: countryCode }
-      },
-      horoscope_type: horoType,
-      language: 'en',
-      tradition: 'universal',
-      include_transits: true,
-      include_progressions: false
-    };
-    if (targetDate) body.target_date = targetDate;
-    const resp = await fetch('/proxy', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ apiPath: apiEndpoint, payload:body })
-    });
-    const json = await resp.json();
-    if (!json.success && !json.data) throw new Error(json.message || 'Ошибка API');
 
-    // Отправляем весь JSON в Groq — получаем готовый русский текст
+    const posOpts = { house_system: 'P', zodiac_type: 'Tropic', tradition: 'universal', detail_level: 'standard' };
+    const natalPayload = {
+      subject: { name: 'User', birth_data: { year:y, month:mo, day:day, hour:h, minute:mi, second:0, city:cityName, country_code:countryCode } },
+      options: posOpts
+    };
+    const transitDate = targetDate ? new Date(targetDate) : new Date();
+    const transitPayload = {
+      subject: { name: 'Transit', birth_data: { year:transitDate.getUTCFullYear(), month:transitDate.getUTCMonth()+1, day:transitDate.getUTCDate(), hour:transitDate.getUTCHours(), minute:transitDate.getUTCMinutes(), second:0, city:cityName, country_code:countryCode } },
+      options: posOpts
+    };
+
+    const [natalResp, transitResp] = await Promise.all([
+      fetch('/proxy', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ apiPath:'/api/v3/data/positions', payload:natalPayload }) }),
+      fetch('/proxy', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ apiPath:'/api/v3/data/positions', payload:transitPayload }) })
+    ]);
+    const [natalJson, transitJson] = await Promise.all([natalResp.json(), transitResp.json()]);
+    if (!natalJson.positions) throw new Error('Ошибка натальной карты: ' + (natalJson.message || JSON.stringify(natalJson).slice(0,120)));
+    if (!transitJson.positions) throw new Error('Ошибка транзитов: ' + (transitJson.message || JSON.stringify(transitJson).slice(0,120)));
+
     const ruResp = await fetch('/horoscope-ru', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ data: json.data || json })
+      body: JSON.stringify({ natal: natalJson, transits: transitJson, period: horoType })
     });
     if (!ruResp.ok) {
       const errText = await ruResp.text();
@@ -794,20 +789,12 @@ async function createHoroscope(mechLabel, sub) {
     }
     const ruJson = await ruResp.json();
     const ruText = ruJson.text || '';
-    const enText = ruJson.original || '';
-
-    // Рейтинг из оригинала
-    const data = json.data || json;
-    const rating = data.overall_rating || 0;
-    const stars = rating ? '<div style="font-size:1.1rem;color:#f5c842;margin-bottom:16px;letter-spacing:2px">' + '★'.repeat(rating) + '☆'.repeat(5-rating) + '</div>' : '';
 
     const dF = p.date ? p.date.split('-').reverse().join('.') : '—';
     const tF = (p.time||'').replace(':','-');
     const origin = '<div style="font-size:.75rem;color:var(--text2);margin-top:16px">Исходная информация: ' + (p.city||'—') + ', ' + dF + ', ' + tF + '</div>';
 
-    const toggleBtn = enText ? '<button onclick="toggleHoroscopeOriginal(this)" data-ru="' + encodeURIComponent(ruText) + '" data-en="' + encodeURIComponent(enText) + '" data-mode="ru" style="margin-bottom:14px;padding:6px 14px;border-radius:20px;border:1px solid var(--accent);background:transparent;color:var(--accent);font-size:.78rem;cursor:pointer">🌐 Показать оригинал</button>' : '';
-
-    const html = stars + toggleBtn +
+    const html =
       '<div id="horo-text-body" style="font-size:.92rem;line-height:1.75;color:var(--text);white-space:pre-wrap">' + ruText + '</div>' +
       origin;
 
