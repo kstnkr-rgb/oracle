@@ -355,7 +355,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
 <div class="screen" id="s-onboard">
   <div class="onboard-header">
     <div class="onboard-logo">🔮</div>
-    <div class="onboard-title">Оракул <span style="font-size:.55rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.1.4</span></div>
+    <div class="onboard-title">Оракул <span style="font-size:.55rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.1.5</span></div>
     <div class="onboard-sub">Введите данные о рождении для персонального прогноза</div>
   </div>
   <div class="form-body">
@@ -376,7 +376,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
 <!-- ══ МЕХАНИКИ ══ -->
 <div class="screen hidden" id="s-mechanics">
   <div class="nav" style="padding:52px 20px 16px;display:flex;align-items:center;gap:12px">
-    <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.1.4</span></div>
+    <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.1.5</span></div>
     <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
       <span style="font-size:1rem;cursor:pointer" onclick="openRubleShop()">💎</span>
       <span class="crystal-count" id="crystal-display" style="cursor:pointer" onclick="openRubleShop()">50</span>
@@ -908,42 +908,38 @@ async function createTaro(mechLabel, sub) {
     };
 
     let html = '';
+    const p2 = profile;
+    const dF2 = p2.date ? p2.date.split('-').reverse().join('.') : '—';
+    const origin2 = '<div style="font-size:.75rem;color:var(--text2);margin-top:16px">Исходная информация: ' + (p2.city||'—') + ', ' + dF2 + '</div>';
 
     if (sub === 'Карта дня') {
-      // Шаг 1: получить карту дня
       const dailyResp = await fetch('/proxy', {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
+        method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({ apiPath: '/api/v3/tarot/cards/daily', method: 'GET' })
       });
       const dailyJson = await dailyResp.json();
       if (!dailyJson.success) throw new Error(dailyJson.error?.message || 'Ошибка получения карты');
-      const cardId = dailyJson.card?.id;
-      if (!cardId) throw new Error('Карта не получена');
+      const card = dailyJson.card;
+      if (!card?.id) throw new Error('Карта не получена');
 
-      // Шаг 2: получить отчёт по карте
-      const reportResp = await fetch('/proxy', {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
+      const taruResp = await fetch('/tarot-ru', {
+        method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({
-          apiPath: '/api/v3/tarot/reports/single',
-          payload: { subject, card_id: cardId, language: 'en', tradition: 'universal' }
+          type: 'single',
+          card: { name: cardName(card), arcana: card.arcana, suit: card.suit, element: card.element, orientation: card.orientation }
         })
       });
-      const reportJson = await reportResp.json();
-      console.log('tarot reportJson keys:', Object.keys(reportJson));
-      const data = reportJson.data || reportJson;
-      console.log('tarot data keys:', Object.keys(data));
-      // Переводим интерпретацию карты
-      if (data.interpretation) data.interpretation = await translateText(data.interpretation);
-      if (data.report && data.report.summary) data.report.summary = await translateText(data.report.summary);
-      if (data.report && data.report.advice) data.report.advice = await translateText(data.report.advice);
-      html = formatTaroSingle(dailyJson.card, data);
+      if (!taruResp.ok) throw new Error('Ошибка интерпретации: ' + taruResp.status);
+      const taruJson = await taruResp.json();
+
+      html = '<div style="font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#c084fc;margin-bottom:10px">🃏 Карта дня</div>';
+      html += taroCardBadge(card, card.orientation);
+      html += '<div style="font-size:.92rem;line-height:1.75;color:var(--text);white-space:pre-wrap">' + (taruJson.text || '') + '</div>';
+      html += origin2;
 
     } else if (sub === 'Расклад на 3 карты') {
       const resp = await fetch('/proxy', {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
+        method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({
           apiPath: '/api/v3/tarot/reports/three-card',
           payload: { subject, language: 'en', tradition: 'universal' }
@@ -952,17 +948,31 @@ async function createTaro(mechLabel, sub) {
       const json = await resp.json();
       if (!json.success) throw new Error(json.error?.message || 'Ошибка API');
       const threeData = json.data || json;
-      // Переводим интерпретации позиций
-      if (threeData.cards && Array.isArray(threeData.cards)) {
-        for (let i = 0; i < threeData.cards.length; i++) {
-          if (threeData.cards[i].interpretation) {
-            threeData.cards[i] = Object.assign({}, threeData.cards[i], { interpretation: await translateText(threeData.cards[i].interpretation) });
-          }
-        }
-      }
-      if (threeData.report && threeData.report.synthesis) threeData.report.synthesis = await translateText(threeData.report.synthesis);
-      if (threeData.report && threeData.report.advice) threeData.report.advice = await translateText(threeData.report.advice);
-      html = formatTaroThree(threeData);
+      const posNames = ['Прошлое', 'Настоящее', 'Будущее'];
+
+      const taruResp = await fetch('/tarot-ru', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          type: 'three',
+          cards: (threeData.cards || []).map((c, i) => {
+            const card = c.card || c;
+            return { position: posNames[i] || 'Карта '+(i+1), name: cardName(card), arcana: card.arcana, suit: card.suit, element: card.element, orientation: c.orientation || card.orientation };
+          })
+        })
+      });
+      if (!taruResp.ok) throw new Error('Ошибка интерпретации: ' + taruResp.status);
+      const taruJson = await taruResp.json();
+
+      html = '<div style="font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#c084fc;margin-bottom:12px">🃏 Расклад на 3 карты</div>';
+      (threeData.cards || []).forEach((c, i) => {
+        const card = c.card || c;
+        html += '<div style="margin-bottom:12px">';
+        html += '<div style="font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin-bottom:6px">' + (posNames[i] || 'Карта '+(i+1)) + '</div>';
+        html += taroCardBadge(card, c.orientation || card.orientation);
+        html += '</div>';
+      });
+      html += '<div style="font-size:.92rem;line-height:1.75;color:var(--text);white-space:pre-wrap">' + (taruJson.text || '') + '</div>';
+      html += origin2;
     }
 
     document.getElementById('rmt-text').innerHTML = html;

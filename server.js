@@ -42,6 +42,24 @@ const HOROSCOPE_SYSTEM_PROMPT = `Ты — астролог, составляющ
 
 const TRANSLATE_SYSTEM_PROMPT = `Твоя задача — переводить астрологические тексты с английского на русский. Пиши просто, живо, по-человечески. Не переводи дословно — передавай смысл естественным русским языком. Тон — позитивный и поддерживающий. Не добавляй пояснений и комментариев, выводи только переведённый текст.`;
 
+const TAROT_SYSTEM_PROMPT = `Ты — таролог, составляющий интерпретации расклада Таро на русском языке. Пиши живо, образно, по-человечески. Тон — поддерживающий и позитивный, с акцентом на возможности. Никаких списков, звёздочек и markdown-разметки.
+
+Для одной карты (тип single): напиши 3–4 предложения — что означает карта в данном положении и какой совет несёт.
+
+Для расклада на 3 карты (тип three) строго следуй формату:
+
+Прошлое
+[1–2 предложения]
+
+Настоящее
+[1–2 предложения]
+
+Будущее
+[1–2 предложения]
+
+Общий вывод
+[2–3 предложения, связывающие всё вместе]`;
+
 function callClaude(systemPrompt, userMessage, callback) {
   const payload = JSON.stringify({
     model: CLAUDE_MODEL,
@@ -145,6 +163,33 @@ const server = http.createServer((req, res) => {
         }
         res.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
         res.end(JSON.stringify({ success: true, text: interpreted }));
+      });
+    });
+    return;
+  }
+
+  if (req.method === 'POST' && urlPath === '/tarot-ru') {
+    let body = '';
+    req.on('data', c => body += c);
+    req.on('end', () => {
+      let parsed;
+      try { parsed = JSON.parse(body); } catch(e) {
+        res.writeHead(400); res.end(JSON.stringify({error:'Invalid JSON'})); return;
+      }
+      const type = parsed.type || 'single';
+      let userMessage;
+      if (type === 'single') {
+        const c = parsed.card || {};
+        userMessage = `Тип расклада: одна карта.\nКарта: ${c.name || '—'}\nАркан: ${c.arcana || '—'}\nМасть: ${c.suit || '—'}\nСтихия: ${c.element || '—'}\nПоложение: ${c.orientation === 'reversed' ? 'перевёрнутое' : 'прямое'}`;
+      } else {
+        const cards = parsed.cards || [];
+        userMessage = 'Тип расклада: три карты (Прошлое / Настоящее / Будущее).\n\n' +
+          cards.map(c => `${c.position}: ${c.name || '—'} (${c.arcana || ''}, ${c.element || ''}, положение: ${c.orientation === 'reversed' ? 'перевёрнутое' : 'прямое'})`).join('\n');
+      }
+      callClaude(TAROT_SYSTEM_PROMPT, userMessage, (err, text) => {
+        if (err) { res.writeHead(500); res.end(JSON.stringify({error: err.message})); return; }
+        res.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
+        res.end(JSON.stringify({ success: true, text }));
       });
     });
     return;
