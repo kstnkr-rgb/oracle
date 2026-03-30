@@ -355,7 +355,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
 <div class="screen" id="s-onboard">
   <div class="onboard-header">
     <div class="onboard-logo">🔮</div>
-    <div class="onboard-title">Оракул <span style="font-size:.55rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.1.5</span></div>
+    <div class="onboard-title">Оракул <span style="font-size:.55rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.1.6</span></div>
     <div class="onboard-sub">Введите данные о рождении для персонального прогноза</div>
   </div>
   <div class="form-body">
@@ -376,7 +376,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
 <!-- ══ МЕХАНИКИ ══ -->
 <div class="screen hidden" id="s-mechanics">
   <div class="nav" style="padding:52px 20px 16px;display:flex;align-items:center;gap:12px">
-    <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.1.5</span></div>
+    <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.1.6</span></div>
     <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
       <span style="font-size:1rem;cursor:pointer" onclick="openRubleShop()">💎</span>
       <span class="crystal-count" id="crystal-display" style="cursor:pointer" onclick="openRubleShop()">50</span>
@@ -740,6 +740,31 @@ function createAndShow(mid, mechLabel, sub) {
   openResultModal(title, text);
 }
 
+// ── КЕШ АСТРОДАННЫХ ───────────────────────────
+let _astroCache = null;
+const ASTRO_CACHE_TTL = 10 * 60 * 1000; // 10 минут
+async function getAstroData() {
+  if (_astroCache && (Date.now() - _astroCache.ts) < ASTRO_CACHE_TTL) return _astroCache;
+  const p = profile;
+  const [y,mo,day] = (p.date||'1990-01-01').split('-').map(Number);
+  const [h,mi] = (p.time||'12:00').split(':').map(Number);
+  const cityName = p.city || 'Moscow';
+  const countryCode = p.countryCode || 'RU';
+  const posOpts = { house_system:'P', zodiac_type:'Tropic', tradition:'universal', detail_level:'standard' };
+  const now = new Date();
+  const [nr, tr] = await Promise.all([
+    fetch('/proxy', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ apiPath:'/api/v3/data/positions', payload:{ subject:{ name:'User', birth_data:{ year:y, month:mo, day:day, hour:h, minute:mi, second:0, city:cityName, country_code:countryCode } }, options:posOpts } }) }),
+    fetch('/proxy', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ apiPath:'/api/v3/data/positions', payload:{ subject:{ name:'Transit', birth_data:{ year:now.getUTCFullYear(), month:now.getUTCMonth()+1, day:now.getUTCDate(), hour:now.getUTCHours(), minute:now.getUTCMinutes(), second:0, city:cityName, country_code:countryCode } }, options:posOpts } }) })
+  ]);
+  const [nj, tj] = await Promise.all([nr.json(), tr.json()]);
+  const natal = nj.data || nj;
+  const transits = tj.data || tj;
+  if (!natal.positions) throw new Error('Ошибка натальной карты');
+  if (!transits.positions) throw new Error('Ошибка транзитов');
+  _astroCache = { natal, transits, ts: Date.now() };
+  return _astroCache;
+}
+
 // ── ГОРОСКОП: API ─────────────────────────────
 async function createHoroscope(mechLabel, sub) {
   if (!spendCrystals('horoscope', sub)) return;
@@ -1018,12 +1043,31 @@ function tarotImageUrl(cardId) {
   return null;
 }
 
+const CARD_NAME_RU = {
+  'The Fool':'Шут','The Magician':'Маг','The High Priestess':'Верховная Жрица',
+  'The Empress':'Императрица','The Emperor':'Император','The Hierophant':'Иерофант',
+  'The Lovers':'Влюблённые','The Chariot':'Колесница','Strength':'Сила',
+  'The Hermit':'Отшельник','Wheel of Fortune':'Колесо Фортуны','Justice':'Справедливость',
+  'The Hanged Man':'Повешенный','Death':'Смерть','Temperance':'Умеренность',
+  'The Devil':'Дьявол','The Tower':'Башня','The Star':'Звезда','The Moon':'Луна',
+  'The Sun':'Солнце','Judgement':'Суд','The World':'Мир',
+  'Ace':'Туз','Two':'Двойка','Three':'Тройка','Four':'Четвёрка','Five':'Пятёрка',
+  'Six':'Шестёрка','Seven':'Семёрка','Eight':'Восьмёрка','Nine':'Девятка','Ten':'Десятка',
+  'Page':'Паж','Knight':'Рыцарь','Queen':'Королева','King':'Король',
+  'of Cups':'Кубков','of Wands':'Жезлов','of Swords':'Мечей','of Pentacles':'Пентаклей'
+};
 function cardName(card) {
   if (!card) return '';
-  if (typeof card.name === 'string') return card.name;
-  if (card.name && card.name.ru) return card.name.ru;
-  if (card.name && card.name.en) return card.name.en;
-  return '';
+  let name = '';
+  if (typeof card.name === 'string') name = card.name;
+  else if (card.name && card.name.ru) return card.name.ru;
+  else if (card.name && card.name.en) name = card.name.en;
+  if (!name) return '';
+  if (CARD_NAME_RU[name]) return CARD_NAME_RU[name];
+  // Minor arcana: "Two of Cups" → "Двойка Кубков"
+  return name.replace(/^(\w+)( of )(\w+)$/, (_, num, _of, suit) =>
+    (CARD_NAME_RU[num] || num) + ' ' + (CARD_NAME_RU['of ' + suit] || suit)
+  );
 }
 
 function taroCardBadge(card, orientation) {
@@ -1037,18 +1081,8 @@ function taroCardBadge(card, orientation) {
   const imgUrl = tarotImageUrl(card.id);
   const isReversed = orientStr === 'reversed';
 
-  let html = '<div style="background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.25);border-radius:10px;padding:13px 15px;margin-bottom:10px;display:flex;gap:14px;align-items:flex-start">';
-  // Картинка
-  if (imgUrl) {
-    html += '<div style="flex-shrink:0;width:60px">'
-      + '<img src="' + imgUrl + '" alt="' + name + '" '
-      + 'style="width:60px;height:103px;object-fit:cover;border-radius:6px;'
-      + (isReversed ? 'transform:rotate(180deg);' : '')
-      + 'box-shadow:0 2px 8px rgba(0,0,0,.4)" onerror="this.style.display=\'none\'">'
-      + '</div>';
-  }
-  // Текст
-  html += '<div style="flex:1;min-width:0">';
+  let html = '<div style="background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.25);border-radius:10px;padding:13px 15px;margin-bottom:10px">';
+  html += '<div style="min-width:0">';
   if (name) html += '<div style="font-size:1.05rem;font-weight:800;color:#c084fc;margin-bottom:6px">' + name + '</div>';
   html += '<div style="display:flex;flex-wrap:wrap;gap:5px">';
   if (arcana) html += '<span style="font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(167,139,250,.15);color:#c084fc">' + arcana + '</span>';
@@ -1484,12 +1518,41 @@ function doShare() { doShareModal(); }
 let _oracleMid = 'oracle', _oracleSub = null;
 function openOracleModal(mechLabel, sub) {
   _oracleSub = sub;
-  document.getElementById('oracle-modal-title').textContent = 'Совет Оракула' + (sub ? ' · ' + sub : '');
+  const noInput = sub === 'Работа' || sub === 'Самопознание';
+
+  if (noInput) {
+    if (!spendCrystals('oracle', sub)) return;
+    const title = 'Совет Оракула · ' + sub;
+    openResultModal(title, '⏳ Формирую совет… (может занять ~15 сек)');
+    getAstroData().then(astro =>
+      fetch('/oracle-ru', { method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ sub, natal: astro.natal, transits: astro.transits }) })
+    ).then(r => r.json()).then(json => {
+      if (json.error) throw new Error(json.error);
+      const p = profile;
+      const dF = p.date ? p.date.split('-').reverse().join('.') : '—';
+      const origin = '<div style="font-size:.75rem;color:var(--text2);margin-top:16px">Исходная информация: ' + (p.city||'—') + ', ' + dF + '</div>';
+      document.getElementById('rmt-text').innerHTML =
+        '<div style="font-size:.92rem;line-height:1.75;color:var(--text);white-space:pre-wrap">' + json.text + '</div>' + origin;
+      const dt = nowStr();
+      const key = 'oracle_' + sub;
+      if (!history[key]) history[key] = [];
+      history[key].push({ datetime: dt, title, text: json.text.slice(0, 200) });
+    }).catch(e => {
+      document.getElementById('rmt-text').textContent = '❌ Ошибка: ' + e.message;
+    });
+    return;
+  }
+
+  // Общение — с полем ввода
+  document.getElementById('oracle-modal-title').textContent = 'Совет Оракула · ' + sub;
   document.getElementById('oracle-question').value = '';
   document.getElementById('oracle-answer').textContent = '';
   document.getElementById('oracle-answer-wrap').style.display = 'none';
   document.getElementById('oracle-share-btn').style.display = 'none';
   document.getElementById('oracle-ask-btn').style.display = 'block';
+  document.getElementById('oracle-ask-btn').disabled = false;
+  document.getElementById('oracle-ask-btn').textContent = 'Спросить Оракула';
   document.getElementById('oracle-modal').classList.add('open');
 }
 function closeOracleModal() { document.getElementById('oracle-modal').classList.remove('open'); }
@@ -1702,24 +1765,37 @@ function formatCompatibility(data) {
   html += '<div style="margin-top:6px">' + origin + '</div>';
   return html;
 }
-function askOracle() {
+async function askOracle() {
   const q = document.getElementById('oracle-question').value.trim();
   if (!q) { document.getElementById('oracle-question').focus(); return; }
   if (!spendCrystals('oracle', _oracleSub)) return;
-  const dt = nowStr();
-  const answer = 'Все будет хорошо, надо только стараться';
-  const sub = _oracleSub;
-  const key = 'oracle' + (sub ? '_'+sub : '');
-  const title = 'Совет Оракула' + (sub ? ' · '+sub : '');
-  const text = `Вопрос: ${q}\n\nОракул: ${answer}\n\n${dt}\n\nДата рождения: ${profile.date||'—'}\nГород: ${profile.city||'—'}`;
-  if (!history[key]) history[key] = [];
-  history[key].push({ datetime: dt, title, text });
-  soundDrum();
-  setTimeout(() => {   document.getElementById('oracle-answer').textContent = answer;
-  document.getElementById('oracle-answer-wrap').style.display = 'block';
-  document.getElementById('oracle-ask-btn').style.display = 'none';
-  document.getElementById('oracle-share-btn').style.display = 'flex';
-  }, 600);
+  const btn = document.getElementById('oracle-ask-btn');
+  btn.disabled = true; btn.textContent = '⏳ Думаю…';
+  try {
+    const astro = await getAstroData();
+    const resp = await fetch('/oracle-ru', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ sub: _oracleSub, natal: astro.natal, transits: astro.transits, question: q })
+    });
+    const json = await resp.json();
+    if (json.error) throw new Error(json.error);
+    const answer = json.text || '';
+    const dt = nowStr();
+    const sub = _oracleSub;
+    const key = 'oracle' + (sub ? '_'+sub : '');
+    const title = 'Совет Оракула' + (sub ? ' · '+sub : '');
+    if (!history[key]) history[key] = [];
+    history[key].push({ datetime: dt, title, text: ('Вопрос: ' + q + '\n\nОракул: ' + answer).slice(0, 200) });
+    soundDrum();
+    document.getElementById('oracle-answer').textContent = answer;
+    document.getElementById('oracle-answer-wrap').style.display = 'block';
+    btn.style.display = 'none';
+    document.getElementById('oracle-share-btn').style.display = 'flex';
+  } catch(e) {
+    document.getElementById('oracle-answer').textContent = '❌ Ошибка: ' + e.message;
+    document.getElementById('oracle-answer-wrap').style.display = 'block';
+    btn.disabled = false; btn.textContent = 'Спросить Оракула';
+  }
 }
 function doShareOracle() {
   const q = document.getElementById('oracle-question').value.trim();

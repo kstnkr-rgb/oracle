@@ -42,6 +42,14 @@ const HOROSCOPE_SYSTEM_PROMPT = `Ты — астролог, составляющ
 
 const TRANSLATE_SYSTEM_PROMPT = `Твоя задача — переводить астрологические тексты с английского на русский. Пиши просто, живо, по-человечески. Не переводи дословно — передавай смысл естественным русским языком. Тон — позитивный и поддерживающий. Не добавляй пояснений и комментариев, выводи только переведённый текст.`;
 
+const ORACLE_SYSTEM_PROMPT = `Ты — мудрый астрологический советник. Составляй развёрнутые советы на основе натальной карты и текущих транзитов.
+
+Пиши от второго лица ("ты"). Язык — простой, живой, человечный. Без астрологического жаргона: не используй "транзит", "натальный", "аспект", "конъюнкция" и подобное. Тон — мудрый, поддерживающий, вдохновляющий.
+
+Целевой объём — около 1200–1500 знаков (150–200 слов).
+
+Никаких заголовков, списков, звёздочек и markdown. Только связный текст.`;
+
 const TAROT_SYSTEM_PROMPT = `Ты — таролог, составляющий интерпретации расклада Таро на русском языке. Пиши живо, образно, по-человечески. Тон — поддерживающий и позитивный, с акцентом на возможности. Никаких списков, звёздочек и markdown-разметки.
 
 Для одной карты (тип single): напиши 3–4 предложения — что означает карта в данном положении и какой совет несёт.
@@ -163,6 +171,32 @@ const server = http.createServer((req, res) => {
         }
         res.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
         res.end(JSON.stringify({ success: true, text: interpreted }));
+      });
+    });
+    return;
+  }
+
+  if (req.method === 'POST' && urlPath === '/oracle-ru') {
+    let body = '';
+    req.on('data', c => body += c);
+    req.on('end', () => {
+      let parsed;
+      try { parsed = JSON.parse(body); } catch(e) {
+        res.writeHead(400); res.end(JSON.stringify({error:'Invalid JSON'})); return;
+      }
+      const sub = parsed.sub || '';
+      const natal = parsed.natal || {};
+      const transits = parsed.transits || {};
+      const question = parsed.question || '';
+      const topics = { 'Работа':'карьера и профессиональная реализация', 'Самопознание':'личностный рост и самопознание', 'Общение':'общение и взаимодействие с людьми' };
+      const topic = topics[sub] || sub;
+      let userMessage = `Тема совета: ${topic}.\n`;
+      if (question) userMessage += `Вопрос: "${question}"\n`;
+      userMessage += `\nНАТАЛЬНАЯ КАРТА:\n${JSON.stringify(natal.positions, null, 2)}\n\nТЕКУЩИЕ ТРАНЗИТЫ:\n${JSON.stringify(transits.positions, null, 2)}`;
+      callClaude(ORACLE_SYSTEM_PROMPT, userMessage, (err, text) => {
+        if (err) { res.writeHead(500); res.end(JSON.stringify({error: err.message})); return; }
+        res.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
+        res.end(JSON.stringify({ success: true, text }));
       });
     });
     return;
