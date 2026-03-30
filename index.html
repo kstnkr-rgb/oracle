@@ -355,7 +355,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
 <div class="screen" id="s-onboard">
   <div class="onboard-header">
     <div class="onboard-logo">🔮</div>
-    <div class="onboard-title">Оракул</div>
+    <div class="onboard-title">Оракул <span style="font-size:.55rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.1.4</span></div>
     <div class="onboard-sub">Введите данные о рождении для персонального прогноза</div>
   </div>
   <div class="form-body">
@@ -775,13 +775,15 @@ async function createHoroscope(mechLabel, sub) {
       fetch('/proxy', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ apiPath:'/api/v3/data/positions', payload:transitPayload }) })
     ]);
     const [natalJson, transitJson] = await Promise.all([natalResp.json(), transitResp.json()]);
-    if (!natalJson.positions) throw new Error('Ошибка натальной карты: ' + (natalJson.message || JSON.stringify(natalJson).slice(0,120)));
-    if (!transitJson.positions) throw new Error('Ошибка транзитов: ' + (transitJson.message || JSON.stringify(transitJson).slice(0,120)));
+    const natalData = natalJson.data || natalJson;
+    const transitData = transitJson.data || transitJson;
+    if (!natalData.positions) throw new Error('Ошибка натальной карты: ' + JSON.stringify(natalJson).slice(0,120));
+    if (!transitData.positions) throw new Error('Ошибка транзитов: ' + JSON.stringify(transitJson).slice(0,120));
 
     const ruResp = await fetch('/horoscope-ru', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ natal: natalJson, transits: transitJson, period: horoType })
+      body: JSON.stringify({ natal: natalData, transits: transitData, period: horoType })
     });
     if (!ruResp.ok) {
       const errText = await ruResp.text();
