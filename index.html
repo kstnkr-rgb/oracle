@@ -258,8 +258,28 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
   cursor:pointer;display:flex;align-items:center;justify-content:center}
 .nav{position:relative}
 .nav-right{margin-left:auto}
-.onboard-header{padding:56px 24px 28px;flex-shrink:0;text-align:center}
-.onboard-logo{font-size:3.2rem;margin-bottom:14px}
+.onboard-header{padding:56px 24px 28px;flex-shrink:0;text-align:center;position:relative;overflow:hidden}
+.onboard-header::before{content:'';position:absolute;inset:0;pointer-events:none;
+  background-image:
+    radial-gradient(1.5px 1.5px at 40px 22px,rgba(255,255,255,.5),transparent),
+    radial-gradient(1px 1px at 120px 18px,rgba(255,255,255,.3),transparent),
+    radial-gradient(2px 2px at 185px 35px,rgba(255,255,255,.6),transparent),
+    radial-gradient(1px 1px at 265px 16px,rgba(255,255,255,.4),transparent),
+    radial-gradient(1.5px 1.5px at 325px 28px,rgba(255,255,255,.35),transparent),
+    radial-gradient(1px 1px at 395px 20px,rgba(255,255,255,.45),transparent),
+    radial-gradient(1px 1px at 65px 58px,rgba(255,255,255,.28),transparent),
+    radial-gradient(2px 2px at 155px 54px,rgba(255,255,255,.5),transparent),
+    radial-gradient(1px 1px at 235px 70px,rgba(255,255,255,.25),transparent),
+    radial-gradient(1.5px 1.5px at 305px 50px,rgba(255,255,255,.4),transparent),
+    radial-gradient(1px 1px at 372px 65px,rgba(255,255,255,.3),transparent),
+    radial-gradient(2px 2px at 92px 95px,rgba(255,255,255,.35),transparent),
+    radial-gradient(1px 1px at 202px 88px,rgba(255,255,255,.3),transparent),
+    radial-gradient(2px 2px at 345px 98px,rgba(255,255,255,.45),transparent),
+    radial-gradient(1px 1px at 440px 82px,rgba(255,255,255,.3),transparent),
+    radial-gradient(1.5px 1.5px at 18px 78px,rgba(255,255,255,.35),transparent),
+    radial-gradient(1px 1px at 460px 45px,rgba(255,255,255,.25),transparent);}
+.onboard-logo{font-size:3.2rem;margin-bottom:14px;display:inline-block;animation:float 3.8s ease-in-out infinite;position:relative;z-index:1}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
 .onboard-title{font-family:'Philosopher',serif;font-size:2rem;font-weight:700;margin-bottom:8px}
 .onboard-sub{color:var(--text2);font-size:.95rem;line-height:1.5}
 .mechanic-list{padding:8px 16px 40px;display:flex;flex-direction:column;gap:12px}
@@ -347,6 +367,24 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
   font-size:.95rem;font-weight:800;cursor:pointer;display:flex;align-items:center;
   justify-content:center;gap:8px;transition:all .2s}
 .share-btn:active{background:var(--card)}
+
+/* ── v1.2.0 UI UPDATES ── */
+:root{--gold:#f5c842}
+.sbtn{box-shadow:0 6px 24px rgba(74,158,255,.28),0 2px 10px rgba(245,200,66,.12)}
+.crystal-pill{display:flex;align-items:center;gap:5px;background:rgba(167,139,250,.12);
+  border:1px solid rgba(167,139,250,.25);border-radius:20px;padding:5px 12px;
+  color:#a78bfa;font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:800;cursor:pointer}
+.crystal-pill:active{background:rgba(167,139,250,.22)}
+.result-modal[data-mtype="horoscope"]{border-top:3px solid #4a9eff}
+.result-modal[data-mtype="taro"]{border-top:3px solid #9f4aff}
+.result-modal[data-mtype="oracle"]{border-top:3px solid #ff9f4a}
+.result-modal[data-mtype="runes"]{border-top:3px solid #d4924a}
+.result-modal[data-mtype="numerology"]{border-top:3px solid #3ecf8e}
+.result-modal[data-mtype="compat"]{border-top:3px solid #f472b6}
+.modal-spinner{text-align:center;padding:24px 0}
+.modal-spinner .orbit-ring{margin:0 auto 16px}
+.modal-phrase{color:var(--text2);font-size:.9rem;min-height:1.4em}
+.modal-phrase-sub{color:var(--text2);font-size:.72rem;margin-top:8px;opacity:.4}
 </style>
 </head>
 <body>
@@ -355,7 +393,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
 <div class="screen" id="s-onboard">
   <div class="onboard-header">
     <div class="onboard-logo">🔮</div>
-    <div class="onboard-title">Оракул <span style="font-size:.55rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.1.6</span></div>
+    <div class="onboard-title">Оракул <span style="font-size:.55rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.2.0</span></div>
     <div class="onboard-sub">Введите данные о рождении для персонального прогноза</div>
   </div>
   <div class="form-body">
@@ -376,10 +414,9 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
 <!-- ══ МЕХАНИКИ ══ -->
 <div class="screen hidden" id="s-mechanics">
   <div class="nav" style="padding:52px 20px 16px;display:flex;align-items:center;gap:12px">
-    <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.1.6</span></div>
+    <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.2.0</span></div>
     <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
-      <span style="font-size:1rem;cursor:pointer" onclick="openRubleShop()">💎</span>
-      <span class="crystal-count" id="crystal-display" style="cursor:pointer" onclick="openRubleShop()">50</span>
+      <button class="crystal-pill" onclick="openRubleShop()">💎 <span id="crystal-display">50</span></button>
       <button class="profile-btn" style="position:static;transform:none" onclick="goTo('profile')">👤</button>
     </div>
   </div>
@@ -400,7 +437,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
     <div style="display:flex;flex-direction:column;gap:12px" id="profile-mech-list"></div>
   </div>
   <div style="height:32px"></div>
-  <div style="text-align:center;padding:0 0 24px;font-size:.72rem;color:var(--text2);opacity:.5">v1.8</div>
+  <div style="text-align:center;padding:0 0 24px;font-size:.72rem;color:var(--text2);opacity:.5">v1.2.0</div>
 </div>
 
 <!-- ══ РЕЗУЛЬТАТ ══ -->
@@ -711,9 +748,10 @@ function renderHistItems(hlist, mid, sub) {
     hlist.innerHTML = '<div style="padding:8px 12px;font-size:.82rem;color:var(--text2)">Нет прогнозов</div>';
     return;
   }
+  const color = MECH_COLORS[mid] || 'rgba(74,158,255,.3)';
   hlist.innerHTML = items.map((item,i) => {
     const realIdx = (history[key]||[]).length - 1 - i;
-    return `<button class="hist-item" onclick="openSaved('${key}',${realIdx})">
+    return `<button class="hist-item" style="border-left:3px solid ${color}" onclick="openSaved('${key}',${realIdx},'${mid}')">
       <span style="font-size:.85rem">${item.title}</span>
       <span class="hist-date">${item.datetime}</span>
     </button>`;
@@ -769,7 +807,8 @@ async function getAstroData() {
 async function createHoroscope(mechLabel, sub) {
   if (!spendCrystals('horoscope', sub)) return;
   const title = mechLabel + ' · ' + sub;
-  openResultModal(title, '⏳ Загружаю прогноз… (может занять ~15 сек)');
+  openResultModal(title, loadingHtml('horoscope'), 'horoscope');
+  startLoadingPhrases('horoscope');
   try {
     const p = profile;
     const [y,mo,day] = (p.date||'1990-01-01').split('-').map(Number);
@@ -825,12 +864,14 @@ async function createHoroscope(mechLabel, sub) {
       '<div id="horo-text-body" style="font-size:.92rem;line-height:1.75;color:var(--text);white-space:pre-wrap">' + ruText + '</div>' +
       origin;
 
+    stopLoadingPhrases();
     document.getElementById('rmt-text').innerHTML = html;
     const dt = nowStr();
     const key = 'horoscope_' + sub;
     if (!history[key]) history[key] = [];
     history[key].push({ datetime: dt, title, text: ruText.slice(0, 200) });
   } catch(e) {
+    stopLoadingPhrases();
     document.getElementById('rmt-text').textContent = '❌ Ошибка: ' + e.message;
   }
 }
@@ -919,7 +960,8 @@ function formatHoroscope(d, sub) {
 async function createTaro(mechLabel, sub) {
   if (!spendCrystals('taro', sub)) return;
   const title = mechLabel + ' · ' + sub;
-  openResultModal(title, '⏳ Загружаю расклад… (может занять ~15 сек)');
+  openResultModal(title, loadingHtml('taro'), 'taro');
+  startLoadingPhrases('taro');
   try {
     const p = profile;
     const [y,mo,day] = (p.date||'1990-01-01').split('-').map(Number);
@@ -1000,12 +1042,14 @@ async function createTaro(mechLabel, sub) {
       html += origin2;
     }
 
+    stopLoadingPhrases();
     document.getElementById('rmt-text').innerHTML = html;
     const dt = nowStr();
     const key = 'taro_' + sub;
     if (!history[key]) history[key] = [];
     history[key].push({ datetime: dt, title, text: html });
   } catch(e) {
+    stopLoadingPhrases();
     document.getElementById('rmt-text').textContent = '❌ Ошибка: ' + e.message;
   }
 }
@@ -1195,7 +1239,8 @@ function formatTaroThree(data) {
 // ── НУМЕРОЛОГИЯ: API ──────────────────────────
 async function createNumerology(mechLabel) {
   if (!spendCrystals('numerology', null)) return;
-  openResultModal(mechLabel, '⏳ Считаю числа… (может занять ~15 сек)');
+  openResultModal(mechLabel, loadingHtml('numerology'), 'numerology');
+  startLoadingPhrases('numerology');
   try {
     const p = profile;
     const [y,mo,day] = (p.date||'1990-01-01').split('-').map(Number);
@@ -1229,11 +1274,13 @@ async function createNumerology(mechLabel) {
       }
     }
     const html = formatNumerology(data);
+    stopLoadingPhrases();
     document.getElementById('rmt-text').innerHTML = html;
     const dt = nowStr();
     if (!history['numerology']) history['numerology'] = [];
     history['numerology'].push({ datetime: dt, title: mechLabel, text: html });
   } catch(e) {
+    stopLoadingPhrases();
     document.getElementById('rmt-text').textContent = '❌ Ошибка: ' + e.message;
   }
 }
@@ -1346,7 +1393,8 @@ const ELEMENT_RUNE_RU = { Fire:'Огонь', Water:'Вода', Air:'Воздух
 async function createRunes(mechLabel, sub) {
   if (!spendCrystals('runes', sub)) return;
   const title = mechLabel + ' · ' + sub;
-  openResultModal(title, '⏳ Бросаю руны… (может занять ~15 сек)');
+  openResultModal(title, loadingHtml('runes'), 'runes');
+  startLoadingPhrases('runes');
   try {
     const p = profile;
     const [y,mo,day] = (p.date||'1990-01-01').split('-').map(Number);
@@ -1384,12 +1432,14 @@ async function createRunes(mechLabel, sub) {
       if (runeData.report.advice) runeData.report.advice = await translateText(runeData.report.advice);
     }
     const html = formatRunes(runeData, sub);
+    stopLoadingPhrases();
     document.getElementById('rmt-text').innerHTML = html;
     const dt = nowStr();
     const key = 'runes_' + sub;
     if (!history[key]) history[key] = [];
     history[key].push({ datetime: dt, title, text: html });
   } catch(e) {
+    stopLoadingPhrases();
     document.getElementById('rmt-text').textContent = '❌ Ошибка: ' + e.message;
   }
 }
@@ -1483,19 +1533,21 @@ function translateSign(sign) {
   return map[sign] || sign;
 }
 
-function openSaved(key, idx) {
+function openSaved(key, idx, mid) {
   const item = (history[key]||[])[idx];
   if (!item) return;
-  openResultModal(item.title, item.text);
+  openResultModal(item.title, item.text, mid || key.split('_')[0]);
 }
 
-function openResultModal(title, text) {
+function openResultModal(title, text, mechType) {
   document.getElementById('rmt-title').textContent = title;
   const el = document.getElementById('rmt-text');
-  // if text contains HTML tags use innerHTML, else textContent
   if (text && text.includes('<')) el.innerHTML = text;
   else el.textContent = text;
-  document.getElementById('result-modal').classList.add('open');
+  const overlay = document.getElementById('result-modal');
+  const rm = overlay.querySelector('.result-modal');
+  if (rm) rm.setAttribute('data-mtype', mechType || '');
+  overlay.classList.add('open');
 }
 
 function closeResultModal() {
@@ -1523,7 +1575,8 @@ function openOracleModal(mechLabel, sub) {
   if (noInput) {
     if (!spendCrystals('oracle', sub)) return;
     const title = 'Совет Оракула · ' + sub;
-    openResultModal(title, '⏳ Формирую совет… (может занять ~15 сек)');
+    openResultModal(title, loadingHtml('oracle'), 'oracle');
+    startLoadingPhrases('oracle');
     getAstroData().then(astro =>
       fetch('/oracle-ru', { method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({ sub, natal: astro.natal, transits: astro.transits }) })
@@ -1532,6 +1585,7 @@ function openOracleModal(mechLabel, sub) {
       const p = profile;
       const dF = p.date ? p.date.split('-').reverse().join('.') : '—';
       const origin = '<div style="font-size:.75rem;color:var(--text2);margin-top:16px">Исходная информация: ' + (p.city||'—') + ', ' + dF + '</div>';
+      stopLoadingPhrases();
       document.getElementById('rmt-text').innerHTML =
         '<div style="font-size:.92rem;line-height:1.75;color:var(--text);white-space:pre-wrap">' + json.text + '</div>' + origin;
       const dt = nowStr();
@@ -1539,6 +1593,7 @@ function openOracleModal(mechLabel, sub) {
       if (!history[key]) history[key] = [];
       history[key].push({ datetime: dt, title, text: json.text.slice(0, 200) });
     }).catch(e => {
+      stopLoadingPhrases();
       document.getElementById('rmt-text').textContent = '❌ Ошибка: ' + e.message;
     });
     return;
@@ -1591,7 +1646,8 @@ async function calcCompatibility() {
   closePartnerModal();
 
   const title = '💑 Анализ отношений';
-  openResultModal(title, '⏳ Анализирую совместимость… (может занять ~20 сек)');
+  openResultModal(title, loadingHtml('oracle'), 'compat');
+  startLoadingPhrases('oracle');
 
   try {
     const p = profile;
@@ -1642,8 +1698,10 @@ async function calcCompatibility() {
       }
     }
     const html = formatCompatibility(compData);
+    stopLoadingPhrases();
     document.getElementById('rmt-text').innerHTML = html;
   } catch(e) {
+    stopLoadingPhrases();
     document.getElementById('rmt-text').textContent = '❌ Ошибка: ' + e.message;
   }
 }
@@ -2238,6 +2296,39 @@ function soundDrum() {
     og.gain.exponentialRampToValueAtTime(0.001, finalT + 0.3);
     osc.start(finalT); osc.stop(finalT + 0.3);
   } catch(e) {}
+}
+
+// ── ЗАГРУЗКА: АНИМИРОВАННЫЕ ФРАЗЫ ─────────────
+const LOADING_PHRASES = {
+  horoscope: ['Читаю звёзды…','Сверяю планеты…','Составляю прогноз…','Советуюсь с небесами…','Изучаю транзиты…'],
+  taro:      ['Тасую колоду…','Раскладываю карты…','Читаю символы…','Смотрю в расклад…'],
+  oracle:    ['Формирую совет…','Советуюсь с космосом…','Слушаю звёзды…','Ищу ответ…'],
+  numerology:['Считаю числа…','Ищу вибрации…','Анализирую дату…','Составляю отчёт…'],
+  runes:     ['Бросаю руны…','Читаю символы…','Слышу руны…','Толкую знаки…'],
+  default:   ['Думаю…','Готовлю ответ…','Анализирую данные…','Секунду…']
+};
+const MECH_COLORS = {
+  horoscope:'rgba(74,158,255,.55)',taro:'rgba(159,74,255,.55)',oracle:'rgba(255,159,74,.55)',
+  numerology:'rgba(62,207,142,.55)',runes:'rgba(212,146,74,.55)',
+  ball:'rgba(74,222,255,.4)',cookie:'rgba(255,74,159,.4)'
+};
+let _phraseInterval = null;
+function loadingHtml(type) {
+  const phrases = LOADING_PHRASES[type] || LOADING_PHRASES.default;
+  return `<div class="modal-spinner"><div class="orbit-ring"></div><div class="modal-phrase" id="loading-phrase">${phrases[0]}</div><div class="modal-phrase-sub">обычно ~15 сек</div></div>`;
+}
+function startLoadingPhrases(type) {
+  const phrases = LOADING_PHRASES[type] || LOADING_PHRASES.default;
+  let idx = 0;
+  if (_phraseInterval) clearInterval(_phraseInterval);
+  _phraseInterval = setInterval(() => {
+    idx = (idx + 1) % phrases.length;
+    const el = document.getElementById('loading-phrase');
+    if (el) el.textContent = phrases[idx];
+  }, 2500);
+}
+function stopLoadingPhrases() {
+  if (_phraseInterval) { clearInterval(_phraseInterval); _phraseInterval = null; }
 }
 
 // ── АВТОДОПОЛНЕНИЕ ГОРОДА ─────────────────────
