@@ -368,7 +368,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
   justify-content:center;gap:8px;transition:all .2s}
 .share-btn:active{background:var(--card)}
 
-/* ── v1.2.8 UI UPDATES ── */
+/* ── v1.2.9 UI UPDATES ── */
 :root{--gold:#f5c842}
 .sbtn{box-shadow:0 6px 24px rgba(74,158,255,.28),0 2px 10px rgba(245,200,66,.12)}
 .crystal-pill{display:flex;align-items:center;gap:5px;background:rgba(167,139,250,.12);
@@ -406,7 +406,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
 <div class="screen" id="s-onboard">
   <div class="onboard-header">
     <div class="onboard-logo">🔮</div>
-    <div class="onboard-title">Оракул <span style="font-size:.55rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.2.8</span></div>
+    <div class="onboard-title">Оракул <span style="font-size:.55rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.2.9</span></div>
     <div class="onboard-sub">Введите данные о рождении для персонального прогноза</div>
   </div>
   <div class="form-body">
@@ -428,7 +428,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
 <!-- ══ МЕХАНИКИ ══ -->
 <div class="screen hidden" id="s-mechanics">
   <div class="nav" style="padding:52px 20px 16px;display:flex;align-items:center;gap:12px">
-    <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.2.8</span></div>
+    <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.2.9</span></div>
     <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
       <button class="crystal-pill" onclick="openRubleShop()">💎 <span id="crystal-display">50</span></button>
       <button class="profile-btn" style="position:static;transform:none" onclick="goTo('profile')">👤</button>
@@ -452,7 +452,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
   </div>
   <span class="rules-link" style="margin-bottom:8px" onclick="openRules()">правила акции</span>
   <div style="height:24px"></div>
-  <div style="text-align:center;padding:0 0 24px;font-size:.72rem;color:var(--text2);opacity:.5">v1.2.8</div>
+  <div style="text-align:center;padding:0 0 24px;font-size:.72rem;color:var(--text2);opacity:.5">v1.2.9</div>
 </div>
 
 <!-- ══ РЕЗУЛЬТАТ ══ -->
@@ -1080,6 +1080,7 @@ const SUIT_RU = { cups: 'Кубки', wands: 'Жезлы', swords: 'Мечи', p
 const ORIENTATION_RU = { upright: 'Прямое положение', reversed: 'Перевёрнутое положение' };
 const ELEMENT_RU = { Water:'Вода', Fire:'Огонь', Air:'Воздух', Earth:'Земля' };
 const POSITION_RU = { Past:'Прошлое', Present:'Настоящее', Future:'Будущее',
+  past:'Прошлое', present:'Настоящее', future:'Будущее',
   'Card 1':'Карта 1', 'Card 2':'Карта 2', 'Card 3':'Карта 3' };
 
 const ZODIAC_IMG_MAP = {
@@ -1593,6 +1594,8 @@ function openResultModal(title, text, mechType) {
   const overlay = document.getElementById('result-modal');
   const rm = overlay.querySelector('.result-modal');
   if (rm) rm.setAttribute('data-mtype', mechType || '');
+  const isLoading = typeof text === 'string' && text.includes('loading-cover');
+  document.getElementById('rmt-share-btn').style.display = isLoading ? 'none' : '';
   overlay.classList.add('open');
 }
 
@@ -1627,6 +1630,15 @@ function closeOracleModal() { document.getElementById('oracle-modal').classList.
 function openRules() { document.getElementById('rules-modal').classList.add('open'); }
 function closeRules() { document.getElementById('rules-modal').classList.remove('open'); }
 function closeOracleOutside(e) { if(e.target===document.getElementById('oracle-modal')) closeOracleModal(); }
+// Поднимаем модал оракула над экранной клавиатурой
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', () => {
+    const modal = document.getElementById('oracle-modal');
+    if (!modal.classList.contains('open')) return;
+    const offset = window.innerHeight - window.visualViewport.offsetTop - window.visualViewport.height;
+    document.getElementById('oracle-modal-inner').style.marginBottom = Math.max(0, offset) + 'px';
+  });
+}
 
 // ── ОТНОШЕНИЯ: СОВМЕСТИМОСТЬ ──────────────────
 let _partnerMechLabel = '';
@@ -1842,8 +1854,13 @@ async function askOracle() {
   const q = document.getElementById('oracle-question').value.trim();
   if (!q) { document.getElementById('oracle-question').focus(); return; }
   if (!spendCrystals('oracle', null)) return;
-  const btn = document.getElementById('oracle-ask-btn');
-  btn.disabled = true; btn.textContent = '⏳ Думаю…';
+  // показать анимацию загрузки
+  document.getElementById('oracle-ask-btn').style.display = 'none';
+  document.getElementById('oracle-question').closest('div') && (document.getElementById('oracle-question').disabled = true);
+  const aw = document.getElementById('oracle-answer-wrap');
+  aw.style.display = 'block';
+  aw.innerHTML = loadingHtml('oracle');
+  startLoadingPhrases('oracle');
   try {
     const astro = await getAstroData();
     const resp = await fetch('/oracle-ru', {
@@ -1853,18 +1870,19 @@ async function askOracle() {
     const json = await resp.json();
     if (json.error) throw new Error(json.error);
     const answer = json.text || '';
+    stopLoadingPhrases();
+    aw.innerHTML = '<div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:6px">Ответ Оракула</div><div class="oracle-answer on" id="oracle-answer">' + answer + '</div>';
     const dt = nowStr();
     if (!history['oracle']) history['oracle'] = [];
     history['oracle'].push({ datetime: dt, title: 'Совет Оракула', text: ('Вопрос: ' + q + '\n\nОракул: ' + answer).slice(0, 200) });
     soundDrum();
-    document.getElementById('oracle-answer').textContent = answer;
-    document.getElementById('oracle-answer-wrap').style.display = 'block';
-    btn.style.display = 'none';
     document.getElementById('oracle-share-btn').style.display = 'flex';
   } catch(e) {
-    document.getElementById('oracle-answer').textContent = '❌ Ошибка: ' + e.message;
-    document.getElementById('oracle-answer-wrap').style.display = 'block';
-    btn.disabled = false; btn.textContent = 'Получить совет';
+    stopLoadingPhrases();
+    aw.innerHTML = '<div class="oracle-answer on">❌ Ошибка: ' + e.message + '</div>';
+    const btn = document.getElementById('oracle-ask-btn');
+    btn.style.display = ''; btn.disabled = false;
+    document.getElementById('oracle-question').disabled = false;
   }
 }
 function doShareOracle() {
@@ -2340,8 +2358,7 @@ function loadingStars() {
 function loadingHtml(type) {
   const phrases = LOADING_PHRASES[type] || LOADING_PHRASES.default;
   if (type !== 'ball' && type !== 'cookie') {
-    const src = type === 'taro' ? '/tarot-img/cover.png' : '/zodiac-img/cover.png';
-    return `<div class="loading-cover">${loadingStars()}<img class="loading-cover-img" src="${src}" alt=""/><div class="modal-phrase" id="loading-phrase" style="position:relative;z-index:1;margin-top:16px">${phrases[0]}</div><div class="modal-phrase-sub" style="position:relative;z-index:1">обычно ~15 сек</div></div>`;
+    return `<div class="loading-cover">${loadingStars()}<img class="loading-cover-img" src="/tarot-img/cover.png" alt=""/><div class="modal-phrase" id="loading-phrase" style="position:relative;z-index:1;margin-top:16px">${phrases[0]}</div><div class="modal-phrase-sub" style="position:relative;z-index:1">обычно ~15 сек</div></div>`;
   }
   return `<div class="modal-spinner"><div class="orbit-ring"></div><div class="modal-phrase" id="loading-phrase">${phrases[0]}</div><div class="modal-phrase-sub">обычно ~15 сек</div></div>`;
 }
@@ -2357,6 +2374,8 @@ function startLoadingPhrases(type) {
 }
 function stopLoadingPhrases() {
   if (_phraseInterval) { clearInterval(_phraseInterval); _phraseInterval = null; }
+  const btn = document.getElementById('rmt-share-btn');
+  if (btn) btn.style.display = '';
 }
 
 // ── АВТОДОПОЛНЕНИЕ ГОРОДА ─────────────────────
@@ -2414,13 +2433,13 @@ function hideCitySuggestions(listId) {
       <button class="result-modal-close" onclick="closeResultModal()">✕</button>
     </div>
     <div class="result-modal-text" id="rmt-text"></div>
-    <button class="share-btn" onclick="doShareModal()">📤 Поделиться</button>
+    <button class="share-btn" id="rmt-share-btn" style="display:none" onclick="doShareModal()">📤 Поделиться</button>
   </div>
 </div>
 
 <!-- ══ МОДАЛ: ОРАКУЛ ══ -->
-<div class="result-modal-overlay" id="oracle-modal" style="align-items:center;padding:24px" onclick="closeOracleOutside(event)">
-  <div class="result-modal" style="border-radius:20px">
+<div class="result-modal-overlay" id="oracle-modal" style="align-items:flex-end;padding:0" onclick="closeOracleOutside(event)">
+  <div class="result-modal" style="border-radius:20px 20px 0 0;max-height:85vh;width:100%;max-width:480px;padding-bottom:env(safe-area-inset-bottom,12px)" id="oracle-modal-inner">
     <div class="result-modal-header">
       <div class="result-modal-title">Совет Оракула</div>
       <button class="result-modal-close" onclick="closeOracleModal()">✕</button>
