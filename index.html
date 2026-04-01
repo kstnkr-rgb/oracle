@@ -368,7 +368,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
   justify-content:center;gap:8px;transition:all .2s}
 .share-btn:active{background:var(--card)}
 
-/* ── v1.2.7 UI UPDATES ── */
+/* ── v1.2.8 UI UPDATES ── */
 :root{--gold:#f5c842}
 .sbtn{box-shadow:0 6px 24px rgba(74,158,255,.28),0 2px 10px rgba(245,200,66,.12)}
 .crystal-pill{display:flex;align-items:center;gap:5px;background:rgba(167,139,250,.12);
@@ -388,8 +388,8 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
 .loading-cover{position:relative;display:flex;flex-direction:column;align-items:center;
   padding:28px 0 16px;overflow:hidden;min-height:200px}
 .loading-cover-img{width:min(240px,85%);height:auto;object-fit:contain;position:relative;z-index:1;
-  animation:cover-rotate 22s linear infinite;filter:drop-shadow(0 0 22px rgba(74,158,255,.4))}
-@keyframes cover-rotate{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+  animation:cover-pulse 3s ease-in-out infinite;filter:drop-shadow(0 0 28px rgba(74,158,255,.45))}
+@keyframes cover-pulse{0%,100%{opacity:.82;transform:scale(1)}50%{opacity:1;transform:scale(1.05)}}
 @keyframes star-twinkle{0%,100%{opacity:.1}50%{opacity:1}}
 .zodiac-sign-header{display:flex;align-items:center;justify-content:center;
   padding:20px 0 16px;margin-bottom:4px}
@@ -406,7 +406,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
 <div class="screen" id="s-onboard">
   <div class="onboard-header">
     <div class="onboard-logo">🔮</div>
-    <div class="onboard-title">Оракул <span style="font-size:.55rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.2.7</span></div>
+    <div class="onboard-title">Оракул <span style="font-size:.55rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.2.8</span></div>
     <div class="onboard-sub">Введите данные о рождении для персонального прогноза</div>
   </div>
   <div class="form-body">
@@ -428,7 +428,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
 <!-- ══ МЕХАНИКИ ══ -->
 <div class="screen hidden" id="s-mechanics">
   <div class="nav" style="padding:52px 20px 16px;display:flex;align-items:center;gap:12px">
-    <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.2.7</span></div>
+    <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.2.8</span></div>
     <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
       <button class="crystal-pill" onclick="openRubleShop()">💎 <span id="crystal-display">50</span></button>
       <button class="profile-btn" style="position:static;transform:none" onclick="goTo('profile')">👤</button>
@@ -452,7 +452,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
   </div>
   <span class="rules-link" style="margin-bottom:8px" onclick="openRules()">правила акции</span>
   <div style="height:24px"></div>
-  <div style="text-align:center;padding:0 0 24px;font-size:.72rem;color:var(--text2);opacity:.5">v1.2.7</div>
+  <div style="text-align:center;padding:0 0 24px;font-size:.72rem;color:var(--text2);opacity:.5">v1.2.8</div>
 </div>
 
 <!-- ══ РЕЗУЛЬТАТ ══ -->
@@ -515,8 +515,7 @@ const MECHANICS = [
     subs:['Карта дня','Расклад на 3 карты'],
     prices:{'Карта дня':1,'Расклад на 3 карты':5} },
   { id:'oracle',    icon:'🔮', cls:'icon-c3', label:'Совет Оракула',
-    subs:['Отношения','Работа','Самопознание','Общение'],
-    prices:{'Отношения':20,'Работа':20,'Самопознание':20,'Общение':20} },
+    subs:[], direct:true, price:20 },
   { id:'ball',      icon:'🌐', cls:'icon-c4', label:'Магический шар',
     subs:[], direct:true, noHistory:true, price:1 },
   { id:'cookie',    icon:'🥠', cls:'icon-c5', label:'Печенье с предсказанием',
@@ -713,6 +712,7 @@ function toggleDrop(cid, mid) {
   const mech = MECHANICS.find(m=>m.id===mid);
   // direct modals — open immediately, no dropdown
   if (mech && mech.direct && cid === 'main-mech-list') {
+    if (mid === 'oracle') { openOracleModal('Совет Оракула', null); return; }
     if (mid === 'ball') { openBallModal(); return; }
     if (mid === 'cookie') { openCookieModal(); return; }
   }
@@ -775,8 +775,7 @@ function renderHistItems(hlist, mid, sub) {
 
 // ── СОЗДАТЬ ПРОГНОЗ ──────────────────────────────
 function createAndShow(mid, mechLabel, sub) {
-  if (mid === 'oracle' && sub === 'Отношения') { openPartnerModal(mechLabel, sub); return; }
-  if (mid === 'oracle') { openOracleModal(mechLabel, sub); return; }
+  if (mid === 'oracle') { openOracleModal(mechLabel, null); return; }
   if (mid === 'ball')   { if (!spendCrystals(mid, sub)) return; openBallModal(); return; }
   if (mid === 'cookie') { openCookieModal(); return; }
   if (mid === 'horoscope') { createHoroscope(mechLabel, sub); return; }
@@ -1614,47 +1613,14 @@ function doShareModal() {
 function doShare() { doShareModal(); }
 
 // ── ОРАКУЛ ────────────────────────────────────
-let _oracleMid = 'oracle', _oracleSub = null;
-function openOracleModal(mechLabel, sub) {
-  _oracleSub = sub;
-  const noInput = sub === 'Работа' || sub === 'Самопознание';
-
-  if (noInput) {
-    if (!spendCrystals('oracle', sub)) return;
-    const title = 'Совет Оракула · ' + sub;
-    openResultModal(title, loadingHtml('oracle'), 'oracle');
-    startLoadingPhrases('oracle');
-    getAstroData().then(astro =>
-      fetch('/oracle-ru', { method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ sub, natal: astro.natal, transits: astro.transits }) })
-    ).then(r => r.json()).then(json => {
-      if (json.error) throw new Error(json.error);
-      const p = profile;
-      const dF = p.date ? p.date.split('-').reverse().join('.') : '—';
-      const origin = '<div style="font-size:.75rem;color:var(--text2);margin-top:16px">Исходная информация: ' + (p.city||'—') + ', ' + dF + '</div>';
-      stopLoadingPhrases();
-      document.getElementById('rmt-text').innerHTML =
-        '<div style="font-size:.92rem;line-height:1.75;color:var(--text);white-space:pre-wrap">' + json.text + '</div>' + origin;
-      const dt = nowStr();
-      const key = 'oracle_' + sub;
-      if (!history[key]) history[key] = [];
-      history[key].push({ datetime: dt, title, text: json.text.slice(0, 200) });
-    }).catch(e => {
-      stopLoadingPhrases();
-      document.getElementById('rmt-text').textContent = '❌ Ошибка: ' + e.message;
-    });
-    return;
-  }
-
-  // Общение — с полем ввода
-  document.getElementById('oracle-modal-title').textContent = 'Совет Оракула · ' + sub;
+function openOracleModal() {
   document.getElementById('oracle-question').value = '';
+  document.getElementById('oracle-char-count').textContent = '0 / 200';
   document.getElementById('oracle-answer').textContent = '';
   document.getElementById('oracle-answer-wrap').style.display = 'none';
   document.getElementById('oracle-share-btn').style.display = 'none';
   document.getElementById('oracle-ask-btn').style.display = 'block';
   document.getElementById('oracle-ask-btn').disabled = false;
-  document.getElementById('oracle-ask-btn').textContent = 'Спросить Оракула';
   document.getElementById('oracle-modal').classList.add('open');
 }
 function closeOracleModal() { document.getElementById('oracle-modal').classList.remove('open'); }
@@ -1875,24 +1841,21 @@ function formatCompatibility(data) {
 async function askOracle() {
   const q = document.getElementById('oracle-question').value.trim();
   if (!q) { document.getElementById('oracle-question').focus(); return; }
-  if (!spendCrystals('oracle', _oracleSub)) return;
+  if (!spendCrystals('oracle', null)) return;
   const btn = document.getElementById('oracle-ask-btn');
   btn.disabled = true; btn.textContent = '⏳ Думаю…';
   try {
     const astro = await getAstroData();
     const resp = await fetch('/oracle-ru', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ sub: _oracleSub, natal: astro.natal, transits: astro.transits, question: q })
+      body: JSON.stringify({ natal: astro.natal, transits: astro.transits, question: q })
     });
     const json = await resp.json();
     if (json.error) throw new Error(json.error);
     const answer = json.text || '';
     const dt = nowStr();
-    const sub = _oracleSub;
-    const key = 'oracle' + (sub ? '_'+sub : '');
-    const title = 'Совет Оракула' + (sub ? ' · '+sub : '');
-    if (!history[key]) history[key] = [];
-    history[key].push({ datetime: dt, title, text: ('Вопрос: ' + q + '\n\nОракул: ' + answer).slice(0, 200) });
+    if (!history['oracle']) history['oracle'] = [];
+    history['oracle'].push({ datetime: dt, title: 'Совет Оракула', text: ('Вопрос: ' + q + '\n\nОракул: ' + answer).slice(0, 200) });
     soundDrum();
     document.getElementById('oracle-answer').textContent = answer;
     document.getElementById('oracle-answer-wrap').style.display = 'block';
@@ -1901,7 +1864,7 @@ async function askOracle() {
   } catch(e) {
     document.getElementById('oracle-answer').textContent = '❌ Ошибка: ' + e.message;
     document.getElementById('oracle-answer-wrap').style.display = 'block';
-    btn.disabled = false; btn.textContent = 'Спросить Оракула';
+    btn.disabled = false; btn.textContent = 'Получить совет';
   }
 }
 function doShareOracle() {
@@ -2456,15 +2419,16 @@ function hideCitySuggestions(listId) {
 </div>
 
 <!-- ══ МОДАЛ: ОРАКУЛ ══ -->
-<div class="result-modal-overlay" id="oracle-modal" style="align-items:center;padding:24px">
+<div class="result-modal-overlay" id="oracle-modal" style="align-items:center;padding:24px" onclick="closeOracleOutside(event)">
   <div class="result-modal" style="border-radius:20px">
     <div class="result-modal-header">
-      <div class="result-modal-title" id="oracle-modal-title">Совет Оракула</div>
+      <div class="result-modal-title">Совет Оракула</div>
       <button class="result-modal-close" onclick="closeOracleModal()">✕</button>
     </div>
-    <div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--text2);margin-bottom:6px">Вопрос</div>
-    <textarea class="oracle-input" id="oracle-question" placeholder="Задайте свой вопрос Оракулу…"></textarea>
-    <button class="sbtn" onclick="askOracle()" id="oracle-ask-btn">Спросить Оракула</button>
+    <div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--text2);margin-bottom:6px">Ваш вопрос</div>
+    <textarea class="oracle-input" id="oracle-question" maxlength="200" placeholder="Задайте свой вопрос Оракулу…" oninput="document.getElementById('oracle-char-count').textContent=this.value.length+' / 200'"></textarea>
+    <div style="text-align:right;font-size:.7rem;color:var(--text2);opacity:.5;margin:-6px 0 10px" id="oracle-char-count">0 / 200</div>
+    <button class="sbtn" onclick="askOracle()" id="oracle-ask-btn">Получить совет · 20 💎</button>
     <div id="oracle-answer-wrap" style="display:none;margin-top:14px">
       <div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:6px">Ответ Оракула</div>
       <div class="oracle-answer on" id="oracle-answer"></div>
