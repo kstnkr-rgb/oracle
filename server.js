@@ -128,6 +128,19 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // Раздача картинок карт таро из папки "taror deck"
+  if (req.method === 'GET' && urlPath.startsWith('/tarot-img/')) {
+    const filename = path.basename(urlPath);
+    const imgPath = path.join(__dirname, 'taror deck', filename);
+    if (fs.existsSync(imgPath)) {
+      res.writeHead(200, {'Content-Type': 'image/jpeg', 'Cache-Control': 'public, max-age=86400'});
+      fs.createReadStream(imgPath).pipe(res);
+    } else {
+      res.writeHead(404); res.end('Not found');
+    }
+    return;
+  }
+
   if (req.method === 'POST' && urlPath === '/translate') {
     let body = '';
     req.on('data', c => body += c);
