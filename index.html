@@ -368,7 +368,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
   justify-content:center;gap:8px;transition:all .2s}
 .share-btn:active{background:var(--card)}
 
-/* ── v1.2.4 UI UPDATES ── */
+/* ── v1.2.5 UI UPDATES ── */
 :root{--gold:#f5c842}
 .sbtn{box-shadow:0 6px 24px rgba(74,158,255,.28),0 2px 10px rgba(245,200,66,.12)}
 .crystal-pill{display:flex;align-items:center;gap:5px;background:rgba(167,139,250,.12);
@@ -385,18 +385,14 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
 .modal-spinner .orbit-ring{margin:0 auto 16px}
 .modal-phrase{color:var(--text2);font-size:.9rem;min-height:1.4em}
 .modal-phrase-sub{color:var(--text2);font-size:.72rem;margin-top:8px;opacity:.4}
-/* ── ZODIAC LOADING COVER ── */
-.horo-loading-cover{display:flex;flex-direction:column;align-items:center;padding:32px 0 20px}
+.loading-cover{display:flex;flex-direction:column;align-items:center;padding:32px 0 20px}
 .horo-cover-img{width:336px;height:336px;object-fit:contain;
   animation:zodiac-spin 18s linear infinite;filter:drop-shadow(0 0 24px rgba(74,158,255,.35))}
 @keyframes zodiac-spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-/* ── ZODIAC SIGN HEADER IN RESULT ── */
 .zodiac-sign-header{display:flex;align-items:center;justify-content:center;
   padding:20px 0 16px;margin-bottom:4px}
 .zodiac-sign-img{width:100px;height:100px;object-fit:contain;
   filter:drop-shadow(0 0 18px rgba(74,158,255,.4));opacity:.95}
-/* ── TAROT LOADING COVER ── */
-.taro-loading-cover{display:flex;flex-direction:column;align-items:center;padding:32px 0 20px}
 .taro-cover-img{width:200px;object-fit:contain;border-radius:14px;
   animation:taro-pulse 3s ease-in-out infinite;
   filter:drop-shadow(0 0 28px rgba(159,74,255,.5))}
@@ -409,7 +405,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
 <div class="screen" id="s-onboard">
   <div class="onboard-header">
     <div class="onboard-logo">🔮</div>
-    <div class="onboard-title">Оракул <span style="font-size:.55rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.2.4</span></div>
+    <div class="onboard-title">Оракул <span style="font-size:.55rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.2.5</span></div>
     <div class="onboard-sub">Введите данные о рождении для персонального прогноза</div>
   </div>
   <div class="form-body">
@@ -430,7 +426,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
 <!-- ══ МЕХАНИКИ ══ -->
 <div class="screen hidden" id="s-mechanics">
   <div class="nav" style="padding:52px 20px 16px;display:flex;align-items:center;gap:12px">
-    <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.2.4</span></div>
+    <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.2.5</span></div>
     <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
       <button class="crystal-pill" onclick="openRubleShop()">💎 <span id="crystal-display">50</span></button>
       <button class="profile-btn" style="position:static;transform:none" onclick="goTo('profile')">👤</button>
@@ -453,7 +449,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
     <div style="display:flex;flex-direction:column;gap:12px" id="profile-mech-list"></div>
   </div>
   <div style="height:32px"></div>
-  <div style="text-align:center;padding:0 0 24px;font-size:.72rem;color:var(--text2);opacity:.5">v1.2.4</div>
+  <div style="text-align:center;padding:0 0 24px;font-size:.72rem;color:var(--text2);opacity:.5">v1.2.5</div>
 </div>
 
 <!-- ══ РЕЗУЛЬТАТ ══ -->
@@ -876,12 +872,6 @@ async function createHoroscope(mechLabel, sub) {
     const tF = (p.time||'').replace(':','-');
     const origin = '<div style="font-size:.75rem;color:var(--text2);margin-top:16px">Исходная информация: ' + (p.city||'—') + ', ' + dF + ', ' + tF + '</div>';
 
-    const ZODIAC_IMG_MAP = {
-      'овен':'aries.png','телец':'taurus.png','близнецы':'gemini.png',
-      'рак':'cancer.png','лев':'leo.png','дева':'virgo.png',
-      'весы':'libra.png','скорпион':'scorpio.png','стрелец':'siggitarius.png',
-      'козерог':'capricorn.png','водолей':'aquarius.png','рыбы':'pisces.png'
-    };
     const firstLine = ruText.split('\n')[0].trim().toLowerCase();
     const zodiacFile = ZODIAC_IMG_MAP[firstLine];
     const zodiacHeader = zodiacFile
@@ -1090,7 +1080,12 @@ const ELEMENT_RU = { Water:'Вода', Fire:'Огонь', Air:'Воздух', Ea
 const POSITION_RU = { Past:'Прошлое', Present:'Настоящее', Future:'Будущее',
   'Card 1':'Карта 1', 'Card 2':'Карта 2', 'Card 3':'Карта 3' };
 
-// Маппинг имени карты (card.name) → файл изображения
+const ZODIAC_IMG_MAP = {
+  'овен':'aries.png','телец':'taurus.png','близнецы':'gemini.png',
+  'рак':'cancer.png','лев':'leo.png','дева':'virgo.png',
+  'весы':'libra.png','скорпион':'scorpio.png','стрелец':'siggitarius.png',
+  'козерог':'capricorn.png','водолей':'aquarius.png','рыбы':'pisces.png'
+};
 const CARD_FILE_MAP = {
   'The Fool':'Major00.jpg','The Magician':'Major01.jpg','The High Priestess':'Major02.jpg',
   'The Empress':'Major03.jpg','The Emperor':'Major04.jpg','The Hierophant':'Major05.jpg',
@@ -1167,7 +1162,6 @@ function taroCardBadge(card, orientation) {
   const isReversed = orientStr === 'reversed';
 
   let html = '<div style="background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.25);border-radius:10px;padding:13px 15px;margin-bottom:10px;display:flex;gap:14px;align-items:flex-start">';
-  // Картинка карты
   if (imgUrl) {
     html += '<div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:6px">';
     html += '<img src="' + imgUrl + '" alt="' + name + '" '
@@ -1176,7 +1170,6 @@ function taroCardBadge(card, orientation) {
       + 'onerror="this.style.display=\'none\'">';
     html += '</div>';
   }
-  // Текст
   html += '<div style="min-width:0;flex:1">';
   if (name) html += '<div style="font-size:1.05rem;font-weight:800;color:#c084fc;margin-bottom:6px">' + name + '</div>';
   html += '<div style="display:flex;flex-wrap:wrap;gap:5px">';
@@ -2367,10 +2360,10 @@ let _phraseInterval = null;
 function loadingHtml(type) {
   const phrases = LOADING_PHRASES[type] || LOADING_PHRASES.default;
   if (type === 'horoscope') {
-    return `<div class="horo-loading-cover"><img class="horo-cover-img" src="/zodiac-img/cover.png" alt=""/><div class="modal-phrase" id="loading-phrase" style="margin-top:20px">${phrases[0]}</div><div class="modal-phrase-sub">обычно ~15 сек</div></div>`;
+    return `<div class="loading-cover"><img class="horo-cover-img" src="/zodiac-img/cover.png" alt=""/><div class="modal-phrase" id="loading-phrase" style="margin-top:20px">${phrases[0]}</div><div class="modal-phrase-sub">обычно ~15 сек</div></div>`;
   }
   if (type === 'taro') {
-    return `<div class="taro-loading-cover"><img class="taro-cover-img" src="/tarot-img/cover.png" alt=""/><div class="modal-phrase" id="loading-phrase" style="margin-top:20px">${phrases[0]}</div><div class="modal-phrase-sub">обычно ~15 сек</div></div>`;
+    return `<div class="loading-cover"><img class="taro-cover-img" src="/tarot-img/cover.png" alt=""/><div class="modal-phrase" id="loading-phrase" style="margin-top:20px">${phrases[0]}</div><div class="modal-phrase-sub">обычно ~15 сек</div></div>`;
   }
   return `<div class="modal-spinner"><div class="orbit-ring"></div><div class="modal-phrase" id="loading-phrase">${phrases[0]}</div><div class="modal-phrase-sub">обычно ~15 сек</div></div>`;
 }

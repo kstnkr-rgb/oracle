@@ -128,31 +128,19 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // Раздача изображений зодиака из папки "zodiac"
-  if (req.method === 'GET' && urlPath.startsWith('/zodiac-img/')) {
+  const IMG_ROUTES = { '/zodiac-img/': 'zodiac', '/tarot-img/': 'taror deck' };
+  const imgRoute = Object.keys(IMG_ROUTES).find(p => req.method === 'GET' && urlPath.startsWith(p));
+  if (imgRoute) {
     const filename = path.basename(urlPath);
-    const imgPath = path.join(__dirname, 'zodiac', filename);
-    if (fs.existsSync(imgPath)) {
-      const ext = path.extname(filename).toLowerCase();
-      const mime = ext === '.png' ? 'image/png' : 'image/jpeg';
+    const imgPath = path.join(__dirname, IMG_ROUTES[imgRoute], filename);
+    const ext = path.extname(filename).toLowerCase();
+    const mime = ext === '.png' ? 'image/png' : 'image/jpeg';
+    const stream = fs.createReadStream(imgPath);
+    stream.on('error', () => { res.writeHead(404); res.end('Not found'); });
+    stream.once('readable', () => {
       res.writeHead(200, {'Content-Type': mime, 'Cache-Control': 'public, max-age=86400'});
-      fs.createReadStream(imgPath).pipe(res);
-    } else {
-      res.writeHead(404); res.end('Not found');
-    }
-    return;
-  }
-
-  // Раздача картинок карт таро из папки "taror deck"
-  if (req.method === 'GET' && urlPath.startsWith('/tarot-img/')) {
-    const filename = path.basename(urlPath);
-    const imgPath = path.join(__dirname, 'taror deck', filename);
-    if (fs.existsSync(imgPath)) {
-      res.writeHead(200, {'Content-Type': 'image/jpeg', 'Cache-Control': 'public, max-age=86400'});
-      fs.createReadStream(imgPath).pipe(res);
-    } else {
-      res.writeHead(404); res.end('Not found');
-    }
+      stream.pipe(res);
+    });
     return;
   }
 
