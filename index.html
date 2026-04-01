@@ -368,7 +368,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
   justify-content:center;gap:8px;transition:all .2s}
 .share-btn:active{background:var(--card)}
 
-/* ── v1.2.6 UI UPDATES ── */
+/* ── v1.2.7 UI UPDATES ── */
 :root{--gold:#f5c842}
 .sbtn{box-shadow:0 6px 24px rgba(74,158,255,.28),0 2px 10px rgba(245,200,66,.12)}
 .crystal-pill{display:flex;align-items:center;gap:5px;background:rgba(167,139,250,.12);
@@ -385,18 +385,19 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
 .modal-spinner .orbit-ring{margin:0 auto 16px}
 .modal-phrase{color:var(--text2);font-size:.9rem;min-height:1.4em}
 .modal-phrase-sub{color:var(--text2);font-size:.72rem;margin-top:8px;opacity:.4}
-.loading-cover{display:flex;flex-direction:column;align-items:center;padding:32px 0 20px}
-.horo-cover-img{width:min(336px,100%);height:auto;object-fit:contain;
-  animation:zodiac-spin 18s linear infinite;filter:drop-shadow(0 0 24px rgba(74,158,255,.35))}
-@keyframes zodiac-spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.loading-cover{position:relative;display:flex;flex-direction:column;align-items:center;
+  padding:28px 0 16px;overflow:hidden;min-height:200px}
+.loading-cover-img{width:min(240px,85%);height:auto;object-fit:contain;position:relative;z-index:1;
+  animation:cover-rotate 22s linear infinite;filter:drop-shadow(0 0 22px rgba(74,158,255,.4))}
+@keyframes cover-rotate{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes star-twinkle{0%,100%{opacity:.1}50%{opacity:1}}
 .zodiac-sign-header{display:flex;align-items:center;justify-content:center;
   padding:20px 0 16px;margin-bottom:4px}
 .zodiac-sign-img{width:100px;height:100px;object-fit:contain;
   filter:drop-shadow(0 0 18px rgba(74,158,255,.4));opacity:.95}
-.taro-cover-img{width:200px;object-fit:contain;border-radius:14px;
-  animation:taro-pulse 3s ease-in-out infinite;
-  filter:drop-shadow(0 0 28px rgba(159,74,255,.5))}
-@keyframes taro-pulse{0%,100%{opacity:.85;transform:scale(1)}50%{opacity:1;transform:scale(1.04)}}
+.rules-link{display:block;text-align:center;font-size:.78rem;color:var(--text2);
+  opacity:.55;margin-top:12px;cursor:pointer;text-decoration:underline;
+  text-underline-offset:3px}
 </style>
 </head>
 <body>
@@ -405,7 +406,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
 <div class="screen" id="s-onboard">
   <div class="onboard-header">
     <div class="onboard-logo">🔮</div>
-    <div class="onboard-title">Оракул <span style="font-size:.55rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.2.6</span></div>
+    <div class="onboard-title">Оракул <span style="font-size:.55rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.2.7</span></div>
     <div class="onboard-sub">Введите данные о рождении для персонального прогноза</div>
   </div>
   <div class="form-body">
@@ -420,13 +421,14 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
     </div>
     <button class="sbtn" onclick="saveProfile(false)">К прогнозам →</button>
     <div class="eb" id="er-onboard"></div>
+    <span class="rules-link" onclick="openRules()">правила акции</span>
   </div>
 </div>
 
 <!-- ══ МЕХАНИКИ ══ -->
 <div class="screen hidden" id="s-mechanics">
   <div class="nav" style="padding:52px 20px 16px;display:flex;align-items:center;gap:12px">
-    <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.2.6</span></div>
+    <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.2.7</span></div>
     <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
       <button class="crystal-pill" onclick="openRubleShop()">💎 <span id="crystal-display">50</span></button>
       <button class="profile-btn" style="position:static;transform:none" onclick="goTo('profile')">👤</button>
@@ -448,8 +450,9 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
     <div class="profile-section-title">Ваши данные</div>
     <div style="display:flex;flex-direction:column;gap:12px" id="profile-mech-list"></div>
   </div>
-  <div style="height:32px"></div>
-  <div style="text-align:center;padding:0 0 24px;font-size:.72rem;color:var(--text2);opacity:.5">v1.2.6</div>
+  <span class="rules-link" style="margin-bottom:8px" onclick="openRules()">правила акции</span>
+  <div style="height:24px"></div>
+  <div style="text-align:center;padding:0 0 24px;font-size:.72rem;color:var(--text2);opacity:.5">v1.2.7</div>
 </div>
 
 <!-- ══ РЕЗУЛЬТАТ ══ -->
@@ -1655,6 +1658,8 @@ function openOracleModal(mechLabel, sub) {
   document.getElementById('oracle-modal').classList.add('open');
 }
 function closeOracleModal() { document.getElementById('oracle-modal').classList.remove('open'); }
+function openRules() { document.getElementById('rules-modal').classList.add('open'); }
+function closeRules() { document.getElementById('rules-modal').classList.remove('open'); }
 function closeOracleOutside(e) { if(e.target===document.getElementById('oracle-modal')) closeOracleModal(); }
 
 // ── ОТНОШЕНИЯ: СОВМЕСТИМОСТЬ ──────────────────
@@ -2357,13 +2362,23 @@ const MECH_COLORS = {
   ball:'rgba(74,222,255,.4)',cookie:'rgba(255,74,159,.4)'
 };
 let _phraseInterval = null;
+function loadingStars() {
+  let s = '<div style="position:absolute;inset:0;pointer-events:none;z-index:0">';
+  for (let i = 0; i < 44; i++) {
+    const x = (Math.random()*100).toFixed(1);
+    const y = (Math.random()*100).toFixed(1);
+    const sz = Math.random() < 0.2 ? 2 : 1;
+    const dur = (1.5 + Math.random()*2.5).toFixed(1);
+    const del = (Math.random()*4).toFixed(1);
+    s += `<div style="position:absolute;left:${x}%;top:${y}%;width:${sz}px;height:${sz}px;border-radius:50%;background:#fff;animation:star-twinkle ${dur}s ${del}s ease-in-out infinite"></div>`;
+  }
+  return s + '</div>';
+}
 function loadingHtml(type) {
   const phrases = LOADING_PHRASES[type] || LOADING_PHRASES.default;
-  if (type === 'horoscope') {
-    return `<div class="loading-cover"><img class="horo-cover-img" src="/zodiac-img/cover.png" alt=""/><div class="modal-phrase" id="loading-phrase" style="margin-top:20px">${phrases[0]}</div><div class="modal-phrase-sub">обычно ~15 сек</div></div>`;
-  }
-  if (type === 'taro') {
-    return `<div class="loading-cover"><img class="taro-cover-img" src="/tarot-img/cover.png" alt=""/><div class="modal-phrase" id="loading-phrase" style="margin-top:20px">${phrases[0]}</div><div class="modal-phrase-sub">обычно ~15 сек</div></div>`;
+  if (type !== 'ball' && type !== 'cookie') {
+    const src = type === 'taro' ? '/tarot-img/cover.png' : '/zodiac-img/cover.png';
+    return `<div class="loading-cover">${loadingStars()}<img class="loading-cover-img" src="${src}" alt=""/><div class="modal-phrase" id="loading-phrase" style="position:relative;z-index:1;margin-top:16px">${phrases[0]}</div><div class="modal-phrase-sub" style="position:relative;z-index:1">обычно ~15 сек</div></div>`;
   }
   return `<div class="modal-spinner"><div class="orbit-ring"></div><div class="modal-phrase" id="loading-phrase">${phrases[0]}</div><div class="modal-phrase-sub">обычно ~15 сек</div></div>`;
 }
@@ -2724,6 +2739,20 @@ function hideCitySuggestions(listId) {
     <button class="sbtn" onclick="calcCompatibility()" id="partner-calc-btn">
       💑 Рассчитать совместимость · <span id="partner-price-label">5 💎</span>
     </button>
+  </div>
+</div>
+
+<!-- ══ ПРАВИЛА АКЦИИ ══ -->
+<div class="result-modal-overlay" id="rules-modal" onclick="if(event.target===this)closeRules()">
+  <div class="result-modal" style="max-height:80vh">
+    <div class="result-modal-header">
+      <div class="result-modal-title">Правила акции</div>
+      <button class="result-modal-close" onclick="closeRules()">✕</button>
+    </div>
+    <div class="result-modal-text" id="rules-text" style="white-space:pre-line">
+Здесь будут правила акции.
+    </div>
+    <button class="sbtn" onclick="closeRules()">Закрыть</button>
   </div>
 </div>
 
