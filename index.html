@@ -526,7 +526,7 @@ function _show(screen) {
   next.classList.remove('hidden');
   next.scrollTop = 0;
   current = screen;
-  document.getElementById('sticky-header').classList.toggle('hidden', screen === 'onboard');
+  document.getElementById('sticky-header').classList.toggle('hidden', screen !== 'mechanics');
   if (screen === 'profile') { renderProfileInfo(); }
   if (screen === 'predictions') { renderMechList('predictions-mech-list', true); }
   if (screen === 'mechanics') { renderMechList('main-mech-list', false); }
