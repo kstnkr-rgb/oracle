@@ -368,7 +368,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
   justify-content:center;gap:8px;transition:all .2s}
 .share-btn:active{background:var(--card)}
 
-/* ── v1.4.5 UI UPDATES ── */
+/* ── v1.4.6 UI UPDATES ── */
 :root{--gold:#f5c842}
 .sbtn{box-shadow:0 6px 24px rgba(74,158,255,.28),0 2px 10px rgba(245,200,66,.12)}
 .crystal-pill{display:flex;align-items:center;gap:5px;background:rgba(167,139,250,.12);
@@ -398,6 +398,15 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
 .rules-link{display:block;text-align:center;font-size:.78rem;color:var(--text2);
   opacity:.55;margin-top:12px;cursor:pointer;text-decoration:underline;
   text-underline-offset:3px}
+/* ── DRUM PICKER ── */
+.drum-picker{display:flex;height:200px;position:relative;overflow:hidden;border-radius:12px;background:var(--card);border:1px solid var(--border)}
+.drum-col{flex:1;overflow-y:scroll;scroll-snap-type:y mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.drum-col::-webkit-scrollbar{display:none}
+.drum-col-month{flex:1.5}
+.drum-item{height:40px;scroll-snap-align:center;display:flex;align-items:center;justify-content:center;font-size:.95rem;color:var(--text2);font-variant-numeric:tabular-nums;user-select:none}
+.drum-col-sep{display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:700;color:var(--text);padding:0 4px;position:relative;z-index:4;flex-shrink:0}
+.drum-sel{position:absolute;top:50%;transform:translateY(-50%);inset-inline:0;height:40px;background:rgba(74,158,255,.1);border-top:1px solid rgba(74,158,255,.25);border-bottom:1px solid rgba(74,158,255,.25);pointer-events:none;z-index:2}
+.drum-fade{position:absolute;inset:0;background:linear-gradient(to bottom,var(--card) 0%,transparent 30%,transparent 70%,var(--card) 100%);pointer-events:none;z-index:3}
 </style>
 </head>
 <body>
@@ -406,12 +415,12 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
 <div class="screen hidden" id="s-onboard">
   <div class="onboard-header">
     <div class="onboard-logo">🔮</div>
-    <div class="onboard-title">Оракул <span style="font-size:.55rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.5</span></div>
+    <div class="onboard-title">Оракул <span style="font-size:.55rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.6</span></div>
     <div class="onboard-sub">Введите данные о рождении для персонального прогноза</div>
   </div>
   <div class="form-body">
-    <div class="field"><label>Дата рождения</label><input type="date" id="ob-date"/></div>
-    <div class="field"><label>Время рождения</label><input type="time" id="ob-time"/></div>
+    <div class="field"><label>Дата рождения</label><input type="hidden" id="ob-date"/><div class="drum-picker" id="ob-date-p"></div></div>
+    <div class="field"><label>Время рождения</label><input type="hidden" id="ob-time"/><div class="drum-picker" id="ob-time-p"></div></div>
     <div class="field">
       <label>Город рождения <span style="font-size:.75rem;font-weight:400;color:var(--text2)">(начните печатать и выберите из списка)</span></label>
       <div class="city-wrap">
@@ -428,7 +437,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
 <!-- ══ МЕХАНИКИ ══ -->
 <div class="screen hidden" id="s-mechanics">
   <div class="nav" style="padding:52px 20px 16px;display:flex;align-items:center;gap:12px">
-    <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.5</span></div>
+    <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.6</span></div>
     <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
       <button class="crystal-pill" onclick="openRubleShop()">💎 <span id="crystal-display">50</span></button>
       <button class="profile-btn" style="position:static;transform:none" onclick="goTo('profile')">👤</button>
@@ -449,7 +458,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
   <button class="edit-btn" style="margin:0 16px 16px;width:calc(100% - 32px)" onclick="goTo('predictions')">📋 Ваши предсказания</button>
   <span class="rules-link" style="margin-bottom:8px" onclick="openRules()">правила акции</span>
   <div style="height:24px"></div>
-  <div style="text-align:center;padding:0 0 24px;font-size:.72rem;color:var(--text2);opacity:.5">v1.4.5</div>
+  <div style="text-align:center;padding:0 0 24px;font-size:.72rem;color:var(--text2);opacity:.5">v1.4.6</div>
 </div>
 
 <!-- ══ ПРЕДСКАЗАНИЯ ══ -->
@@ -481,8 +490,8 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
     <div class="modal-fields">
-      <div class="field"><label>Дата рождения</label><input type="date" id="m-date"/></div>
-      <div class="field"><label>Время рождения</label><input type="time" id="m-time"/></div>
+      <div class="field"><label>Дата рождения</label><input type="hidden" id="m-date"/><div class="drum-picker" id="m-date-p"></div></div>
+      <div class="field"><label>Время рождения</label><input type="hidden" id="m-time"/><div class="drum-picker" id="m-time-p"></div></div>
       <div class="field">
         <label>Город рождения</label>
         <div class="city-wrap">
@@ -2043,11 +2052,13 @@ function renderProfileInfo() {
 
 // ── МОДАЛКА ─────────────────────────────────────
 function openModal() {
-  document.getElementById('m-date').value = profile.date||'';
-  document.getElementById('m-time').value = profile.time||'';
   document.getElementById('m-city').value = profile.city||'';
   _cityCoords['m'] = {lat: profile.lat||55.75, lon: profile.lon||37.62};
   document.getElementById('edit-modal').classList.add('open');
+  const dp = document.getElementById('m-date-p');
+  const tp = document.getElementById('m-time-p');
+  if (dp && dp._set) dp._set(profile.date||'');
+  if (tp && tp._set) tp._set(profile.time||'');
 }
 function closeModal() { document.getElementById('edit-modal').classList.remove('open'); }
 function closeModalOutside(e) { if(e.target===document.getElementById('edit-modal')) closeModal(); }
@@ -2100,7 +2111,89 @@ async function translateFields(obj, fields) {
   return result;
 }
 
+// ── DRUM PICKER ──────────────────────────────
+const DRUM_H = 40, DRUM_PAD_PX = 80; // 2 items padding
+const MONTHS_SHORT = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
+
+class DrumCol {
+  constructor(el, items, onChange) {
+    this.el = el; this.items = items; this.onChange = onChange; this._idx = 0;
+    this._build();
+    this.el.addEventListener('scroll', () => this._onScroll(), { passive: true });
+  }
+  _build() {
+    this.el.innerHTML = '';
+    const pt = document.createElement('div'); pt.style.height = DRUM_PAD_PX + 'px'; this.el.appendChild(pt);
+    this.items.forEach(item => {
+      const d = document.createElement('div'); d.className = 'drum-item'; d.textContent = item.label; this.el.appendChild(d);
+    });
+    const pb = document.createElement('div'); pb.style.height = DRUM_PAD_PX + 'px'; this.el.appendChild(pb);
+  }
+  rebuild(newItems) {
+    const cur = this.items[this._idx]?.value;
+    this.items = newItems; this._build();
+    const ni = Math.max(0, newItems.findIndex(i => i.value === cur));
+    this._go(ni, false);
+  }
+  _onScroll() {
+    const idx = Math.min(Math.max(Math.round(this.el.scrollTop / DRUM_H), 0), this.items.length - 1);
+    if (idx !== this._idx) { this._idx = idx; this.onChange(this.items[idx].value); }
+  }
+  _go(idx, smooth = true) {
+    this._idx = idx;
+    this.el.scrollTo({ top: idx * DRUM_H, behavior: smooth ? 'smooth' : 'instant' });
+  }
+  setValue(v) { const i = this.items.findIndex(x => x.value === v); if (i >= 0) this._go(i, false); }
+  getValue() { return this.items[this._idx]?.value; }
+}
+
+function _range(a, b) { return Array.from({length: b - a + 1}, (_, i) => i + a); }
+function _numItems(arr) { return arr.map(v => ({ value: v, label: String(v).padStart(2, '0') })); }
+function _daysInMonth(y, m) { return new Date(y, m, 0).getDate(); }
+
+function initDatePicker(pickerId, inputId) {
+  const wrap = document.getElementById(pickerId);
+  const inp  = document.getElementById(inputId);
+  if (!wrap || !inp) return;
+  const curY = new Date().getFullYear();
+  const yearItems = _range(1940, curY).reverse().map(v => ({ value: v, label: String(v) }));
+  let sy = curY - 25, sm = 1, sd = 1;
+  const upd = () => { inp.value = `${sy}-${String(sm).padStart(2,'0')}-${String(sd).padStart(2,'0')}`; };
+  wrap.innerHTML = `<div class="drum-col" id="${pickerId}-y"></div><div class="drum-col drum-col-month" id="${pickerId}-m"></div><div class="drum-col" id="${pickerId}-d"></div><div class="drum-sel"></div><div class="drum-fade"></div>`;
+  const colY = new DrumCol(document.getElementById(`${pickerId}-y`), yearItems, v => { sy = v; rebuildDays(); upd(); });
+  const colM = new DrumCol(document.getElementById(`${pickerId}-m`), MONTHS_SHORT.map((l,i) => ({value:i+1,label:l})), v => { sm = v; rebuildDays(); upd(); });
+  const colD = new DrumCol(document.getElementById(`${pickerId}-d`), _numItems(_range(1,31)), v => { sd = v; upd(); });
+  function rebuildDays() { const max = _daysInMonth(sy, sm); sd = Math.min(sd, max); colD.rebuild(_numItems(_range(1, max))); }
+  wrap._set = (ds) => {
+    if (!ds) return;
+    const p = ds.split('-').map(Number); if (p.length < 3) return;
+    [sy, sm, sd] = p; rebuildDays(); colY.setValue(sy); colM.setValue(sm); colD.setValue(sd); upd();
+  };
+  colY._go(yearItems.findIndex(i => i.value === sy), false); upd();
+}
+
+function initTimePicker(pickerId, inputId) {
+  const wrap = document.getElementById(pickerId);
+  const inp  = document.getElementById(inputId);
+  if (!wrap || !inp) return;
+  let sh = 12, smin = 0;
+  const upd = () => { inp.value = `${String(sh).padStart(2,'0')}:${String(smin).padStart(2,'0')}`; };
+  wrap.innerHTML = `<div class="drum-col" id="${pickerId}-h"></div><div class="drum-col-sep">:</div><div class="drum-col" id="${pickerId}-min"></div><div class="drum-sel"></div><div class="drum-fade"></div>`;
+  const colH   = new DrumCol(document.getElementById(`${pickerId}-h`),   _numItems(_range(0,23)), v => { sh   = v; upd(); });
+  const colMin = new DrumCol(document.getElementById(`${pickerId}-min`), _numItems(_range(0,59)), v => { smin = v; upd(); });
+  wrap._set = (ts) => {
+    if (!ts) return;
+    const p = ts.split(':').map(Number); if (p.length < 2) return;
+    [sh, smin] = p; colH.setValue(sh); colMin.setValue(smin); upd();
+  };
+  colH._go(sh, false); upd();
+}
+
 // ── ИНИТ ──────────────────────────────────────
+initDatePicker('ob-date-p', 'ob-date');
+initTimePicker('ob-time-p', 'ob-time');
+initDatePicker('m-date-p', 'm-date');
+initTimePicker('m-time-p', 'm-time');
 renderMechList('main-mech-list', false);
 
 // Загружаем сохранённую сессию (кристаллы, история, бесплатные попытки)
