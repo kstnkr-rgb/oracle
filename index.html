@@ -368,7 +368,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
   justify-content:center;gap:8px;transition:all .2s}
 .share-btn:active{background:var(--card)}
 
-/* ── v1.4.1 UI UPDATES ── */
+/* ── v1.4.2 UI UPDATES ── */
 :root{--gold:#f5c842}
 .sbtn{box-shadow:0 6px 24px rgba(74,158,255,.28),0 2px 10px rgba(245,200,66,.12)}
 .crystal-pill{display:flex;align-items:center;gap:5px;background:rgba(167,139,250,.12);
@@ -406,29 +406,29 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
 <div class="screen" id="s-onboard">
   <div class="onboard-header">
     <div class="onboard-logo">🔮</div>
-    <div class="onboard-title">Оракул <span style="font-size:.55rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.1</span></div>
+    <div class="onboard-title">Оракул <span style="font-size:.55rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.2</span></div>
     <div class="onboard-sub">Введите данные о рождении для персонального прогноза</div>
   </div>
   <div class="form-body">
-    <div class="field"><label>Дата рождения</label><input type="date" id="ob-date" value="1983-07-09"/></div>
-    <div class="field"><label>Время рождения</label><input type="time" id="ob-time" value="17:30"/></div>
+    <div class="field"><label>Дата рождения</label><input type="date" id="ob-date"/></div>
+    <div class="field"><label>Время рождения</label><input type="time" id="ob-time"/></div>
     <div class="field">
-      <label>Город рождения</label>
+      <label>Город рождения <span style="font-size:.75rem;font-weight:400;color:var(--text2)">(начните печатать и выберите из списка)</span></label>
       <div class="city-wrap">
-        <input type="text" id="ob-city" placeholder="Начните вводить город…" autocomplete="off" value="Североморск" oninput="cityAutocomplete(this,'ob-city-list')" onblur="hideCitySuggestions('ob-city-list')"/>
+        <input type="text" id="ob-city" placeholder="Начните вводить город…" autocomplete="off" oninput="cityAutocomplete(this,'ob-city-list')" onblur="hideCitySuggestions('ob-city-list')"/>
         <div class="city-suggestions" id="ob-city-list"></div>
       </div>
     </div>
-    <button class="sbtn" onclick="saveProfile(false)">К прогнозам →</button>
+    <button class="sbtn" onclick="saveProfile(false)">К прогнозам</button>
     <div class="eb" id="er-onboard"></div>
-    <span class="rules-link" onclick="openRules()">правила акции</span>
+    <div style="font-size:.75rem;color:var(--text2);text-align:center;line-height:1.5;margin-top:4px">Нажимая «К прогнозам» ты соглашаешься с <span style="color:var(--accent);cursor:pointer;text-decoration:underline" onclick="openRules()">Правилами акции</span></div>
   </div>
 </div>
 
 <!-- ══ МЕХАНИКИ ══ -->
 <div class="screen hidden" id="s-mechanics">
   <div class="nav" style="padding:52px 20px 16px;display:flex;align-items:center;gap:12px">
-    <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.1</span></div>
+    <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.2</span></div>
     <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
       <button class="crystal-pill" onclick="openRubleShop()">💎 <span id="crystal-display">50</span></button>
       <button class="profile-btn" style="position:static;transform:none" onclick="goTo('profile')">👤</button>
@@ -449,7 +449,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
   <button class="edit-btn" style="margin:0 16px 16px;width:calc(100% - 32px)" onclick="goTo('predictions')">📋 Ваши предсказания</button>
   <span class="rules-link" style="margin-bottom:8px" onclick="openRules()">правила акции</span>
   <div style="height:24px"></div>
-  <div style="text-align:center;padding:0 0 24px;font-size:.72rem;color:var(--text2);opacity:.5">v1.4.1</div>
+  <div style="text-align:center;padding:0 0 24px;font-size:.72rem;color:var(--text2);opacity:.5">v1.4.2</div>
 </div>
 
 <!-- ══ ПРЕДСКАЗАНИЯ ══ -->
@@ -655,7 +655,6 @@ function renderMechList(containerId, withDropdown) {
       <div class="mech-icon ${m.cls}">${m.icon}</div>
       <div class="mech-label">${m.label}</div>
       <div class="mech-badge" id="badge-${containerId}-${m.id}" style="${showBadge ? '' : 'display:none'}">${cnt}</div>
-      <div class="mech-arrow" id="arrow-${containerId}-${m.id}">›</div>
     `;
     btn.onclick = () => toggleDrop(containerId, m.id);
     wrap.appendChild(btn);
@@ -749,15 +748,11 @@ function toggleDrop(cid, mid) {
     if (m.id === mid) return;
     const d = document.getElementById(`drop-${cid}-${m.id}`);
     if (d && d.classList.contains('open')) { d.classList.remove('open'); }
-    const a = document.getElementById(`arrow-${cid}-${m.id}`);
-    if (a) a.classList.remove('open');
   });
   const drop = document.getElementById(`drop-${cid}-${mid}`);
-  const arrow = document.getElementById(`arrow-${cid}-${mid}`);
   if (!drop) return;
   const opening = !drop.classList.contains('open');
   drop.classList.toggle('open');
-  if (arrow) arrow.classList.toggle('open', opening);
   if (opening) {
     if (mech && mech.subs.length === 0) {
       const hl = document.getElementById(`hlist-${cid}-${mid}-_`);
@@ -2124,10 +2119,6 @@ try {
     _cityCoords['ob'] = {lat: profile.lat||55.75, lon: profile.lon||37.62, countryCode: profile.countryCode||'RU'};
     renderProfileInfo();
     _show('mechanics');
-  } else {
-    // Дефолтный город для новых пользователей
-    document.getElementById('ob-city').value = 'Североморск, Россия';
-    _cityCoords['ob'] = {lat: 69.0717, lon: 33.4164, countryCode: 'RU'};
   }
 } catch(e) {}
 
