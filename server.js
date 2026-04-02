@@ -10,6 +10,7 @@ const ASTRO_HOST = 'api.astrology-api.io';
 const CLAUDE_KEY = process.env.CLAUDE_KEY;
 const CLAUDE_HOST = 'api.anthropic.com';
 const CLAUDE_MODEL = 'claude-haiku-4-5-20251001';
+const CLAUDE_MODEL_SONNET = 'claude-sonnet-4-5-20251001';
 
 // Не даём серверу падать при необработанных ошибках
 process.on('uncaughtException', err => console.error('[crash] uncaughtException:', err.message, err.stack));
@@ -78,9 +79,9 @@ const TAROT_SYSTEM_PROMPT = `Ты — таролог, составляющий �
 Общий вывод
 [2–3 предложения, связывающие всё вместе]`;
 
-function callClaude(systemPrompt, userMessage, callback) {
+function callClaude(systemPrompt, userMessage, callback, model = CLAUDE_MODEL) {
   const payload = JSON.stringify({
-    model: CLAUDE_MODEL,
+    model,
     max_tokens: 4000,
     system: systemPrompt,
     messages: [{ role: 'user', content: userMessage }]
@@ -223,7 +224,7 @@ const server = http.createServer((req, res) => {
         if (err) { res.writeHead(500); res.end(JSON.stringify({error: err.message})); return; }
         res.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
         res.end(JSON.stringify({ success: true, text }));
-      });
+      }, CLAUDE_MODEL_SONNET);
     });
     return;
   }
