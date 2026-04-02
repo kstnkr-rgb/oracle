@@ -219,7 +219,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
   padding:16px 0 24px;line-height:1.5}
 
 /* ── ORACLE KEYBOARD FIX ── */
-#oracle-modal .result-modal{ max-height:calc(100vh - 120px); }
+#oracle-modal .result-modal{ max-height:calc(100vh - 130px); }
 
 /* ── CITY AUTOCOMPLETE ── */
 .city-wrap{position:relative}
@@ -235,8 +235,8 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
 </style>
 <style>
 /* ── RESULT MODAL ── */
-.result-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:200;
-  display:flex;align-items:center;justify-content:center;padding:96px 16px 12px;
+.result-modal-overlay{position:fixed;top:96px;left:0;right:0;bottom:0;background:rgba(0,0,0,.65);z-index:200;
+  display:flex;align-items:center;justify-content:center;padding:12px 16px;
   opacity:0;pointer-events:none;transition:opacity .25s}
 .result-modal-overlay.open{opacity:1;pointer-events:all}
 .result-modal{background:#162540;border-radius:20px;padding:24px 20px 28px;
@@ -368,7 +368,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
   justify-content:center;gap:8px;transition:all .2s}
 .share-btn:active{background:var(--card)}
 
-/* ── v1.4.8 UI UPDATES ── */
+/* ── v1.4.9 UI UPDATES ── */
 :root{--gold:#f5c842}
 .sbtn{box-shadow:0 6px 24px rgba(74,158,255,.28),0 2px 10px rgba(245,200,66,.12)}
 .crystal-pill{display:flex;align-items:center;gap:5px;background:rgba(167,139,250,.12);
@@ -377,10 +377,11 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
 .crystal-pill:active{background:rgba(167,139,250,.22)}
 #sticky-header{position:fixed;top:0;left:0;right:0;z-index:300;padding:52px 20px 12px;display:flex;align-items:center;gap:12px;background:var(--bg)}
 #sticky-header.hidden{display:none}
-.spar-pill{display:flex;align-items:center;gap:5px;background:rgba(74,222,128,.1);
-  border:1px solid rgba(74,222,128,.22);border-radius:20px;padding:5px 12px;
-  color:#4ade80;font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:800;cursor:pointer}
-.spar-pill:active{background:rgba(74,222,128,.2)}
+#sticky-header::after{content:'';position:absolute;left:0;right:0;top:100%;height:24px;background:linear-gradient(to bottom,var(--bg),transparent);pointer-events:none}
+.spar-pill{display:flex;align-items:center;gap:5px;background:rgba(167,139,250,.12);
+  border:1px solid rgba(167,139,250,.25);border-radius:20px;padding:5px 12px;
+  color:#a78bfa;font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:800;cursor:pointer}
+.spar-pill:active{background:rgba(167,139,250,.22)}
 .result-modal[data-mtype="horoscope"]{border-top:3px solid #4a9eff}
 .result-modal[data-mtype="taro"]{border-top:3px solid #9f4aff}
 .result-modal[data-mtype="oracle"]{border-top:3px solid #ff9f4a}
@@ -421,7 +422,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
 <div class="screen hidden" id="s-onboard">
   <div class="onboard-header">
     <div class="onboard-logo">🔮</div>
-    <div class="onboard-title">Оракул <span style="font-size:.55rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.8</span></div>
+    <div class="onboard-title">Оракул <span style="font-size:.55rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.9</span></div>
     <div class="onboard-sub">Введите данные о рождении для персонального прогноза</div>
   </div>
   <div class="form-body">
@@ -442,7 +443,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
 
 <!-- ══ МЕХАНИКИ ══ -->
 <div id="sticky-header" class="hidden">
-  <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.8</span></div>
+  <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.9</span></div>
   <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
     <button class="spar-pill" onclick="openShopModal()">👛 <span id="spar-display">10000</span></button>
     <button class="crystal-pill" onclick="openRubleShop()">💎 <span id="crystal-display">50</span></button>
@@ -467,7 +468,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
   <button class="edit-btn" style="margin:0 16px 16px;width:calc(100% - 32px)" onclick="goTo('predictions')">📋 Ваши предсказания</button>
   <span class="rules-link" style="margin-bottom:8px" onclick="openRules()">правила акции</span>
   <div style="height:24px"></div>
-  <div style="text-align:center;padding:0 0 24px;font-size:.72rem;color:var(--text2);opacity:.5">v1.4.8</div>
+  <div style="text-align:center;padding:0 0 24px;font-size:.72rem;color:var(--text2);opacity:.5">v1.4.9</div>
 </div>
 
 <!-- ══ ПРЕДСКАЗАНИЯ ══ -->
@@ -582,11 +583,11 @@ function saveSession() {
     const histTrim = Object.fromEntries(
       Object.entries(history).map(([k,v]) => [k, v.slice(-10).map(e => ({
         datetime: e.datetime, title: e.title,
-        text: typeof e.text === 'string' ? e.text.replace(/<[^>]*>/g,'').slice(0,300) : ''
+        text: typeof e.text === 'string' ? e.text.slice(0, 5000) : ''
       }))])
     );
     localStorage.setItem('oracul_session', JSON.stringify({
-      crystals, freeUses, crystalLedger, history: histTrim
+      crystals, sparBonus, freeUses, crystalLedger, history: histTrim
     }));
   } catch(e) { console.error('[saveSession]', e); }
 }
@@ -2229,6 +2230,7 @@ try {
   if (sess) {
     const s = JSON.parse(sess);
     if (typeof s.crystals === 'number') crystals = s.crystals;
+    if (typeof s.sparBonus === 'number') sparBonus = s.sparBonus;
     if (s.freeUses) Object.assign(freeUses, s.freeUses);
     if (s.crystalLedger) crystalLedger.push(...s.crystalLedger);
     if (s.history) Object.assign(history, s.history);
