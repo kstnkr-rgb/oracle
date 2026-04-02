@@ -368,7 +368,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
   justify-content:center;gap:8px;transition:all .2s}
 .share-btn:active{background:var(--card)}
 
-/* ── v1.4.2 UI UPDATES ── */
+/* ── v1.4.3 UI UPDATES ── */
 :root{--gold:#f5c842}
 .sbtn{box-shadow:0 6px 24px rgba(74,158,255,.28),0 2px 10px rgba(245,200,66,.12)}
 .crystal-pill{display:flex;align-items:center;gap:5px;background:rgba(167,139,250,.12);
@@ -406,7 +406,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
 <div class="screen" id="s-onboard">
   <div class="onboard-header">
     <div class="onboard-logo">🔮</div>
-    <div class="onboard-title">Оракул <span style="font-size:.55rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.2</span></div>
+    <div class="onboard-title">Оракул <span style="font-size:.55rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.3</span></div>
     <div class="onboard-sub">Введите данные о рождении для персонального прогноза</div>
   </div>
   <div class="form-body">
@@ -428,7 +428,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
 <!-- ══ МЕХАНИКИ ══ -->
 <div class="screen hidden" id="s-mechanics">
   <div class="nav" style="padding:52px 20px 16px;display:flex;align-items:center;gap:12px">
-    <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.2</span></div>
+    <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.3</span></div>
     <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
       <button class="crystal-pill" onclick="openRubleShop()">💎 <span id="crystal-display">50</span></button>
       <button class="profile-btn" style="position:static;transform:none" onclick="goTo('profile')">👤</button>
@@ -449,7 +449,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
   <button class="edit-btn" style="margin:0 16px 16px;width:calc(100% - 32px)" onclick="goTo('predictions')">📋 Ваши предсказания</button>
   <span class="rules-link" style="margin-bottom:8px" onclick="openRules()">правила акции</span>
   <div style="height:24px"></div>
-  <div style="text-align:center;padding:0 0 24px;font-size:.72rem;color:var(--text2);opacity:.5">v1.4.2</div>
+  <div style="text-align:center;padding:0 0 24px;font-size:.72rem;color:var(--text2);opacity:.5">v1.4.3</div>
 </div>
 
 <!-- ══ ПРЕДСКАЗАНИЯ ══ -->
@@ -557,13 +557,17 @@ function updateCrystalDisplay() {
 }
 function saveSession() {
   try {
+    // Обрезаем текст истории — полный HTML не храним, только превью
+    const histTrim = Object.fromEntries(
+      Object.entries(history).map(([k,v]) => [k, v.slice(-10).map(e => ({
+        datetime: e.datetime, title: e.title,
+        text: typeof e.text === 'string' ? e.text.replace(/<[^>]*>/g,'').slice(0,300) : ''
+      }))])
+    );
     localStorage.setItem('oracul_session', JSON.stringify({
-      crystals,
-      freeUses,
-      crystalLedger,
-      history: Object.fromEntries(Object.entries(history).map(([k,v]) => [k, v.slice(-20)]))
+      crystals, freeUses, crystalLedger, history: histTrim
     }));
-  } catch(e) {}
+  } catch(e) { console.error('[saveSession]', e); }
 }
 function spendCrystals(mid, sub) {
   // бесплатная попытка
@@ -2117,10 +2121,10 @@ try {
   if (saved) {
     profile = JSON.parse(saved);
     _cityCoords['ob'] = {lat: profile.lat||55.75, lon: profile.lon||37.62, countryCode: profile.countryCode||'RU'};
-    renderProfileInfo();
-    _show('mechanics');
+    _show('mechanics'); // вызываем ДО renderProfileInfo, чтобы ошибка в ней не блокировала переход
+    try { renderProfileInfo(); } catch(e) {}
   }
-} catch(e) {}
+} catch(e) { console.error('[profile load]', e); }
 
 // ── КРИСТАЛЛЫ: МОДАЛЫ ─────────────────────────
 let _pendingCrystals = 0, _pendingBonus = 0;
