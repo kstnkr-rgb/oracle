@@ -368,7 +368,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
   justify-content:center;gap:8px;transition:all .2s}
 .share-btn:active{background:var(--card)}
 
-/* ── v1.3.0 UI UPDATES ── */
+/* ── v1.4.0 UI UPDATES ── */
 :root{--gold:#f5c842}
 .sbtn{box-shadow:0 6px 24px rgba(74,158,255,.28),0 2px 10px rgba(245,200,66,.12)}
 .crystal-pill{display:flex;align-items:center;gap:5px;background:rgba(167,139,250,.12);
@@ -406,7 +406,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
 <div class="screen" id="s-onboard">
   <div class="onboard-header">
     <div class="onboard-logo">🔮</div>
-    <div class="onboard-title">Оракул <span style="font-size:.55rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.3.0</span></div>
+    <div class="onboard-title">Оракул <span style="font-size:.55rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.0</span></div>
     <div class="onboard-sub">Введите данные о рождении для персонального прогноза</div>
   </div>
   <div class="form-body">
@@ -428,7 +428,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
 <!-- ══ МЕХАНИКИ ══ -->
 <div class="screen hidden" id="s-mechanics">
   <div class="nav" style="padding:52px 20px 16px;display:flex;align-items:center;gap:12px">
-    <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.3.0</span></div>
+    <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.0</span></div>
     <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
       <button class="crystal-pill" onclick="openRubleShop()">💎 <span id="crystal-display">50</span></button>
       <button class="profile-btn" style="position:static;transform:none" onclick="goTo('profile')">👤</button>
@@ -446,13 +446,19 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
   <div class="profile-info" id="profile-info"></div>
   <button class="edit-btn" style="margin:0 16px 8px;width:calc(100% - 32px)" onclick="openModal()">✏️ Редактировать данные</button>
   <button class="edit-btn" style="margin:0 16px 16px;width:calc(100% - 32px)" onclick="openLedgerModal()">💎 История покупок</button>
-  <div class="profile-section">
-    <div class="profile-section-title">Ваши данные</div>
-    <div style="display:flex;flex-direction:column;gap:12px" id="profile-mech-list"></div>
-  </div>
+  <button class="edit-btn" style="margin:0 16px 16px;width:calc(100% - 32px)" onclick="goTo('predictions')">📋 Ваши предсказания</button>
   <span class="rules-link" style="margin-bottom:8px" onclick="openRules()">правила акции</span>
   <div style="height:24px"></div>
-  <div style="text-align:center;padding:0 0 24px;font-size:.72rem;color:var(--text2);opacity:.5">v1.3.0</div>
+  <div style="text-align:center;padding:0 0 24px;font-size:.72rem;color:var(--text2);opacity:.5">v1.4.0</div>
+</div>
+
+<!-- ══ ПРЕДСКАЗАНИЯ ══ -->
+<div class="screen hidden" id="s-predictions">
+  <div class="nav">
+    <button class="nav-back" onclick="back()">‹</button>
+    <div class="nav-title">Ваши предсказания</div>
+  </div>
+  <div style="padding:16px;display:flex;flex-direction:column;gap:12px" id="predictions-mech-list"></div>
 </div>
 
 <!-- ══ РЕЗУЛЬТАТ ══ -->
@@ -502,7 +508,8 @@ function _show(screen) {
   next.classList.remove('hidden');
   next.scrollTop = 0;
   current = screen;
-  if (screen === 'profile') { renderProfileInfo(); renderMechList('profile-mech-list', true); }
+  if (screen === 'profile') { renderProfileInfo(); }
+  if (screen === 'predictions') { renderMechList('predictions-mech-list', true); }
   if (screen === 'mechanics') { renderMechList('main-mech-list', false); }
 }
 
@@ -568,6 +575,17 @@ function spendCrystals(mid, sub) {
   const m = MECHANICS.find(x=>x.id===mid);
   const label = (m ? m.label : mid) + (sub ? ' · ' + sub : '');
   ledgerAdd('spend', cost, label);
+  return true;
+}
+function checkCrystals(mid, sub) {
+  if (hasFree(mid, sub)) return true;
+  const cost = getPrice(mid, sub);
+  if (cost > crystals) {
+    const el = document.getElementById('crystal-display');
+    if (el) { el.classList.remove('not-enough'); void el.offsetWidth; el.classList.add('not-enough'); }
+    document.getElementById('no-crystals-modal').classList.add('open');
+    return false;
+  }
   return true;
 }
 function rerenderSubPrices() {
@@ -819,7 +837,7 @@ async function getAstroData() {
 
 // ── ГОРОСКОП: API ─────────────────────────────
 async function createHoroscope(mechLabel, sub) {
-  if (!spendCrystals('horoscope', sub)) return;
+  if (!checkCrystals('horoscope', sub)) return;
   const title = mechLabel + ' · ' + sub;
   openResultModal(title, loadingHtml('horoscope'), 'horoscope');
   startLoadingPhrases('horoscope');
@@ -885,6 +903,7 @@ async function createHoroscope(mechLabel, sub) {
       '<div id="horo-text-body" style="font-size:.92rem;line-height:1.75;color:var(--text);white-space:pre-wrap">' + ruText + '</div>' +
       origin;
 
+    spendCrystals('horoscope', sub);
     stopLoadingPhrases();
     document.getElementById('rmt-text').innerHTML = html;
     const dt = nowStr();
@@ -979,7 +998,7 @@ function formatHoroscope(d, sub) {
 
 // ── ТАРО: API ─────────────────────────────────
 async function createTaro(mechLabel, sub) {
-  if (!spendCrystals('taro', sub)) return;
+  if (!checkCrystals('taro', sub)) return;
   const title = mechLabel + ' · ' + sub;
   openResultModal(title, loadingHtml('taro'), 'taro');
   startLoadingPhrases('taro');
@@ -1063,6 +1082,7 @@ async function createTaro(mechLabel, sub) {
       html += origin2;
     }
 
+    spendCrystals('taro', sub);
     stopLoadingPhrases();
     document.getElementById('rmt-text').innerHTML = html;
     const dt = nowStr();
@@ -1285,7 +1305,7 @@ function formatTaroThree(data) {
 
 // ── НУМЕРОЛОГИЯ: API ──────────────────────────
 async function createNumerology(mechLabel) {
-  if (!spendCrystals('numerology', null)) return;
+  if (!checkCrystals('numerology', null)) return;
   openResultModal(mechLabel, loadingHtml('numerology'), 'numerology');
   startLoadingPhrases('numerology');
   try {
@@ -1321,6 +1341,7 @@ async function createNumerology(mechLabel) {
       }
     }
     const html = formatNumerology(data);
+    spendCrystals('numerology', null);
     stopLoadingPhrases();
     document.getElementById('rmt-text').innerHTML = html;
     const dt = nowStr();
@@ -1438,7 +1459,7 @@ const ORIENTATION_RUNE_RU = { upright: 'Прямое', reversed: 'Перевёр
 const ELEMENT_RUNE_RU = { Fire:'Огонь', Water:'Вода', Air:'Воздух', Earth:'Земля', Ice:'Лёд' };
 
 async function createRunes(mechLabel, sub) {
-  if (!spendCrystals('runes', sub)) return;
+  if (!checkCrystals('runes', sub)) return;
   const title = mechLabel + ' · ' + sub;
   openResultModal(title, loadingHtml('runes'), 'runes');
   startLoadingPhrases('runes');
@@ -1469,9 +1490,13 @@ async function createRunes(mechLabel, sub) {
     // Переводим интерпретации рун
     if (runeData.runes && Array.isArray(runeData.runes)) {
       for (let i = 0; i < runeData.runes.length; i++) {
-        if (runeData.runes[i].interpretation) {
-          runeData.runes[i] = Object.assign({}, runeData.runes[i], { interpretation: await translateText(runeData.runes[i].interpretation) });
-        }
+        const r = runeData.runes[i];
+        const updates = {};
+        if (r.interpretation) updates.interpretation = await translateText(r.interpretation);
+        const runeUpdates = {};
+        if (r.rune && r.rune.meaning_word) runeUpdates.meaning_word = await translateText(r.rune.meaning_word);
+        runeData.runes[i] = Object.assign({}, r, updates,
+          Object.keys(runeUpdates).length ? { rune: Object.assign({}, r.rune, runeUpdates) } : {});
       }
     }
     if (runeData.report) {
@@ -1479,6 +1504,7 @@ async function createRunes(mechLabel, sub) {
       if (runeData.report.advice) runeData.report.advice = await translateText(runeData.report.advice);
     }
     const html = formatRunes(runeData, sub);
+    spendCrystals('runes', sub);
     stopLoadingPhrases();
     document.getElementById('rmt-text').innerHTML = html;
     const dt = nowStr();
@@ -1537,9 +1563,17 @@ function formatRunes(data, sub) {
     html += '<div style="font-size:.95rem;font-weight:700;line-height:1.6;margin-bottom:14px;color:var(--text)">' + data.report.theme + '</div>';
   }
 
+  const POS_NAME_RU = {
+    'PAST (URD)': 'ПРОШЛОЕ (УРД)', 'PRESENT (VERDANDI)': 'НАСТОЯЩЕЕ (ВЕРДАНДI)', 'FUTURE (SKULD)': 'БУДУЩЕЕ (СКУЛЬД)',
+    'PAST': 'ПРОШЛОЕ', 'PRESENT': 'НАСТОЯЩЕЕ', 'FUTURE': 'БУДУЩЕЕ',
+    'URD': 'УРД', 'VERDANDI': 'ВЕРДАНДI', 'SKULD': 'СКУЛЬД',
+    'SITUATION': 'СИТУАЦИЯ', 'CHALLENGE': 'ВЫЗОВ', 'ADVICE': 'СОВЕТ',
+    'OUTCOME': 'ИСХОД', 'PAST INFLUENCE': 'ПРОШЛОЕ', 'PRESENT SITUATION': 'НАСТОЯЩЕЕ', 'FUTURE POTENTIAL': 'БУДУЩЕЕ'
+  };
+
   // Руны по позициям
   runes.forEach(function(r) {
-    const posLabel = r.position_name || ('Позиция ' + r.position);
+    const posLabel = POS_NAME_RU[r.position_name] || r.position_name || ('Позиция ' + r.position);
     html += '<div style="margin-bottom:14px">';
     html += '<div style="font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#d4924a;margin-bottom:6px">' + posLabel + '</div>';
     html += runeCard(r.rune, r.orientation);
@@ -1639,10 +1673,20 @@ if (window.visualViewport) {
   window.visualViewport.addEventListener('resize', () => {
     const modal = document.getElementById('oracle-modal');
     if (!modal.classList.contains('open')) return;
-    const kbHeight = window.innerHeight - window.visualViewport.offsetTop - window.visualViewport.height;
-    modal.style.paddingBottom = kbHeight > 0 ? (kbHeight + 8) + 'px' : '';
-    modal.style.paddingTop = kbHeight > 0 ? '8px' : '';
-    modal.style.alignItems = kbHeight > 0 ? 'flex-end' : 'center';
+    const vvh = window.visualViewport.height;
+    const kbHeight = window.innerHeight - window.visualViewport.offsetTop - vvh;
+    const inner = document.getElementById('oracle-modal-inner');
+    if (kbHeight > 50) {
+      modal.style.paddingBottom = (kbHeight + 8) + 'px';
+      modal.style.paddingTop = '8px';
+      modal.style.alignItems = 'flex-end';
+      if (inner) inner.style.maxHeight = (vvh - 24) + 'px';
+    } else {
+      modal.style.paddingBottom = '';
+      modal.style.paddingTop = '';
+      modal.style.alignItems = 'center';
+      if (inner) inner.style.maxHeight = '';
+    }
   });
 }
 
@@ -1675,7 +1719,7 @@ async function calcCompatibility() {
   if (!_cityCoords['p']) { errEl.style.display = 'block'; return; }
   errEl.style.display = 'none';
 
-  if (!spendCrystals('oracle', 'Отношения')) return;
+  if (!checkCrystals('oracle', 'Отношения')) return;
   closePartnerModal();
 
   const title = '💑 Анализ отношений';
@@ -1731,6 +1775,7 @@ async function calcCompatibility() {
       }
     }
     const html = formatCompatibility(compData);
+    spendCrystals('oracle', 'Отношения');
     stopLoadingPhrases();
     document.getElementById('rmt-text').innerHTML = html;
   } catch(e) {
@@ -1859,7 +1904,7 @@ function formatCompatibility(data) {
 async function askOracle() {
   const q = document.getElementById('oracle-question').value.trim();
   if (!q) { document.getElementById('oracle-question').focus(); return; }
-  if (!spendCrystals('oracle', null)) return;
+  if (!checkCrystals('oracle', null)) return;
   // показать анимацию загрузки
   document.getElementById('oracle-ask-btn').style.display = 'none';
   document.getElementById('oracle-question').closest('div') && (document.getElementById('oracle-question').disabled = true);
@@ -1876,6 +1921,7 @@ async function askOracle() {
     const json = await resp.json();
     if (json.error) throw new Error(json.error);
     const answer = json.text || '';
+    spendCrystals('oracle', null);
     stopLoadingPhrases();
     aw.innerHTML = '<div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:6px">Ответ Оракула</div><div class="oracle-answer on" id="oracle-answer">' + answer + '</div>';
     const dt = nowStr();
@@ -1928,7 +1974,7 @@ function openCookieModal() {
 function closeCookieModal() { document.getElementById('cookie-modal').classList.remove('open'); }
 function closeCookieOutside(e) { if(e.target===document.getElementById('cookie-modal')) closeCookieModal(); }
 async function cookieReveal() {
-  if (!spendCrystals('cookie', null)) return;
+  if (!checkCrystals('cookie', null)) return;
   soundCrunch();
   document.getElementById('cookie-img-whole').style.display = 'none';
   document.getElementById('cookie-img-broken').style.display = 'block';
@@ -1939,6 +1985,7 @@ async function cookieReveal() {
   try {
     const resp = await fetch('/cookie-ru', { method:'POST', headers:{'Content-Type':'application/json'}, body:'{}' });
     const json = await resp.json();
+    spendCrystals('cookie', null);
     pred.textContent = '«' + (json.text || 'Удача улыбается тебе сегодня!') + '»';
   } catch(e) {
     pred.textContent = '«Удача улыбается тебе сегодня!»';
