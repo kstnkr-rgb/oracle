@@ -368,7 +368,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
   justify-content:center;gap:8px;transition:all .2s}
 .share-btn:active{background:var(--card)}
 
-/* ── v1.4.13 UI UPDATES ── */
+/* ── v1.4.14 UI UPDATES ── */
 :root{--gold:#f5c842}
 .sbtn{box-shadow:0 6px 24px rgba(74,158,255,.28),0 2px 10px rgba(245,200,66,.12)}
 .crystal-pill{display:flex;align-items:center;gap:5px;background:rgba(167,139,250,.12);
@@ -423,7 +423,7 @@ body.has-header .result-modal-overlay{padding-top:96px}
 <div class="screen hidden" id="s-onboard">
   <div class="onboard-header">
     <div class="onboard-logo">🔮</div>
-    <div class="onboard-title">Оракул <span style="font-size:.55rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.13</span></div>
+    <div class="onboard-title">Оракул <span style="font-size:.55rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.14</span></div>
     <div class="onboard-sub">Введите данные о рождении для персонального прогноза</div>
   </div>
   <div class="form-body">
@@ -444,7 +444,7 @@ body.has-header .result-modal-overlay{padding-top:96px}
 
 <!-- ══ МЕХАНИКИ ══ -->
 <div id="sticky-header" class="hidden">
-  <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.13</span></div>
+  <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.14</span></div>
   <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
     <button class="spar-pill" onclick="openShopModal()">👛 <span id="spar-display">10000</span></button>
     <button class="crystal-pill" onclick="openRubleShop()">💎 <span id="crystal-display">50</span></button>
@@ -469,7 +469,7 @@ body.has-header .result-modal-overlay{padding-top:96px}
   <button class="edit-btn" style="margin:0 16px 16px;width:calc(100% - 32px)" onclick="goTo('predictions')">📋 Ваши предсказания</button>
   <span class="rules-link" style="margin-bottom:8px" onclick="openRules()">правила акции</span>
   <div style="height:24px"></div>
-  <div style="text-align:center;padding:0 0 24px;font-size:.72rem;color:var(--text2);opacity:.5">v1.4.13</div>
+  <div style="text-align:center;padding:0 0 24px;font-size:.72rem;color:var(--text2);opacity:.5">v1.4.14</div>
 </div>
 
 <!-- ══ ПРЕДСКАЗАНИЯ ══ -->
@@ -563,6 +563,40 @@ const crystalLedger = []; // {type:'spend'|'earn', amount, label, datetime}
 const freeUses = { 'horoscope_Сегодня': 1, 'taro_Карта дня': 1 };
 function freeKey(mid, sub) { return sub ? mid + '_' + sub : mid; }
 function hasFree(mid, sub) { return (freeUses[freeKey(mid, sub)] || 0) > 0; }
+
+// ── БЛОКИРОВКА ПОВТОРНЫХ ПРОГНОЗОВ ──────────────
+let forecastLock = {}; // key → { stamp, profileHash }
+function _profileHash() { return (profile.date||'')+'|'+(profile.time||'')+'|'+(profile.city||''); }
+function _forecastStamp(sub) {
+  const now = new Date();
+  if (sub === 'Год') return String(now.getFullYear());
+  if (sub === 'Месяц') return now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
+  if (sub === 'Неделя') {
+    const d = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
+    const day = d.getUTCDay() || 7; d.setUTCDate(d.getUTCDate() + 4 - day);
+    const ys = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+    const wk = Math.ceil((((d-ys)/86400000)+1)/7);
+    return d.getUTCFullYear() + '-W' + String(wk).padStart(2,'0');
+  }
+  return now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
+}
+function isForecastLocked(mid, sub) {
+  if (mid !== 'horoscope') return false;
+  const lock = forecastLock[freeKey(mid, sub)];
+  if (!lock) return false;
+  if (lock.profileHash !== _profileHash()) return false;
+  return lock.stamp === _forecastStamp(sub);
+}
+function setForecastLock(mid, sub) {
+  forecastLock[freeKey(mid, sub)] = { stamp: _forecastStamp(sub), profileHash: _profileHash() };
+}
+function forecastLockedMsg(sub) {
+  if (sub === 'Сегодня' || sub === 'Завтра') return 'Прогноз за сегодня уже получен.<br>Следующий будет доступен завтра.<br><br><span style="font-size:.8rem;color:var(--text2)">Измените данные профиля, чтобы получить новый прогноз.</span>';
+  if (sub === 'Неделя') return 'Прогноз на эту неделю уже получен.<br>Следующий будет доступен на следующей неделе.<br><br><span style="font-size:.8rem;color:var(--text2)">Измените данные профиля, чтобы получить новый прогноз.</span>';
+  if (sub === 'Месяц') return 'Прогноз на этот месяц уже получен.<br>Следующий будет доступен в следующем месяце.<br><br><span style="font-size:.8rem;color:var(--text2)">Измените данные профиля, чтобы получить новый прогноз.</span>';
+  if (sub === 'Год') return 'Прогноз на этот год уже получен.<br>Следующий будет доступен в следующем году.<br><br><span style="font-size:.8rem;color:var(--text2)">Измените данные профиля, чтобы получить новый прогноз.</span>';
+  return 'Прогноз уже получен. Попробуйте позже.';
+}
 function ledgerAdd(type, amount, label) {
   crystalLedger.push({ type, amount, label, datetime: nowStr() });
 }
@@ -589,7 +623,7 @@ function saveSession() {
       }))])
     );
     localStorage.setItem('oracul_session', JSON.stringify({
-      crystals, sparBonus, freeUses, crystalLedger, history: histTrim
+      crystals, sparBonus, freeUses, crystalLedger, history: histTrim, forecastLock
     }));
   } catch(e) { console.error('[saveSession]', e); }
 }
@@ -873,6 +907,10 @@ async function getAstroData() {
 
 // ── ГОРОСКОП: API ─────────────────────────────
 async function createHoroscope(mechLabel, sub) {
+  if (isForecastLocked('horoscope', sub)) {
+    openResultModal(mechLabel + ' · ' + sub, '<div style="text-align:center;padding:16px 0;line-height:1.8">' + forecastLockedMsg(sub) + '</div>', 'horoscope');
+    return;
+  }
   if (!checkCrystals('horoscope', sub)) return;
   const title = mechLabel + ' · ' + sub;
   openResultModal(title, loadingHtml('horoscope'), 'horoscope');
@@ -940,6 +978,7 @@ async function createHoroscope(mechLabel, sub) {
       origin;
 
     spendCrystals('horoscope', sub);
+    setForecastLock('horoscope', sub);
     stopLoadingPhrases();
     document.getElementById('rmt-text').innerHTML = html;
     const dt = nowStr();
@@ -2237,6 +2276,7 @@ try {
     if (s.freeUses) Object.assign(freeUses, s.freeUses);
     if (s.crystalLedger) crystalLedger.push(...s.crystalLedger);
     if (s.history) Object.assign(history, s.history);
+    if (s.forecastLock) Object.assign(forecastLock, s.forecastLock);
     updateCrystalDisplay();
   }
 } catch(e) {}
