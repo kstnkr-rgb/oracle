@@ -10,7 +10,7 @@ const ASTRO_HOST = 'api.astrology-api.io';
 const CLAUDE_KEY = process.env.CLAUDE_KEY;
 const CLAUDE_HOST = 'api.anthropic.com';
 const CLAUDE_MODEL = 'claude-haiku-4-5-20251001';
-const CLAUDE_MODEL_SONNET = 'claude-sonnet-4-5-20251001';
+const CLAUDE_MODEL_SONNET = 'claude-sonnet-4-6';
 
 // Не даём серверу падать при необработанных ошибках
 process.on('uncaughtException', err => console.error('[crash] uncaughtException:', err.message, err.stack));
