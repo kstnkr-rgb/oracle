@@ -220,6 +220,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
 
 /* ── ORACLE KEYBOARD FIX ── */
 #oracle-modal .result-modal{ max-height:calc(100vh - 130px); }
+#dream-modal .result-modal{ max-height:calc(100vh - 130px); }
 
 /* ── CITY AUTOCOMPLETE ── */
 .city-wrap{position:relative}
@@ -368,7 +369,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
   justify-content:center;gap:8px;transition:all .2s}
 .share-btn:active{background:var(--card)}
 
-/* ── v1.4.15 UI UPDATES ── */
+/* ── v1.4.16 UI UPDATES ── */
 :root{--gold:#f5c842}
 .sbtn{box-shadow:0 6px 24px rgba(74,158,255,.28),0 2px 10px rgba(245,200,66,.12)}
 .crystal-pill{display:flex;align-items:center;gap:5px;background:rgba(167,139,250,.12);
@@ -423,7 +424,7 @@ body.has-header .result-modal-overlay{padding-top:96px}
 <div class="screen hidden" id="s-onboard">
   <div class="onboard-header">
     <div class="onboard-logo">🔮</div>
-    <div class="onboard-title">Оракул <span style="font-size:.55rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.15</span></div>
+    <div class="onboard-title">Оракул <span style="font-size:.55rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.16</span></div>
     <div class="onboard-sub">Введите данные о рождении для персонального прогноза</div>
   </div>
   <div class="form-body">
@@ -444,7 +445,7 @@ body.has-header .result-modal-overlay{padding-top:96px}
 
 <!-- ══ МЕХАНИКИ ══ -->
 <div id="sticky-header" class="hidden">
-  <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.15</span></div>
+  <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.16</span></div>
   <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
     <button class="spar-pill" onclick="openShopModal()">👛 <span id="spar-display">10000</span></button>
     <button class="crystal-pill" onclick="openRubleShop()">💎 <span id="crystal-display">50</span></button>
@@ -469,7 +470,7 @@ body.has-header .result-modal-overlay{padding-top:96px}
   <button class="edit-btn" style="margin:0 16px 16px;width:calc(100% - 32px)" onclick="goTo('predictions')">📋 Ваши предсказания</button>
   <span class="rules-link" style="margin-bottom:8px" onclick="openRules()">правила акции</span>
   <div style="height:24px"></div>
-  <div style="text-align:center;padding:0 0 24px;font-size:.72rem;color:var(--text2);opacity:.5">v1.4.15</div>
+  <div style="text-align:center;padding:0 0 24px;font-size:.72rem;color:var(--text2);opacity:.5">v1.4.16</div>
 </div>
 
 <!-- ══ ПРЕДСКАЗАНИЯ ══ -->
@@ -540,20 +541,22 @@ const MECHANICS = [
   { id:'horoscope', icon:'☉', cls:'icon-c1', label:'Гороскоп',
     subs:['Сегодня','Завтра','Неделя','Месяц','Год'],
     prices:{'Сегодня':1,'Завтра':2,'Неделя':5,'Месяц':10,'Год':30} },
+  { id:'oracle',    icon:'🔮', cls:'icon-c3', label:'Совет Оракула',
+    subs:[], direct:true, price:20 },
   { id:'taro',      icon:'🃏', cls:'icon-c2', label:'Таро',
     subs:['Карта дня','Расклад на 3 карты'],
     prices:{'Карта дня':1,'Расклад на 3 карты':5} },
-  { id:'oracle',    icon:'🔮', cls:'icon-c3', label:'Совет Оракула',
-    subs:[], direct:true, price:20 },
-  { id:'ball',      icon:'🌐', cls:'icon-c4', label:'Магический шар',
-    subs:[], direct:true, noHistory:true, price:1 },
-  { id:'cookie',    icon:'🥠', cls:'icon-c5', label:'Печенье с предсказанием',
-    subs:[], direct:true, noHistory:true, price:1 },
-  { id:'numerology',icon:'🔢', cls:'icon-c6', label:'Нумерология',
-    subs:[], price:5 },
   { id:'runes',     icon:'ᚱ',  cls:'icon-c7', label:'Руны',
     subs:['Одна руна','Три руны','Руна ситуации'],
     prices:{'Одна руна':5,'Три руны':10,'Руна ситуации':5} },
+  { id:'numerology',icon:'🔢', cls:'icon-c6', label:'Нумерология',
+    subs:[], price:5 },
+  { id:'cookie',    icon:'🥠', cls:'icon-c5', label:'Печенье с предсказанием',
+    subs:[], direct:true, noHistory:true, price:1 },
+  { id:'ball',      icon:'🌐', cls:'icon-c4', label:'Магический шар',
+    subs:[], direct:true, noHistory:true, price:0 },
+  { id:'dream',     icon:'🌙', cls:'icon-c8', label:'Толкователь снов',
+    subs:[], direct:true, price:10 },
 ];
 
 let crystals = 50;
@@ -806,6 +809,7 @@ function toggleDrop(cid, mid) {
     if (mid === 'oracle') { openOracleModal('Совет Оракула', null); return; }
     if (mid === 'ball') { openBallModal(); return; }
     if (mid === 'cookie') { openCookieModal(); return; }
+    if (mid === 'dream') { openDreamModal(); return; }
   }
   MECHANICS.forEach(m => {
     if (m.id === mid) return;
@@ -863,8 +867,9 @@ function renderHistItems(hlist, mid, sub) {
 // ── СОЗДАТЬ ПРОГНОЗ ──────────────────────────────
 function createAndShow(mid, mechLabel, sub) {
   if (mid === 'oracle') { openOracleModal(mechLabel, null); return; }
-  if (mid === 'ball')   { if (!spendCrystals(mid, sub)) return; openBallModal(); return; }
+  if (mid === 'ball')   { openBallModal(); return; }
   if (mid === 'cookie') { openCookieModal(); return; }
+  if (mid === 'dream')  { openDreamModal(); return; }
   if (mid === 'horoscope') { createHoroscope(mechLabel, sub); return; }
   if (mid === 'taro') { createTaro(mechLabel, sub); return; }
   if (mid === 'numerology') { createNumerology(mechLabel); return; }
@@ -2021,6 +2026,63 @@ function doShareOracle() {
   shareText(text);
 }
 
+// ── ТОЛКОВАТЕЛЬ СНОВ ──────────────────────────
+function openDreamModal() {
+  const q = document.getElementById('dream-question');
+  q.value = ''; q.disabled = false;
+  document.getElementById('dream-char-count').textContent = '0 / 500';
+  const aw = document.getElementById('dream-answer-wrap');
+  aw.style.display = 'none';
+  aw.innerHTML = '<div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:6px">Толкование</div><div class="oracle-answer on" id="dream-answer"></div>';
+  document.getElementById('dream-share-btn').style.display = 'none';
+  const btn = document.getElementById('dream-ask-btn');
+  btn.style.display = 'block'; btn.disabled = false;
+  document.getElementById('dream-modal').classList.add('open');
+}
+function closeDreamModal() { document.getElementById('dream-modal').classList.remove('open'); }
+function closeDreamOutside(e) { if(e.target===document.getElementById('dream-modal')) closeDreamModal(); }
+async function askDream() {
+  const q = document.getElementById('dream-question').value.trim();
+  if (!q) { document.getElementById('dream-question').focus(); return; }
+  if (!checkCrystals('dream', null)) return;
+  document.getElementById('dream-question').disabled = true;
+  const aw = document.getElementById('dream-answer-wrap');
+  aw.style.display = 'block';
+  aw.innerHTML = loadingHtml('dream');
+  startLoadingPhrases('dream');
+  document.getElementById('dream-ask-btn').style.display = 'none';
+  try {
+    const resp = await fetch('/dream-ru', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ dream: q })
+    });
+    if (!resp.ok) throw new Error('Ошибка сервера ' + resp.status);
+    const json = await resp.json();
+    const answer = json.text || '';
+    stopLoadingPhrases();
+    spendCrystals('dream', null);
+    aw.innerHTML = '<div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:6px">Толкование</div><div class="oracle-answer on" id="dream-answer">' + answer + '</div>';
+    const dt = nowStr();
+    if (!history['dream']) history['dream'] = [];
+    history['dream'].push({ datetime: dt, title: 'Толкователь снов', text: ('Сон: ' + q + '\n\nТолкование: ' + answer).slice(0, 200) });
+    saveSession();
+    document.getElementById('dream-share-btn').style.display = 'block';
+    document.getElementById('dream-question').disabled = false;
+  } catch(e) {
+    stopLoadingPhrases();
+    aw.innerHTML = '<div class="oracle-answer on">❌ Ошибка: ' + e.message + '</div>';
+    document.getElementById('dream-ask-btn').style.display = 'block';
+    document.getElementById('dream-ask-btn').disabled = false;
+    document.getElementById('dream-question').disabled = false;
+  }
+}
+function doShareDream() {
+  const q = document.getElementById('dream-question').value.trim();
+  const a = document.getElementById('dream-answer') ? document.getElementById('dream-answer').textContent : '';
+  const text = (q ? 'Сон: ' + q + '\n\nТолкование: ' + a : a);
+  shareText(text);
+}
+
 // ── МАГИЧЕСКИЙ ШАР ────────────────────────────
 function openBallModal() {
   document.getElementById('ball-answer').textContent = '';
@@ -2031,7 +2093,6 @@ function openBallModal() {
 function closeBallModal() { document.getElementById('ball-modal').classList.remove('open'); }
 function closeBallOutside(e) { if(e.target===document.getElementById('ball-modal')) closeBallModal(); }
 function ballReveal() {
-  if (!spendCrystals('ball', null)) return;
   soundMystic();
   const opts = ['Да', 'Нет', 'Не знаю', 'Спроси позже'];
   const ans = opts[Math.floor(Math.random() * opts.length)];
@@ -2588,6 +2649,7 @@ const LOADING_PHRASES = {
   horoscope: ['Читаю звёзды…','Сверяю планеты…','Составляю прогноз…','Советуюсь с небесами…','Изучаю транзиты…'],
   taro:      ['Тасую колоду…','Раскладываю карты…','Читаю символы…','Смотрю в расклад…'],
   oracle:    ['Формирую совет…','Советуюсь с космосом…','Слушаю звёзды…','Ищу ответ…'],
+  dream:     ['Читаю образы…','Анализирую сон…','Толкую символы…','Ищу смысл…'],
   numerology:['Считаю числа…','Ищу вибрации…','Анализирую дату…','Составляю отчёт…'],
   runes:     ['Бросаю руны…','Читаю символы…','Слышу руны…','Толкую знаки…'],
   default:   ['Думаю…','Готовлю ответ…','Анализирую данные…','Секунду…']
@@ -2595,7 +2657,7 @@ const LOADING_PHRASES = {
 const MECH_COLORS = {
   horoscope:'rgba(74,158,255,.55)',taro:'rgba(159,74,255,.55)',oracle:'rgba(255,159,74,.55)',
   numerology:'rgba(62,207,142,.55)',runes:'rgba(212,146,74,.55)',
-  ball:'rgba(74,222,255,.4)',cookie:'rgba(255,74,159,.4)'
+  ball:'rgba(74,222,255,.4)',cookie:'rgba(255,74,159,.4)',dream:'rgba(147,112,219,.55)'
 };
 let _phraseInterval = null;
 function loadingStars() {
@@ -2707,6 +2769,25 @@ function hideCitySuggestions(listId) {
       <div class="oracle-answer on" id="oracle-answer"></div>
     </div>
     <button class="share-btn" id="oracle-share-btn" style="display:none;margin-top:10px" onclick="doShareOracle()">📤 Поделиться</button>
+  </div>
+</div>
+
+<!-- ══ МОДАЛ: ТОЛКОВАТЕЛЬ СНОВ ══ -->
+<div class="result-modal-overlay" id="dream-modal" style="align-items:center;padding:24px;transition:bottom .15s" onclick="closeDreamOutside(event)">
+  <div class="result-modal" style="border-radius:20px;max-height:85vh" id="dream-modal-inner">
+    <div class="result-modal-header">
+      <div class="result-modal-title">🌙 Толкователь снов</div>
+      <button class="result-modal-close" onclick="closeDreamModal()">✕</button>
+    </div>
+    <div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--text2);margin-bottom:6px">Опишите ваш сон</div>
+    <textarea class="oracle-input" id="dream-question" maxlength="500" placeholder="Расскажите, что вам приснилось…" style="min-height:100px" oninput="document.getElementById('dream-char-count').textContent=this.value.length+' / 500'"></textarea>
+    <div style="text-align:right;font-size:.7rem;color:var(--text2);opacity:.5;margin:-6px 0 10px" id="dream-char-count">0 / 500</div>
+    <button class="sbtn" onclick="askDream()" id="dream-ask-btn">Истолковать · 10 💎</button>
+    <div id="dream-answer-wrap" style="display:none;margin-top:14px">
+      <div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:6px">Толкование</div>
+      <div class="oracle-answer on" id="dream-answer"></div>
+    </div>
+    <button class="share-btn" id="dream-share-btn" style="display:none;margin-top:10px" onclick="doShareDream()">📤 Поделиться</button>
   </div>
 </div>
 

@@ -59,6 +59,8 @@ const ORACLE_SYSTEM_PROMPT = `Ты — мудрый астрологически
 
 const COOKIE_SYSTEM_PROMPT = `Ты генерируешь предсказания для печенья с предсказанием. Создай одно позитивное, доброе и короткое предсказание. Максимум 100 знаков. Только текст предсказания без кавычек, заголовков и пояснений. Никогда не пиши, что не можешь предсказать. Не используй длинное тире (—), только короткое тире (–) или дефис (-).`;
 
+const DREAM_SYSTEM_PROMPT = `Толкуй сны с точки зрения психологии. Твоё толкование должно быть в позитивном ключе. Пиши от второго лица («ты»). Язык — простой, живой, человечный. Тон — поддерживающий, вдохновляющий. Целевой объём — около 1200–1500 знаков (150–200 слов). Никаких заголовков, списков, звёздочек и markdown. Только связный текст. Никогда не пиши, что не можешь истолковать сон. Никогда не используй длинное тире (—). Вместо него используй короткое тире (–) или дефис (-).`;
+
 const TAROT_SYSTEM_PROMPT = `Ты — таролог, составляющий интерпретации расклада Таро на русском языке. Пиши живо, образно, по-человечески. Тон — поддерживающий и позитивный, с акцентом на возможности. Никаких списков, звёздочек и markdown-разметки.
 
 Никогда не используй длинное тире (—). Вместо него используй короткое тире (–) или дефис (-).
@@ -238,6 +240,25 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+
+  if (req.method === 'POST' && urlPath === '/dream-ru') {
+    let body = '';
+    req.on('data', c => body += c);
+    req.on('end', () => {
+      let parsed;
+      try { parsed = JSON.parse(body); } catch(e) {
+        res.writeHead(400); res.end(JSON.stringify({error:'Invalid JSON'})); return;
+      }
+      const dream = parsed.dream || '';
+      if (!dream) { res.writeHead(400); res.end(JSON.stringify({error:'No dream text'})); return; }
+      callClaude(DREAM_SYSTEM_PROMPT, `Сон: "${dream}"`, (err, text) => {
+        if (err) { res.writeHead(500); res.end(JSON.stringify({error: err.message})); return; }
+        res.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
+        res.end(JSON.stringify({ success: true, text }));
+      }, CLAUDE_MODEL_SONNET);
+    });
+    return;
+  }
 
   if (req.method === 'POST' && urlPath === '/tarot-ru') {
     let body = '';
