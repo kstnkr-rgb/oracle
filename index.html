@@ -372,7 +372,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
   justify-content:center;gap:8px;transition:all .2s}
 .share-btn:active{background:var(--card)}
 
-/* ── v1.4.21 UI UPDATES ── */
+/* ── v1.4.23 UI UPDATES ── */
 :root{--gold:#f5c842}
 .sbtn{box-shadow:0 6px 24px rgba(74,158,255,.28),0 2px 10px rgba(245,200,66,.12)}
 .crystal-pill{display:flex;align-items:center;gap:5px;background:rgba(167,139,250,.12);
@@ -427,7 +427,7 @@ body.has-header .result-modal-overlay{padding-top:96px}
 <div class="screen hidden" id="s-onboard">
   <div class="onboard-header">
     <div class="onboard-logo">🔮</div>
-    <div class="onboard-title">Оракул <span style="font-size:.55rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.21</span></div>
+    <div class="onboard-title">Оракул <span style="font-size:.55rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.23</span></div>
     <div class="onboard-sub">Введите данные о рождении для персонального прогноза</div>
   </div>
   <div class="form-body">
@@ -448,7 +448,7 @@ body.has-header .result-modal-overlay{padding-top:96px}
 
 <!-- ══ МЕХАНИКИ ══ -->
 <div id="sticky-header" class="hidden">
-  <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.21</span></div>
+  <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.23</span></div>
   <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
     <button class="spar-pill" onclick="openShopModal()">👛 <span id="spar-display">10000</span></button>
     <button class="crystal-pill" onclick="openRubleShop()">💎 <span id="crystal-display">50</span></button>
@@ -474,10 +474,9 @@ body.has-header .result-modal-overlay{padding-top:96px}
   <button class="edit-btn" style="margin:0 16px 16px;width:calc(100% - 32px)" onclick="goTo('predictions')">📋 Ваши предсказания</button>
   <div style="margin:0 16px 4px;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--text2)">Тестовые действия</div>
   <button class="edit-btn" style="margin:0 16px 8px;width:calc(100% - 32px)" onclick="crystals=0;sparBonus=0;updateCrystalDisplay();saveSession()">🧹 Обнулить кристаллы и бонусы</button>
-  <button class="edit-btn" style="margin:0 16px 16px;width:calc(100% - 32px)" onclick="sparBonus+=100;document.getElementById('spar-bonus-display')&&(document.getElementById('spar-bonus-display').textContent=sparBonus);saveSession()">➕ +100 бонусов Спар</button>
   <span class="rules-link" style="margin-bottom:8px" onclick="openRules()">правила акции</span>
   <div style="height:24px"></div>
-  <div style="text-align:center;padding:0 0 24px;font-size:.72rem;color:var(--text2);opacity:.5">v1.4.21</div>
+  <div style="text-align:center;padding:0 0 24px;font-size:.72rem;color:var(--text2);opacity:.5">v1.4.23</div>
 </div>
 
 <!-- ══ ПРЕДСКАЗАНИЯ ══ -->
@@ -1742,11 +1741,6 @@ function doShare() { doShareModal(); }
 
 // ── ОРАКУЛ ────────────────────────────────────
 function openOracleModal() {
-  const oraclePrice = MECHANICS.find(m=>m.id==='oracle').price || 20;
-  if (crystals < oraclePrice) {
-    document.getElementById('no-crystals-modal').classList.add('open');
-    return;
-  }
   const q = document.getElementById('oracle-question');
   q.value = '';
   q.disabled = false;
@@ -2041,11 +2035,6 @@ function doShareOracle() {
 
 // ── ТОЛКОВАТЕЛЬ СНОВ ──────────────────────────
 function openDreamModal() {
-  const dreamPrice = MECHANICS.find(m=>m.id==='dream').price || 10;
-  if (crystals < dreamPrice) {
-    document.getElementById('no-crystals-modal').classList.add('open');
-    return;
-  }
   const q = document.getElementById('dream-question');
   q.value = ''; q.disabled = false;
   document.getElementById('dream-char-count').textContent = '0 / 500';
@@ -2789,9 +2778,9 @@ function hideCitySuggestions(listId) {
       <button class="result-modal-close" onclick="closeOracleModal()">✕</button>
     </div>
     <div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--text2);margin-bottom:6px">Ваш вопрос</div>
-    <textarea class="oracle-input" id="oracle-question" maxlength="200" placeholder="Задайте свой вопрос Оракулу…" oninput="document.getElementById('oracle-char-count').textContent=this.value.length+' / 200'"></textarea>
+    <textarea class="oracle-input" id="oracle-question" maxlength="200" placeholder="Задайте свой вопрос Оракулу…" oninput="document.getElementById('oracle-char-count').textContent=this.value.length+' / 200'" onfocus="if(crystals<(MECHANICS.find(m=>m.id==='oracle').price||20)){this.blur();document.getElementById('no-crystals-modal').classList.add('open');}"></textarea>
     <div style="text-align:right;font-size:.7rem;color:var(--text2);opacity:.5;margin:-6px 0 10px" id="oracle-char-count">0 / 200</div>
-    <button class="sbtn" onclick="askOracle()" id="oracle-ask-btn">Получить совет · 20 💎</button>
+    <button class="sbtn" onclick="if(crystals<(MECHANICS.find(m=>m.id==='oracle').price||20)){document.getElementById('no-crystals-modal').classList.add('open');}else{askOracle();}" id="oracle-ask-btn">Получить совет · 20 💎</button>
     <div id="oracle-answer-wrap" style="display:none;margin-top:14px">
       <div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:6px">Ответ Оракула</div>
       <div class="oracle-answer on" id="oracle-answer"></div>
@@ -2808,9 +2797,9 @@ function hideCitySuggestions(listId) {
       <button class="result-modal-close" onclick="closeDreamModal()">✕</button>
     </div>
     <div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--text2);margin-bottom:6px">Опишите ваш сон</div>
-    <textarea class="oracle-input" id="dream-question" maxlength="500" placeholder="Расскажите, что вам приснилось…" style="min-height:100px" oninput="document.getElementById('dream-char-count').textContent=this.value.length+' / 500'"></textarea>
+    <textarea class="oracle-input" id="dream-question" maxlength="500" placeholder="Расскажите, что вам приснилось…" style="min-height:100px" oninput="document.getElementById('dream-char-count').textContent=this.value.length+' / 500'" onfocus="if(crystals<(MECHANICS.find(m=>m.id==='dream').price||10)){this.blur();document.getElementById('no-crystals-modal').classList.add('open');}"></textarea>
     <div style="text-align:right;font-size:.7rem;color:var(--text2);opacity:.5;margin:-6px 0 10px" id="dream-char-count">0 / 500</div>
-    <button class="sbtn" onclick="askDream()" id="dream-ask-btn">Истолковать · 10 💎</button>
+    <button class="sbtn" onclick="if(crystals<(MECHANICS.find(m=>m.id==='dream').price||10)){document.getElementById('no-crystals-modal').classList.add('open');}else{askDream();}" id="dream-ask-btn">Истолковать · 10 💎</button>
     <div id="dream-answer-wrap" style="display:none;margin-top:14px">
       <div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:6px">Толкование</div>
       <div class="oracle-answer on" id="dream-answer"></div>
