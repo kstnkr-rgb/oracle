@@ -229,7 +229,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
 .city-wrap{position:relative}
 .city-suggestions{position:absolute;top:100%;left:0;right:0;z-index:50;
   background:#162540;border:1px solid var(--border);border-radius:var(--radius-sm);
-  margin-top:4px;overflow:hidden;display:none;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+  margin-top:4px;overflow-y:auto;max-height:180px;display:none;box-shadow:0 8px 24px rgba(0,0,0,.4)}
 .city-suggestions.open{display:block}
 .city-suggestion{padding:12px 16px;font-size:.9rem;font-weight:600;color:var(--text);
   cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s}
@@ -372,7 +372,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
   justify-content:center;gap:8px;transition:all .2s}
 .share-btn:active{background:var(--card)}
 
-/* ── v1.4.24 UI UPDATES ── */
+/* ── v1.4.25 UI UPDATES ── */
 :root{--gold:#f5c842}
 .sbtn{box-shadow:0 6px 24px rgba(74,158,255,.28),0 2px 10px rgba(245,200,66,.12)}
 .crystal-pill{display:flex;align-items:center;gap:5px;background:rgba(167,139,250,.12);
@@ -427,7 +427,7 @@ body.has-header .result-modal-overlay{padding-top:96px}
 <div class="screen hidden" id="s-onboard">
   <div class="onboard-header">
     <div class="onboard-logo">🔮</div>
-    <div class="onboard-title">Оракул <span style="font-size:.55rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.24</span></div>
+    <div class="onboard-title">Оракул <span style="font-size:.55rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.25</span></div>
     <div class="onboard-sub">Введите данные о рождении для персонального прогноза</div>
   </div>
   <div class="form-body">
@@ -448,7 +448,7 @@ body.has-header .result-modal-overlay{padding-top:96px}
 
 <!-- ══ МЕХАНИКИ ══ -->
 <div id="sticky-header" class="hidden">
-  <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.24</span></div>
+  <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.25</span></div>
   <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
     <button class="spar-pill" onclick="openShopModal()">👛 <span id="spar-display">10000</span></button>
     <button class="crystal-pill" onclick="openRubleShop()">💎 <span id="crystal-display">50</span></button>
@@ -476,7 +476,7 @@ body.has-header .result-modal-overlay{padding-top:96px}
   <button class="edit-btn" style="margin:0 16px 8px;width:calc(100% - 32px)" onclick="crystals=0;sparBonus=0;updateCrystalDisplay();saveSession()">🧹 Обнулить кристаллы и бонусы</button>
   <span class="rules-link" style="margin-bottom:8px" onclick="openRules()">правила акции</span>
   <div style="height:24px"></div>
-  <div style="text-align:center;padding:0 0 24px;font-size:.72rem;color:var(--text2);opacity:.5">v1.4.24</div>
+  <div style="text-align:center;padding:0 0 24px;font-size:.72rem;color:var(--text2);opacity:.5">v1.4.25</div>
 </div>
 
 <!-- ══ ПРЕДСКАЗАНИЯ ══ -->
@@ -2728,9 +2728,16 @@ async function cityAutocomplete(input, listId) {
       const resp = await fetch(url);
       const results = await resp.json();
       if (!results.length) { list.classList.remove('open'); return; }
-      list.innerHTML = results.slice(0,6).map(r => {
+      const seen = new Set();
+      const unique = [];
+      for (const r of results) {
         const name = (r.address && (r.address.city || r.address.town || r.address.village || r.address.municipality)) || r.name;
         const country = (r.address && r.address.country) || '';
+        const key = name + '|' + country;
+        if (!seen.has(key)) { seen.add(key); unique.push({r, name, country}); }
+        if (unique.length === 4) break;
+      }
+      list.innerHTML = unique.map(({r, name, country}) => {
         const cc = ((r.address && r.address.country_code) || 'ru').toUpperCase();
         const safeName = encodeURIComponent(name);
         const safeCountry = encodeURIComponent(country);
