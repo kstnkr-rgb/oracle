@@ -371,7 +371,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
   justify-content:center;gap:8px;transition:all .2s}
 .share-btn:active{background:var(--card)}
 
-/* ── v1.4.18 UI UPDATES ── */
+/* ── v1.4.19 UI UPDATES ── */
 :root{--gold:#f5c842}
 .sbtn{box-shadow:0 6px 24px rgba(74,158,255,.28),0 2px 10px rgba(245,200,66,.12)}
 .crystal-pill{display:flex;align-items:center;gap:5px;background:rgba(167,139,250,.12);
@@ -426,7 +426,7 @@ body.has-header .result-modal-overlay{padding-top:96px}
 <div class="screen hidden" id="s-onboard">
   <div class="onboard-header">
     <div class="onboard-logo">🔮</div>
-    <div class="onboard-title">Оракул <span style="font-size:.55rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.18</span></div>
+    <div class="onboard-title">Оракул <span style="font-size:.55rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.19</span></div>
     <div class="onboard-sub">Введите данные о рождении для персонального прогноза</div>
   </div>
   <div class="form-body">
@@ -447,7 +447,7 @@ body.has-header .result-modal-overlay{padding-top:96px}
 
 <!-- ══ МЕХАНИКИ ══ -->
 <div id="sticky-header" class="hidden">
-  <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.18</span></div>
+  <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.19</span></div>
   <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
     <button class="spar-pill" onclick="openShopModal()">👛 <span id="spar-display">10000</span></button>
     <button class="crystal-pill" onclick="openRubleShop()">💎 <span id="crystal-display">50</span></button>
@@ -468,6 +468,7 @@ body.has-header .result-modal-overlay{padding-top:96px}
   </div>
   <div class="profile-info" id="profile-info"></div>
   <button class="edit-btn" style="margin:0 16px 8px;width:calc(100% - 32px)" onclick="openModal()">✏️ Редактировать данные</button>
+  <button class="edit-btn" style="margin:0 16px 8px;width:calc(100% - 32px);color:#f87171" onclick="resetProfile()">🗑️ Сбросить профиль</button>
   <button class="edit-btn" style="margin:0 16px 16px;width:calc(100% - 32px)" onclick="openLedgerModal()">💎 История покупок</button>
   <button class="edit-btn" style="margin:0 16px 16px;width:calc(100% - 32px)" onclick="goTo('predictions')">📋 Ваши предсказания</button>
   <div style="margin:0 16px 4px;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--text2)">Тестовые действия</div>
@@ -475,7 +476,7 @@ body.has-header .result-modal-overlay{padding-top:96px}
   <button class="edit-btn" style="margin:0 16px 16px;width:calc(100% - 32px)" onclick="sparBonus+=100;document.getElementById('spar-bonus-display')&&(document.getElementById('spar-bonus-display').textContent=sparBonus);saveSession()">➕ +100 бонусов Спар</button>
   <span class="rules-link" style="margin-bottom:8px" onclick="openRules()">правила акции</span>
   <div style="height:24px"></div>
-  <div style="text-align:center;padding:0 0 24px;font-size:.72rem;color:var(--text2);opacity:.5">v1.4.18</div>
+  <div style="text-align:center;padding:0 0 24px;font-size:.72rem;color:var(--text2);opacity:.5">v1.4.19</div>
 </div>
 
 <!-- ══ ПРЕДСКАЗАНИЯ ══ -->
@@ -2182,6 +2183,16 @@ function openModal() {
   if (tp && tp._set) tp._set(profile.time||'');
 }
 function closeModal() { document.getElementById('edit-modal').classList.remove('open'); }
+
+function resetProfile() {
+  if (!confirm('Сбросить данные профиля? Это также очистит все блокировки прогнозов.')) return;
+  profile = {};
+  forecastLock = {};
+  _astroCache = null;
+  try { localStorage.removeItem('oracul_profile'); } catch(e) {}
+  saveSession();
+  renderProfileInfo();
+}
 function closeModalOutside(e) { if(e.target===document.getElementById('edit-modal')) closeModal(); }
 
 function toggleHoroscopeOriginal(btn) {
