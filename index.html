@@ -372,7 +372,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
   justify-content:center;gap:8px;transition:all .2s}
 .share-btn:active{background:var(--card)}
 
-/* ── v1.4.29 UI UPDATES ── */
+/* ── v1.4.30 UI UPDATES ── */
 :root{--gold:#f5c842}
 .sbtn{box-shadow:0 6px 24px rgba(74,158,255,.28),0 2px 10px rgba(245,200,66,.12)}
 .crystal-pill{display:flex;align-items:center;gap:5px;background:rgba(167,139,250,.12);
@@ -427,7 +427,7 @@ body.has-header .result-modal-overlay{padding-top:96px}
 <div class="screen hidden" id="s-onboard">
   <div class="onboard-header">
     <div class="onboard-logo">🔮</div>
-    <div class="onboard-title">Оракул <span style="font-size:.55rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.29</span></div>
+    <div class="onboard-title">Оракул <span style="font-size:.55rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.30</span></div>
     <div class="onboard-sub">Введите данные о рождении для персонального прогноза</div>
   </div>
   <div class="form-body">
@@ -448,7 +448,7 @@ body.has-header .result-modal-overlay{padding-top:96px}
 
 <!-- ══ МЕХАНИКИ ══ -->
 <div id="sticky-header" class="hidden">
-  <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.29</span></div>
+  <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.30</span></div>
   <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
     <button class="spar-pill" onclick="openShopModal()">👛 <span id="spar-display">10000</span></button>
     <button class="crystal-pill" onclick="openRubleShop()">💎 <span id="crystal-display">50</span></button>
@@ -476,7 +476,7 @@ body.has-header .result-modal-overlay{padding-top:96px}
   <button class="edit-btn" style="margin:0 16px 8px;width:calc(100% - 32px)" onclick="crystals=0;sparBonus=0;updateCrystalDisplay();saveSession()">🧹 Обнулить кристаллы и бонусы</button>
   <span class="rules-link" style="margin-bottom:8px" onclick="openRules()">правила акции</span>
   <div style="height:24px"></div>
-  <div style="text-align:center;padding:0 0 24px;font-size:.72rem;color:var(--text2);opacity:.5">v1.4.29</div>
+  <div style="text-align:center;padding:0 0 24px;font-size:.72rem;color:var(--text2);opacity:.5">v1.4.30</div>
 </div>
 
 <!-- ══ ПРЕДСКАЗАНИЯ ══ -->
@@ -995,7 +995,7 @@ async function createHoroscope(mechLabel, sub) {
     const dt = nowStr();
     const key = 'horoscope_' + sub;
     if (!history[key]) history[key] = [];
-    history[key].push({ datetime: dt, title, text: ruText.slice(0, 200) });
+    history[key].push({ datetime: dt, title, text: ruText });
     saveSession();
   } catch(e) {
     stopLoadingPhrases();
@@ -2014,7 +2014,7 @@ async function askOracle() {
     aw.innerHTML = '<div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:6px">Ответ Оракула</div><div class="oracle-answer on" id="oracle-answer">' + answer + '</div>';
     const dt = nowStr();
     if (!history['oracle']) history['oracle'] = [];
-    history['oracle'].push({ datetime: dt, title: 'Совет Оракула', text: ('Вопрос: ' + q + '\n\nОракул: ' + answer).slice(0, 200) });
+    history['oracle'].push({ datetime: dt, title: 'Совет Оракула', text: 'Вопрос: ' + q + '\n\nОракул: ' + answer });
     saveSession();
     soundDrum();
     document.getElementById('oracle-share-btn').style.display = 'flex';
@@ -2071,7 +2071,7 @@ async function askDream() {
     aw.innerHTML = '<div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:6px">Толкование</div><div class="oracle-answer on" id="dream-answer">' + answer + '</div>';
     const dt = nowStr();
     if (!history['dream']) history['dream'] = [];
-    history['dream'].push({ datetime: dt, title: 'Толкователь снов', text: ('Сон: ' + q + '\n\nТолкование: ' + answer).slice(0, 200) });
+    history['dream'].push({ datetime: dt, title: 'Толкователь снов', text: 'Сон: ' + q + '\n\nТолкование: ' + answer });
     saveSession();
     document.getElementById('dream-share-btn').style.display = 'block';
     document.getElementById('dream-question').disabled = false;
