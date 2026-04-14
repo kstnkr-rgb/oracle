@@ -223,7 +223,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
 #dream-modal .result-modal{ max-height:calc(100vh - 130px); }
 /* oracle и dream выше sticky header */
 #oracle-modal, #dream-modal { z-index: 400; }
-#no-crystals-modal { z-index: 500; }
+#no-crystals-modal, #shop-modal, #ruble-shop-modal, #choice-modal, #confirm-modal, #not-enough-spar-modal { z-index: 500; }
 
 /* ── CITY AUTOCOMPLETE ── */
 .city-wrap{position:relative}
@@ -372,7 +372,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
   justify-content:center;gap:8px;transition:all .2s}
 .share-btn:active{background:var(--card)}
 
-/* ── v1.4.30 UI UPDATES ── */
+/* ── v1.4.31 UI UPDATES ── */
 :root{--gold:#f5c842}
 .sbtn{box-shadow:0 6px 24px rgba(74,158,255,.28),0 2px 10px rgba(245,200,66,.12)}
 .crystal-pill{display:flex;align-items:center;gap:5px;background:rgba(167,139,250,.12);
@@ -427,7 +427,7 @@ body.has-header .result-modal-overlay{padding-top:96px}
 <div class="screen hidden" id="s-onboard">
   <div class="onboard-header">
     <div class="onboard-logo">🔮</div>
-    <div class="onboard-title">Оракул <span style="font-size:.55rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.30</span></div>
+    <div class="onboard-title">Оракул <span style="font-size:.55rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.31</span></div>
     <div class="onboard-sub">Введите данные о рождении для персонального прогноза</div>
   </div>
   <div class="form-body">
@@ -448,7 +448,7 @@ body.has-header .result-modal-overlay{padding-top:96px}
 
 <!-- ══ МЕХАНИКИ ══ -->
 <div id="sticky-header" class="hidden">
-  <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.30</span></div>
+  <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.31</span></div>
   <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
     <button class="spar-pill" onclick="openShopModal()">👛 <span id="spar-display">10000</span></button>
     <button class="crystal-pill" onclick="openRubleShop()">💎 <span id="crystal-display">50</span></button>
@@ -476,7 +476,7 @@ body.has-header .result-modal-overlay{padding-top:96px}
   <button class="edit-btn" style="margin:0 16px 8px;width:calc(100% - 32px)" onclick="crystals=0;sparBonus=0;updateCrystalDisplay();saveSession()">🧹 Обнулить кристаллы и бонусы</button>
   <span class="rules-link" style="margin-bottom:8px" onclick="openRules()">правила акции</span>
   <div style="height:24px"></div>
-  <div style="text-align:center;padding:0 0 24px;font-size:.72rem;color:var(--text2);opacity:.5">v1.4.30</div>
+  <div style="text-align:center;padding:0 0 24px;font-size:.72rem;color:var(--text2);opacity:.5">v1.4.31</div>
 </div>
 
 <!-- ══ ПРЕДСКАЗАНИЯ ══ -->
