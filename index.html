@@ -372,7 +372,7 @@ body::after{content:'';position:fixed;bottom:-15%;right:-15%;width:55%;height:55
   justify-content:center;gap:8px;transition:all .2s}
 .share-btn:active{background:var(--card)}
 
-/* ── v1.4.34 UI UPDATES ── */
+/* ── v1.4.35 UI UPDATES ── */
 :root{--gold:#f5c842}
 .sbtn{box-shadow:0 6px 24px rgba(74,158,255,.28),0 2px 10px rgba(245,200,66,.12)}
 .crystal-pill{display:flex;align-items:center;gap:5px;background:rgba(167,139,250,.12);
@@ -427,7 +427,7 @@ body.has-header .result-modal-overlay{padding-top:96px}
 <div class="screen hidden" id="s-onboard">
   <div class="onboard-header">
     <div class="onboard-logo">🔮</div>
-    <div class="onboard-title">Оракул <span style="font-size:.55rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.34</span></div>
+    <div class="onboard-title">Оракул <span style="font-size:.55rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.35</span></div>
     <div class="onboard-sub">Введите данные о рождении для персонального прогноза</div>
   </div>
   <div class="form-body">
@@ -448,7 +448,7 @@ body.has-header .result-modal-overlay{padding-top:96px}
 
 <!-- ══ МЕХАНИКИ ══ -->
 <div id="sticky-header" class="hidden">
-  <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.34</span></div>
+  <div class="nav-title">🔮 Оракул <span style="font-size:.6rem;font-weight:600;color:var(--text2);letter-spacing:.05em;vertical-align:middle;opacity:.7">v1.4.35</span></div>
   <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
     <button class="spar-pill" onclick="openShopModal()">👛 <span id="spar-display">10000</span></button>
     <button class="crystal-pill" onclick="openRubleShop()">💎 <span id="crystal-display">50</span></button>
@@ -476,7 +476,7 @@ body.has-header .result-modal-overlay{padding-top:96px}
   <div style="flex:1"></div>
   <span class="rules-link" style="margin-bottom:8px" onclick="openRules()">правила акции</span>
   <button class="edit-btn" style="margin:40px 16px 8px;width:calc(100% - 32px);color:#f87171" onclick="resetProfile()">🗑️ Сбросить профиль</button>
-  <div style="text-align:center;padding:8px 0 24px;font-size:.72rem;color:var(--text2);opacity:.5">v1.4.34</div>
+  <div style="text-align:center;padding:8px 0 24px;font-size:.72rem;color:var(--text2);opacity:.5">v1.4.35</div>
 </div>
 
 <!-- ══ ПРЕДСКАЗАНИЯ ══ -->
@@ -2101,9 +2101,10 @@ async function askDream() {
   startLoadingPhrases('dream');
   document.getElementById('dream-ask-btn').style.display = 'none';
   try {
+    const astro = await getAstroData();
     const resp = await fetch('/dream-ru', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ dream: q })
+      body: JSON.stringify({ dream: q, natal: astro.natal, transits: astro.transits })
     });
     if (!resp.ok) throw new Error('Ошибка сервера ' + resp.status);
     const json = await resp.json();
